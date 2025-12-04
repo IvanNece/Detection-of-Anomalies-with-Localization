@@ -1,3 +1,34 @@
+# Instructions
+## 1.2 Scope, Common Guidelines, and Deliverables (Applies to All Projects)
+
+Documentation, Report, and Submission
+Each group must maintain comprehensive documentation of design, training,
+and evaluation, including preprocessing; the train/validation/test split with percentages and the underlying rationale; validation criteria and decision thresholds; loss functions and optimization strategies; quantitative and qualitative
+results; and an error/confusion analysis with a discussion of failure cases. The
+final report (6–8 pages) must present the application context and operational
+definitions, the dataset with statistics, the adopted machine learning techniques
+and hyper-parameters, the training/validation protocols, the performance metrics, the results, and a balanced discussion of limitations and possible future developments. The submission package must include the full project code and/or
+notebooks, the weights of at least one trained model, scripts to regenerate all
+tables and figures, and (when the dataset is not publicly available) a copy of
+or a link to the dataset; it must also contain a README sufficient for full
+reproducibility (covering setup, training, and evaluation) and the compiled selfassessment checklist. Optionally, groups may also provide an experiment log
+(e.g., using the provided Sample ML tracker spreadsheet) and supplementary
+material such as additional figures, videos, or other artifacts that support the
+evaluation.
+
+Assessment and Grading (Applies to All Projects)
+Grading is based on the following pillars (building on the documentation and
+results required above, without repeating them):
+• Reproducibility & documentation: completeness and clarity of code,
+README, seeds, and scripts.
+• Experimental rigor: sound splits and protocols, well-motivated design
+choices, and ablation studies where appropriate.
+• Results & error analysis: quality of quantitative and qualitative evaluation, including confusion/error analysis and discussion of failure cases.
+• Critical discussion: insight into limitations, bias, and generalization,
+with well-argued future work.
+
+---
+
 # Assignment
 ## 2.2 Detection of Anomalies with Possible Localization
 
@@ -27,31 +58,3 @@ real-world cases and be documented. Propose and evaluate techniques to
 mitigate observed degradation, with clear justification and quantitative
 evidence.
 
-# Instructions
-## 1.2 Scope, Common Guidelines, and Deliverables (Applies to All Projects)
-
-Documentation, Report, and Submission
-Each group must maintain comprehensive documentation of design, training,
-and evaluation, including preprocessing; the train/validation/test split with percentages and the underlying rationale; validation criteria and decision thresholds; loss functions and optimization strategies; quantitative and qualitative
-results; and an error/confusion analysis with a discussion of failure cases. The
-final report (6–8 pages) must present the application context and operational
-definitions, the dataset with statistics, the adopted machine learning techniques
-and hyper-parameters, the training/validation protocols, the performance metrics, the results, and a balanced discussion of limitations and possible future developments. The submission package must include the full project code and/or
-notebooks, the weights of at least one trained model, scripts to regenerate all
-tables and figures, and (when the dataset is not publicly available) a copy of
-or a link to the dataset; it must also contain a README sufficient for full
-reproducibility (covering setup, training, and evaluation) and the compiled selfassessment checklist. Optionally, groups may also provide an experiment log
-(e.g., using the provided Sample ML tracker spreadsheet) and supplementary
-material such as additional figures, videos, or other artifacts that support the
-evaluation.
-
-Assessment and Grading (Applies to All Projects)
-Grading is based on the following pillars (building on the documentation and
-results required above, without repeating them):
-• Reproducibility & documentation: completeness and clarity of code,
-README, seeds, and scripts.
-• Experimental rigor: sound splits and protocols, well-motivated design
-choices, and ablation studies where appropriate.
-• Results & error analysis: quality of quantitative and qualitative evaluation, including confusion/error analysis and discussion of failure cases.
-• Critical discussion: insight into limitations, bias, and generalization,
-with well-argued future work.
