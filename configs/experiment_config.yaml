@@ -1,0 +1,147 @@
+# ============================================================================
+# Experiment Configuration
+# Detection of Anomalies with Localization - MVTec AD
+# ============================================================================
+
+# Global Settings
+seed: 42
+device: 'cuda'  # 'cuda' or 'cpu'
+num_workers: 4
+pin_memory: true
+
+# Dataset Configuration
+dataset:
+  name: 'MVTec AD'
+  classes:
+    - 'hazelnut'
+    - 'carpet'
+    - 'zipper'
+  
+  # Image preprocessing
+  image_size: 224  # ResNet standard input
+  normalize:
+    mean: [0.485, 0.456, 0.406]  # ImageNet stats
+    std: [0.229, 0.224, 0.225]
+
+# Data Split Configuration
+split:
+  train_ratio: 0.8     # 80% of train/good for training
+  val_ratio: 0.2       # 20% of train/good for validation
+  val_anomaly_ratio: 0.3  # 30% of test anomalous for validation
+  
+  # Remaining test/good + remaining anomalous → test set
+
+# Domain Shift Configuration
+domain_shift:
+  enabled: true
+  
+  # Geometric transforms (applied to image + mask)
+  geometric:
+    rotation_range: [-10, 10]  # degrees
+    scale_range: [0.9, 1.0]
+    aspect_ratio_range: [0.9, 1.1]
+    translate_range: 0.1  # fraction of image size
+  
+  # Photometric transforms (applied only to image)
+  photometric:
+    brightness_range: [0.7, 1.3]
+    contrast_range: [0.7, 1.3]
+    saturation_range: [0.7, 1.3]
+    gaussian_blur:
+      kernel_size: [3, 5]
+      sigma_range: [0.1, 2.0]
+    gaussian_noise:
+      sigma_range: [0.01, 0.05]  # for images normalized to [0, 1]
+  
+  # Optional illumination effects
+  vignetting:
+    enabled: false
+    strength_range: [0.3, 0.7]
+
+# Paths Configuration
+paths:
+  # Data directories
+  data_root: 'data'
+  raw_data: 'data/raw/mvtec_ad'
+  processed_data: 'data/processed'
+  shifted_data: 'data/shifted'
+  
+  # Output directories
+  outputs: 'outputs'
+  models: 'outputs/models'
+  thresholds: 'outputs/thresholds'
+  results: 'outputs/results'
+  visualizations: 'outputs/visualizations'
+  
+  # Scripts and configs
+  scripts: 'scripts'
+  configs: 'configs'
+
+# PatchCore Configuration
+patchcore:
+  backbone: 'resnet50'
+  pretrained: true
+  layers: ['layer2', 'layer3']  # Multi-scale features
+  
+  # Patch extraction
+  patch_size: 3  # Size of spatial patches in feature map
+  stride: 1
+  
+  # Memory bank
+  coreset_sampling_ratio: 0.01  # 1% of patches (can vary: 0.01, 0.05, 0.10)
+  
+  # Anomaly scoring
+  n_neighbors: 1  # k-NN for anomaly score
+  distance_metric: 'euclidean'
+  
+  # Aggregation for image-level score
+  aggregation_method: 'max'  # 'max', 'mean', or 'topk'
+  topk_percentile: 0.95  # If using topk
+
+# PaDiM Configuration
+padim:
+  backbone: 'resnet50'
+  pretrained: true
+  layers: ['layer1', 'layer2', 'layer3']
+  
+  # Dimensionality reduction
+  reduce_features: true
+  n_features: 100  # Reduced feature dimension
+  
+  # Gaussian modeling
+  distance_metric: 'mahalanobis'
+
+# Threshold Selection
+threshold:
+  method: 'f1_optimal'  # Maximize F1 score on validation set
+  search_space:
+    n_thresholds: 1000  # Number of thresholds to test
+
+# Evaluation Metrics
+metrics:
+  image_level:
+    - 'auroc'
+    - 'auprc'
+    - 'f1'
+    - 'accuracy'
+    - 'precision'
+    - 'recall'
+  
+  pixel_level:
+    - 'pixel_auroc'
+    - 'pro'  # Per-Region Overlap
+
+# Logging and Visualization
+logging:
+  log_level: 'INFO'
+  save_frequency: 10  # Save every N batches
+  
+visualization:
+  save_heatmaps: true
+  top_k_samples: 10  # Save top-k best/worst predictions
+  dpi: 150
+
+# Optional: Global Model Configuration
+global_model:
+  enabled: false  # Set to true to train a single model on all classes
+  pool_strategy: 'concatenate'  # How to pool data from multiple classes

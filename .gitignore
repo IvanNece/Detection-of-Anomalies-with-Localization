@@ -1,4 +1,43 @@
+# ============================================================================
+# PROJECT-SPECIFIC: Dataset (too large for Git)
+# ============================================================================
+data/raw/
+data/shifted/
+
+# Keep only split files (small JSON/pickle)
+!data/processed/
+
+# ============================================================================
+# PROJECT-SPECIFIC: Models and Cache (large files)
+# ============================================================================
+outputs/models/*.pt
+outputs/models/*.pkl
+outputs/models/*.pth
+outputs/models/*.h5
+outputs/features/
+
+# Keep thresholds and results (small JSON/CSV)
+!outputs/thresholds/
+!outputs/results/
+
+# ============================================================================
+# PROJECT-SPECIFIC: Visualizations (large PNG/JPG files)
+# ============================================================================
+outputs/visualizations/*.png
+outputs/visualizations/*.jpg
+outputs/visualizations/*.jpeg
+# Keep a few example visualizations
+!outputs/visualizations/example_*.png
+
+# ============================================================================
+# Kaggle Credentials (NEVER commit API keys!)
+# ============================================================================
+.kaggle/
+kaggle.json
+
+# ============================================================================
 # Byte-compiled / optimized / DLL files
+# ============================================================================
 __pycache__/
 *.py[codz]
 *$py.class
@@ -56,10 +95,21 @@ cover/
 *.pot
 
 # Django stuff:
-*.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+
+# Logs
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+
+# TensorBoard and Experiment Tracking
+runs/
+tensorboard/
+wandb/
 
 # Flask stuff:
 instance/
@@ -182,11 +232,7 @@ cython_debug/
 .abstra/
 
 # Visual Studio Code
-#  Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore 
-#  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
-#  and can be added to the global gitignore or merged into this file. However, if you prefer, 
-#  you could uncomment the following to ignore the entire vscode folder
-# .vscode/
+.vscode/
 
 # Ruff stuff:
 .ruff_cache/
