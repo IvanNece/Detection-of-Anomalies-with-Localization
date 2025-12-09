@@ -43,7 +43,7 @@ For each class, data are split as follows:
 
 Exact image counts per split will be reported in the final report; splits are generated reproducibly using a fixed random seed and the same protocol for all 3 classes.
 
-**Optional global model.**
+**Global model.**
 
 In addition to the per-class setup, we may train a **single global model** pooling all normal images from the 3 classes, used only as an extra comparison to study the limitations of a heterogeneous notion of “normality”.
 

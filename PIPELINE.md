@@ -1,42 +1,42 @@
-# Pipeline Completa - Anomaly Detection Project
+# Complete Pipeline - Anomaly Detection Project
 
-## 📋 Overview del Progetto
+## 📋 Project Overview
 
-**Dataset**: MVTec AD (3 classi: Hazelnut, Carpet, Zipper)  
-**Metodi**: PatchCore (main) + PaDiM (baseline)  
+**Dataset**: MVTec AD (3 classes: Hazelnut, Carpet, Zipper)  
+**Methods**: PatchCore (main) + PaDiM (baseline)  
 **Framework**: PyTorch + Colab Notebooks  
-**Fasi**: Clean Domain → Domain Shift → Adaptation
+**Phases**: Clean Domain → Domain Shift → Adaptation
 
 ---
 
-## 🏗️ Struttura Proposta del Progetto
+## 🏗️ Proposed Project Structure
 
 ```
 Detection-of-Anomalies-with-Localization/
 ├── notebooks/
-│   ├── 01_data_exploration.ipynb          # EDA e statistiche dataset
-│   ├── 02_data_preparation.ipynb          # Split e preprocessing
-│   ├── 03_domain_shift_generation.ipynb   # Creazione MVTec-Shift
+│   ├── 01_data_exploration.ipynb          # EDA and dataset statistics
+│   ├── 02_data_preparation.ipynb          # Split and preprocessing
+│   ├── 03_domain_shift_generation.ipynb   # MVTec-Shift creation
 │   ├── 04_patchcore_clean.ipynb           # Training PatchCore - Clean
 │   ├── 05_padim_clean.ipynb               # Training PaDiM - Clean
-│   ├── 06_evaluation_clean.ipynb          # Valutazione Phase 1
+│   ├── 06_evaluation_clean.ipynb          # Phase 1 evaluation
 │   ├── 07_patchcore_shift.ipynb           # PatchCore - Shift & Adaptation
 │   ├── 08_padim_shift.ipynb               # PaDiM - Shift & Adaptation
-│   ├── 09_evaluation_shift.ipynb          # Valutazione Phase 2
-│   └── 10_results_visualization.ipynb     # Grafici e analisi finale
+│   ├── 09_evaluation_shift.ipynb          # Phase 2 evaluation
+│   └── 10_results_visualization.ipynb     # Plots and final analysis
 │
 ├── src/
 │   ├── data/
 │   │   ├── __init__.py
 │   │   ├── dataset.py                     # MVTecDataset class
-│   │   ├── transforms.py                  # Transform per clean/shift
-│   │   └── splitter.py                    # Logica split Train/Val/Test
+│   │   ├── transforms.py                  # Transforms for clean/shift
+│   │   └── splitter.py                    # Train/Val/Test split logic
 │   │
 │   ├── models/
 │   │   ├── __init__.py
 │   │   ├── backbones.py                   # ResNet feature extractors
 │   │   ├── patchcore.py                   # PatchCore implementation
-│   │   ├── padim_wrapper.py               # Wrapper per anomalib PaDiM
+│   │   ├── padim_wrapper.py               # Wrapper for anomalib PaDiM
 │   │   └── memory_bank.py                 # Greedy Coreset Subsampling
 │   │
 │   ├── metrics/
@@ -47,37 +47,37 @@ Detection-of-Anomalies-with-Localization/
 │   │
 │   ├── utils/
 │   │   ├── __init__.py
-│   │   ├── config.py                      # Configurazioni globali
-│   │   ├── logger.py                      # Logging e tracking
+│   │   ├── config.py                      # Global configurations
+│   │   ├── logger.py                      # Logging and tracking
 │   │   ├── visualization.py               # Plot heatmaps, ROC, etc.
 │   │   └── reproducibility.py             # Seed setting
 │   │
 │   └── evaluation/
 │       ├── __init__.py
-│       ├── evaluator.py                   # Pipeline valutazione completa
+│       ├── evaluator.py                   # Complete evaluation pipeline
 │       └── error_analysis.py              # Confusion matrix, failure cases
 │
 ├── configs/
 │   ├── patchcore_config.yaml              # Hyperparameters PatchCore
 │   ├── padim_config.yaml                  # Hyperparameters PaDiM
-│   └── experiment_config.yaml             # Setup generale esperimenti
+│   └── experiment_config.yaml             # General experiment setup
 │
 ├── data/
-│   ├── raw/                               # MVTec AD originale
-│   ├── processed/                         # Split salvati (pickle/json)
-│   └── shifted/                           # MVTec-Shift generato
+│   ├── raw/                               # Original MVTec AD
+│   ├── processed/                         # Saved splits (pickle/json)
+│   └── shifted/                           # Generated MVTec-Shift
 │
 ├── outputs/
 │   ├── models/                            # Memory banks, checkpoints
-│   ├── thresholds/                        # Thresholds calibrati
-│   ├── results/                           # Metriche JSON/CSV
-│   └── visualizations/                    # Heatmaps, grafici
+│   ├── thresholds/                        # Calibrated thresholds
+│   ├── results/                           # Metrics JSON/CSV
+│   └── visualizations/                    # Heatmaps, plots
 │
 ├── scripts/
 │   ├── download_dataset.py                # Download MVTec AD
-│   ├── generate_all_splits.py             # Genera tutti gli split
-│   ├── run_experiments.py                 # Script orchestrazione completa
-│   └── generate_report_tables.py          # Genera tabelle per report
+│   ├── generate_all_splits.py             # Generate all splits
+│   ├── run_experiments.py                 # Complete orchestration script
+│   └── generate_report_tables.py          # Generate tables for report
 │
 ├── tests/
 │   ├── test_dataset.py
@@ -87,15 +87,15 @@ Detection-of-Anomalies-with-Localization/
 ├── requirements.txt
 ├── README.md
 ├── .gitignore
-└── PIPELINE.md (questo file)
+└── PIPELINE.md 
 ```
 
 ---
 
 ## 🔄 Pipeline Step-by-Step
 
-### **FASE 0: Setup Iniziale**
-**Obiettivo**: Preparare l'ambiente e scaricare il dataset
+### **PHASE 0: Initial Setup**
+**Goal**: Prepare the environment and download the dataset
 
 #### Step 0.1: Environment Setup
 - [x] Creare `requirements.txt` con dipendenze:
@@ -108,145 +108,145 @@ Detection-of-Anomalies-with-Localization/
   - `tensorboard` (opzionale per logging)
 
 #### Step 0.2: Download Dataset
-- [x] Script per scaricare MVTec AD (Kaggle API o wget)
-- [x] Verificare struttura: `hazelnut/`, `carpet/`, `zipper/`
-- [x] Ogni classe: `train/good/`, `test/good/`, `test/<defect>/`, `ground_truth/<defect>/`
+- [x] Script to download MVTec AD (Kaggle API or wget)
+- [x] Verify structure: `hazelnut/`, `carpet/`, `zipper/`
+- [x] Each class: `train/good/`, `test/good/`, `test/<defect>/`, `ground_truth/<defect>/`
 
-#### Step 0.3: Configurazioni Base
+#### Step 0.3: Base Configurations
 - [x] File `configs/experiment_config.yaml`:
-  - Seed globale: 42
-  - Classi: [hazelnut, carpet, zipper]
+  - Global seed: 42
+  - Classes: [hazelnut, carpet, zipper]
   - Split ratios: Train 80%, Val 20%
   - Val anomaly ratio: 30%
   - Paths dataset e output
 
 ---
 
-### **FASE 1: Data Exploration & Preparation**
+### **PHASE 1: Data Exploration & Preparation**
 
 #### Step 1.1: Exploratory Data Analysis (Notebook 01)
-- [ ] Contare immagini per classe e split
-- [ ] Visualizzare esempi normal/anomalous per ogni classe
-- [ ] Statistiche dimensioni immagini
-- [ ] Distribuzione tipi di difetti per classe
-- [ ] Visualizzare ground truth masks
+- [ ] Count images per class and split
+- [ ] Visualize normal/anomalous examples for each class
+- [ ] Image size statistics
+- [ ] Distribution of defect types per class
+- [ ] Visualize ground truth masks
 
-#### Step 1.2: Implementare Data Split (Notebook 02)
+#### Step 1.2: Implement Data Split (Notebook 02)
 - [ ] `src/data/splitter.py`:
-  - Funzione `create_clean_split(class_name, train_ratio, val_anomaly_ratio, seed)`
-  - Input: cartelle MVTec
-  - Output: dizionari con paths immagini/masks
-  - Train-clean: 80% di `train/good`
-  - Val-clean: 20% `train/good` + 30% anomalous da `test/`
-  - Test-clean: restante `test/good` + restante anomalous
-- [ ] Salvare split in `data/processed/clean_splits.json`
-- [ ] Verificare bilanciamento e conteggi
+  - Function `create_clean_split(class_name, train_ratio, val_anomaly_ratio, seed)`
+  - Input: MVTec folders
+  - Output: dictionaries with image/mask paths
+  - Train-clean: 80% of `train/good`
+  - Val-clean: 20% `train/good` + 30% anomalous from `test/`
+  - Test-clean: remaining `test/good` + remaining anomalous
+- [ ] Save splits in `data/processed/clean_splits.json`
+- [ ] Verify balancing and counts
 
-#### Step 1.3: Implementare Dataset Class (Notebook 02)
+#### Step 1.3: Implement Dataset Class (Notebook 02)
 - [ ] `src/data/dataset.py`:
   - `MVTecDataset(image_paths, mask_paths, transform, phase)`
-  - `__getitem__`: restituire (image, mask, label, image_path)
-  - Supportare phase='train' (solo normal), 'val', 'test'
+  - `__getitem__`: return (image, mask, label, image_path)
+  - Support phase='train' (only normal), 'val', 'test'
 - [ ] `src/data/transforms.py`:
   - `get_clean_transforms(train=False)`: resize, normalize ImageNet
-  - Testare su esempi
+  - Test on examples
 
 ---
 
-### **FASE 2: Domain Shift Generation**
+### **PHASE 2: Domain Shift Generation**
 
-#### Step 2.1: Implementare Trasformazioni Shift (Notebook 03)
+#### Step 2.1: Implement Shift Transformations (Notebook 03)
 - [ ] `src/data/transforms.py`:
   - `ShiftTransform`:
     - **Geometric** (apply to image + mask):
       - Random rotation [-10°, +10°]
       - Random resized crop [0.9, 1.0]
       - Small translation
-    - **Photometric** (solo image):
+    - **Photometric** (image only):
       - ColorJitter (brightness, contrast, saturation [0.7, 1.3])
       - Gaussian blur (kernel 3-5)
       - Gaussian noise σ [0.01, 0.05]
-    - Opzionale: vignetting simulato
-  - Usare `torchvision.transforms` e `albumentations` per consistency
+    - Optional: simulated vignetting
+  - Use `torchvision.transforms` and `albumentations` for consistency
 
-#### Step 2.2: Generare MVTec-Shift Dataset (Notebook 03)
-- [ ] Per ogni split (Train-clean, Val-clean, Test-clean):
-  - Applicare `ShiftTransform` a tutte le immagini + masks
-  - Salvare in `data/shifted/` mantenendo struttura
-- [ ] Creare `data/processed/shifted_splits.json`
-- [ ] Visualizzare esempi clean vs shifted
+#### Step 2.2: Generate MVTec-Shift Dataset (Notebook 03)
+- [ ] For each split (Train-clean, Val-clean, Test-clean):
+  - Apply `ShiftTransform` to all images + masks
+  - Save in `data/shifted/` maintaining structure
+- [ ] Create `data/processed/shifted_splits.json`
+- [ ] Visualize clean vs shifted examples
 
 ---
 
-### **FASE 3: PatchCore - Clean Domain**
+### **PHASE 3: PatchCore - Clean Domain**
 
-#### Step 3.1: Implementare Backbone (Notebook 04)
+#### Step 3.1: Implement Backbone (Notebook 04)
 - [ ] `src/models/backbones.py`:
   - `ResNet50FeatureExtractor`:
     - Pre-trained ImageNet
-    - Hook su layer intermedi (es: layer2, layer3)
+    - Hook on intermediate layers (e.g., layer2, layer3)
     - Forward → multi-scale features
-    - Average pooling locale per ridurre dimensionalità
-    - Concatenazione e upsampling a risoluzione comune
+    - Local average pooling to reduce dimensionality
+    - Concatenation and upsampling to common resolution
 
-#### Step 3.2: Implementare Memory Bank (Notebook 04)
+#### Step 3.2: Implement Memory Bank (Notebook 04)
 - [ ] `src/models/memory_bank.py`:
   - `GreedyCoresetSubsampling`:
-    - Input: patch features da Train-clean
-    - Greedy selection: iterativamente seleziona patch che massimizza min-distance a già selezionati
-    - Target: 1-10% delle patches totali
-    - Output: memoria ridotta
+    - Input: patch features from Train-clean
+    - Greedy selection: iteratively select patches that maximize min-distance to already selected ones
+    - Target: 1-10% of total patches
+    - Output: reduced memory
   - `MemoryBank`:
-    - Store features + metodi nearest neighbour
-    - Reweighting basato su densità locale
+    - Store features + nearest neighbor methods
+    - Reweighting based on local density
 
-#### Step 3.3: Implementare PatchCore (Notebook 04)
+#### Step 3.3: Implement PatchCore (Notebook 04)
 - [ ] `src/models/patchcore.py`:
   - `PatchCore`:
-    - `fit(train_loader)`: estrai features, build memory bank
+    - `fit(train_loader)`: extract features, build memory bank
     - `predict(image)`: 
-      - Estrai patch features
-      - Nearest neighbour per ogni patch
-      - Genera anomaly heatmap
-      - Aggregate image-level score (max o top-k percentile)
-    - `save/load`: salvare memory bank
+      - Extract patch features
+      - Nearest neighbor for each patch
+      - Generate anomaly heatmap
+      - Aggregate image-level score (max or top-k percentile)
+    - `save/load`: save memory bank
 
 #### Step 3.4: Training PatchCore - Clean (Notebook 04)
-- [ ] Per ogni classe (hazelnut, carpet, zipper):
-  - Caricare Train-clean
+- [ ] For each class (hazelnut, carpet, zipper):
+  - Load Train-clean
   - Fit PatchCore
-  - Salvare memory bank in `outputs/models/patchcore_{class}_clean.pkl`
-- [ ] Tempo di training e dimensione memory bank
+  - Save memory bank in `outputs/models/patchcore_{class}_clean.pkl`
+- [ ] Training time and memory bank size
 
 ---
 
-### **FASE 4: PaDiM - Clean Domain**
+### **PHASE 4: PaDiM - Clean Domain**
 
-#### Step 4.1: Setup PaDiM con Anomalib (Notebook 05)
+#### Step 4.1: Setup PaDiM with Anomalib (Notebook 05)
 - [ ] `src/models/padim_wrapper.py`:
-  - Wrapper per `anomalib.models.Padim`
-  - Configurazione backbone ResNet
-  - Interfaccia unificata con PatchCore
+  - Wrapper for `anomalib.models.Padim`
+  - ResNet backbone configuration
+  - Unified interface with PatchCore
 
 #### Step 4.2: Training PaDiM - Clean (Notebook 05)
-- [ ] Per ogni classe:
-  - Adattare dataloader per anomalib
-  - Fit PaDiM su Train-clean
-  - Salvare modello in `outputs/models/padim_{class}_clean.pkl`
+- [ ] For each class:
+  - Adapt dataloader for anomalib
+  - Fit PaDiM on Train-clean
+  - Save model in `outputs/models/padim_{class}_clean.pkl`
 
 ---
 
-### **FASE 5: Threshold Calibration & Evaluation - Clean Domain**
+### **PHASE 5: Threshold Calibration & Evaluation - Clean Domain**
 
-#### Step 5.1: Implementare Threshold Selection (Notebook 06)
+#### Step 5.1: Implement Threshold Selection (Notebook 06)
 - [ ] `src/metrics/threshold_selection.py`:
   - `calibrate_threshold(scores_normal, scores_anomalous)`:
     - Gridsearch thresholds
-    - Calcola F1 per ogni threshold
-    - Return best threshold che massimizza F1
-  - Applicare su Val-clean per ogni classe e metodo
+    - Calculate F1 for each threshold
+    - Return best threshold that maximizes F1
+  - Apply on Val-clean for each class and method
 
-#### Step 5.2: Implementare Metriche (Notebook 06)
+#### Step 5.2: Implement Metrics (Notebook 06)
 - [ ] `src/metrics/image_metrics.py`:
   - `compute_auroc(y_true, scores)`
   - `compute_auprc(y_true, scores)`
@@ -257,112 +257,112 @@ Detection-of-Anomalies-with-Localization/
   - `compute_pixel_auroc(masks_true, heatmaps)`
   - `compute_pro(masks_true, heatmaps)` (Per-Region Overlap)
 
-#### Step 5.3: Valutazione su Test-Clean (Notebook 06)
-- [ ] Per ogni classe e metodo:
-  - Predict su Test-clean
-  - Applicare threshold da Val-clean
-  - Calcolare tutte le metriche image-level e pixel-level
-- [ ] Salvare risultati in `outputs/results/clean_results.json`
-- [ ] Tabelle per classe e macro-average
+#### Step 5.3: Evaluation on Test-Clean (Notebook 06)
+- [ ] For each class and method:
+  - Predict on Test-clean
+  - Apply threshold from Val-clean
+  - Calculate all image-level and pixel-level metrics
+- [ ] Save results in `outputs/results/clean_results.json`
+- [ ] Tables per class and macro-average
 
-#### Step 5.4: Visualizzazioni (Notebook 06)
+#### Step 5.4: Visualizations (Notebook 06)
 - [ ] Top-K best/worst predictions
-- [ ] Heatmaps overlay su immagini anomalous
+- [ ] Heatmaps overlay on anomalous images
 - [ ] Confusion matrix
-- [ ] ROC e Precision-Recall curves
+- [ ] ROC and Precision-Recall curves
 
 ---
 
-### **FASE 6: Domain Shift - No Adaptation**
+### **PHASE 6: Domain Shift - No Adaptation**
 
-#### Step 6.1: Evaluation su Test-Shift senza Adaptation (Notebook 09)
-- [ ] Usare modelli trained su Train-clean
-- [ ] Usare thresholds calibrati su Val-clean (stessi di FASE 5)
-- [ ] Predict su Test-shift
-- [ ] Calcolare metriche
-- [ ] Salvare in `outputs/results/shift_no_adaptation_results.json`
-- [ ] **Analisi degradazione performance** rispetto a Test-clean
+#### Step 6.1: Evaluation on Test-Shift without Adaptation (Notebook 09)
+- [ ] Use models trained on Train-clean
+- [ ] Use thresholds calibrated on Val-clean (same as PHASE 5)
+- [ ] Predict on Test-shift
+- [ ] Calculate metrics
+- [ ] Save in `outputs/results/shift_no_adaptation_results.json`
+- [ ] **Performance degradation analysis** compared to Test-clean
 
 ---
 
-### **FASE 7: Domain Shift - With Adaptation**
+### **PHASE 7: Domain Shift - With Adaptation**
 
-#### Step 7.1: Re-training su Train-Shift (Notebook 07, 08)
+#### Step 7.1: Re-training on Train-Shift (Notebook 07, 08)
 - [ ] **PatchCore**:
-  - Ricostruire memory bank usando Train-shift
-  - Salvare in `outputs/models/patchcore_{class}_shift.pkl`
+  - Rebuild memory bank using Train-shift
+  - Save in `outputs/models/patchcore_{class}_shift.pkl`
 - [ ] **PaDiM**:
-  - Re-fit su Train-shift
-  - Salvare in `outputs/models/padim_{class}_shift.pkl`
+  - Re-fit on Train-shift
+  - Save in `outputs/models/padim_{class}_shift.pkl`
 
-#### Step 7.2: Re-calibrate Thresholds su Val-Shift (Notebook 07, 08)
-- [ ] Predict su Val-shift con nuovi modelli
-- [ ] Calibrare nuovi thresholds massimizzando F1
-- [ ] Salvare in `outputs/thresholds/shift_thresholds.json`
+#### Step 7.2: Re-calibrate Thresholds on Val-Shift (Notebook 07, 08)
+- [ ] Predict on Val-shift with new models
+- [ ] Calibrate new thresholds maximizing F1
+- [ ] Save in `outputs/thresholds/shift_thresholds.json`
 
-#### Step 7.3: Evaluation su Test-Shift con Adaptation (Notebook 09)
-- [ ] Predict con modelli adapted
-- [ ] Applicare thresholds da Val-shift
-- [ ] Calcolare metriche
-- [ ] Salvare in `outputs/results/shift_with_adaptation_results.json`
-- [ ] **Analisi miglioramento** rispetto a no-adaptation
-
----
-
-### **FASE 8: Global Model (Opzionale)**
-
-#### Step 8.1: Training Global Model (Extra)
-- [ ] Pool tutti i normal images dalle 3 classi
-- [ ] Train PatchCore/PaDiM sul pool
-- [ ] Evaluate su ogni classe separatamente
-- [ ] **Analisi limitazioni** di normality eterogenea
+#### Step 7.3: Evaluation on Test-Shift with Adaptation (Notebook 09)
+- [ ] Predict with adapted models
+- [ ] Apply thresholds from Val-shift
+- [ ] Calculate metrics
+- [ ] Save in `outputs/results/shift_with_adaptation_results.json`
+- [ ] **Improvement analysis** compared to no-adaptation
 
 ---
 
-### **FASE 9: Error Analysis & Results Visualization**
+### **PHASE 8: Global Model**
+
+#### Step 8.1: Training Global Model
+- [ ] Pool all normal images from the 3 classes
+- [ ] Train PatchCore/PaDiM on the pool
+- [ ] Evaluate on each class separately
+- [ ] **Limitations analysis** of heterogeneous normality
+
+---
+
+### **PHASE 9: Error Analysis & Results Visualization**
 
 #### Step 9.1: Error Analysis (Notebook 10)
 - [ ] `src/evaluation/error_analysis.py`:
-  - Identifica failure cases (FP, FN)
-  - Analizza pattern comuni (es: difetti piccoli, occlusioni)
-  - Confusion matrix dettagliate per tipo di difetto
+  - Identify failure cases (FP, FN)
+  - Analyze common patterns (e.g., small defects, occlusions)
+  - Detailed confusion matrices per defect type
 
 #### Step 9.2: Comparative Analysis (Notebook 10)
-- [ ] Tabelle comparative:
+- [ ] Comparative tables:
   - PatchCore vs PaDiM
   - Clean vs Shift (no-adapt) vs Shift (adapt)
   - Per-class performance
-- [ ] Grafici:
-  - Bar plots metriche per classe
+- [ ] Plots:
+  - Bar plots of metrics per class
   - Scatter plots AUROC image vs pixel
-  - Heatmap confronto
-  - ROC curves multiple
+  - Comparison heatmap
+  - Multiple ROC curves
 
 #### Step 9.3: Ablation Studies (Notebook 10)
 - [ ] **PatchCore**:
-  - Variare coreset fraction (1%, 5%, 10%)
-  - Variare backbone layers
-  - Variare aggregation method (max, top-k)
+  - Vary coreset fraction (1%, 5%, 10%)
+  - Vary backbone layers
+  - Vary aggregation method (max, top-k)
 - [ ] **Domain Shift**:
-  - Impatto singole trasformazioni (solo photometric, solo geometric)
-  - Severity level delle trasformazioni
+  - Impact of individual transformations (photometric only, geometric only)
+  - Transformation severity levels
 
 ---
 
-### **FASE 10: Documentation & Report**
+### **PHASE 10: Documentation & Report**
 
-#### Step 10.1: README Completo
+#### Step 10.1: Complete README
 - [ ] Setup instructions
-- [ ] Comandi per download dataset
-- [ ] Comandi per train/eval
-- [ ] Struttura output
-- [ ] Riproducibilità (seed, versions)
+- [ ] Commands for dataset download
+- [ ] Commands for train/eval
+- [ ] Output structure
+- [ ] Reproducibility (seed, versions)
 
-#### Step 10.2: Scripts per Reproducibility
-- [ ] `scripts/run_experiments.py`: orchestrazione completa
-- [ ] `scripts/generate_report_tables.py`: genera tutte le tabelle/figure per report
+#### Step 10.2: Scripts for Reproducibility
+- [ ] `scripts/run_experiments.py`: complete orchestration
+- [ ] `scripts/generate_report_tables.py`: generate all tables/figures for report
 
-#### Step 10.3: Report Finale (6-8 pagine)
+#### Step 10.3: Final Report (6-8 pages)
 - [ ] Application context & operational definitions
 - [ ] Dataset statistics & split rationale
 - [ ] ML techniques & hyperparameters
@@ -374,130 +374,110 @@ Detection-of-Anomalies-with-Localization/
 
 ---
 
-## 📊 Analisi Richieste (Confermate)
+## 📊 Required Analyses (Confirmed)
 
-### Analisi Obbligatorie da Implementare:
+### Mandatory Analyses to Implement:
 
 1. **Performance on Test-clean** (clean domain)
-   - Tutte le metriche per ogni classe e metodo
+   - All metrics for each class and method
 
 2. **Performance on Test-shift - No Adaptation**
-   - Stessi thresholds da Val-clean
-   - Studio degradazione performance
+   - Same thresholds from Val-clean
+   - Performance degradation study
 
 3. **Performance on Test-shift - With Adaptation**
-   - Re-training su Train-shift + re-calibration su Val-shift
-   - Studio recovery performance
+   - Re-training on Train-shift + re-calibration on Val-shift
+   - Performance recovery study
 
-4. **Global Model Comparison** (extra)
-   - Modello unico su pool di tutte le classi
-   - Confronto con modelli per-class
+4. **Global Model Comparison** 
+   - Single model on pool of all classes
+   - Comparison with per-class models
 
 ---
 
-## 💡 Proposte Analisi Aggiuntive per Eccellere (30/30)
+## 💡 Proposed Additional Analyses
 
-### A. Analisi Interpretabilità e Spiegabilità
-- **Attention Maps delle Features**: visualizzare quali regioni del backbone contribuiscono di più
-- **T-SNE/UMAP delle Patch Embeddings**: visualizzare clustering normal vs anomalous nello spazio latente
-- **Feature Importance Analysis**: quali layer ResNet sono più discriminativi
+### A. Interpretability and Explainability Analysis
+- **Feature Attention Maps**: visualize which backbone regions contribute most
+- **T-SNE/UMAP of Patch Embeddings**: visualize normal vs anomalous clustering in latent space
+- **Feature Importance Analysis**: which ResNet layers are most discriminative
 
-### B. Robustness Analysis Avanzata
-- **Severity Levels**: testare shift a diverse intensità (mild, moderate, severe)
-- **Single-Transformation Analysis**: isolare l'effetto di ogni trasformazione (rotation, noise, blur, etc.)
-- **Cross-Shift Generalization**: train su shift A, test su shift B
+### B. Advanced Robustness Analysis
+- **Severity Levels**: test shifts at different intensities (mild, moderate, severe)
+- **Single-Transformation Analysis**: isolate the effect of each transformation (rotation, noise, blur, etc.)
+- **Cross-Shift Generalization**: train on shift A, test on shift B
 
-### C. Analisi Statistica e Confidence
-- **Bootstrap Confidence Intervals**: intervalli di confidenza per metriche
-- **Statistical Significance Tests**: t-test tra PatchCore e PaDiM
-- **Per-Defect Type Performance**: breakdown per tipo di difetto specifico (crack, hole, etc.)
+### C. Statistical Analysis and Confidence
+- **Bootstrap Confidence Intervals**: confidence intervals for metrics
+- **Statistical Significance Tests**: t-test between PatchCore and PaDiM
+- **Per-Defect Type Performance**: breakdown by specific defect type (crack, hole, etc.)
 
-### D. Efficienza e Scalabilità
-- **Inference Time Analysis**: latenza per immagine (importante per industrial setting)
-- **Memory Bank Size vs Performance Trade-off**: curva coreset fraction vs AUROC
+### D. Efficiency and Scalability
+- **Inference Time Analysis**: latency per image (important for industrial setting)
+- **Memory Bank Size vs Performance Trade-off**: coreset fraction vs AUROC curve
 - **Feature Dimension Reduction**: PCA/Random Projection impact
 
-### E. Failure Mode Analysis Avanzata
-- **Difficult Cases Study**: analisi approfondita dei casi dove entrambi i metodi falliscono
-- **Defect Size Sensitivity**: performance vs dimensione del difetto (small, medium, large)
-- **Border Effects**: performance su difetti ai bordi vs centrali
+### E. Advanced Failure Mode Analysis
+- **Difficult Cases Study**: in-depth analysis of cases where both methods fail
+- **Defect Size Sensitivity**: performance vs defect size (small, medium, large)
+- **Border Effects**: performance on border vs central defects
 
-### F. Confronto con Soglie Alternative
+### F. Alternative Threshold Comparison
 - **Multiple Threshold Strategies**: max, mean, percentile-based
-- **Per-Region Threshold**: thresholds adattivi per diverse zone dell'immagine
-- **Calibration Curves**: reliability diagrams per confidence scores
+- **Per-Region Threshold**: adaptive thresholds for different image zones
+- **Calibration Curves**: reliability diagrams for confidence scores
 
 ---
 
-## ⚙️ Best Practices da Seguire
+## ⚙️ Best Practices to Follow
 
-### Codice Pulito e Modulare
-- ✅ Type hints ovunque
-- ✅ Docstrings Google-style
-- ✅ Separazione concerns (data/model/evaluation)
-- ✅ Config files per tutti i hyperparameters
-- ✅ Logging strutturato
+### Clean and Modular Code
+- ✅ Type hints everywhere
+- ✅ Google-style docstrings
+- ✅ Separation of concerns (data/model/evaluation)
+- ✅ Config files for all hyperparameters
+- ✅ Structured logging
 
-### Riproducibilità
-- ✅ Seed fisso in `reproducibility.py` (torch, numpy, random)
-- ✅ Versioni librerie in `requirements.txt`
-- ✅ Save split indices, non rigenerare
+### Reproducibility
+- ✅ Fixed seed in `reproducibility.py` (torch, numpy, random)
+- ✅ Library versions in `requirements.txt`
+- ✅ Save split indices, don't regenerate
 - ✅ Deterministic operations (torch.backends.cudnn.deterministic = True)
 
-### Gestione Esperimenti
-- ✅ Experiment tracking (TensorBoard o WandB opzionale)
-- ✅ Salvataggio automatico risultati intermedi
-- ✅ Naming convention chiara per modelli/output
-- ✅ Git history pulita
+### Experiment Management
+- ✅ Experiment tracking (TensorBoard or WandB optional)
+- ✅ Automatic saving of intermediate results
+- ✅ Clear naming convention for models/output
+- ✅ Clean git history
 
 ### Performance
-- ✅ DataLoader con num_workers e pin_memory
-- ✅ Batch processing quando possibile
-- ✅ Caching features già estratte
-- ✅ Profiling per identificare bottleneck
+- ✅ DataLoader with num_workers and pin_memory
+- ✅ Batch processing when possible
+- ✅ Caching already extracted features
+- ✅ Profiling to identify bottlenecks
 
 ---
 
-## 📅 Timeline Suggerita
+## 🎯 Pre-Submission Checklist
 
-| Settimana | Focus | Deliverables |
-|-----------|-------|--------------|
-| 1 | Setup + EDA + Data Prep | Notebooks 01-03, structure completa |
-| 2 | PatchCore Clean | Notebook 04, implementation + training |
-| 3 | PaDiM Clean + Eval Clean | Notebooks 05-06, primi risultati |
-| 4 | Domain Shift | Notebooks 07-09, shift generation + eval |
-| 5 | Analisi Avanzate + Ablation | Notebook 10, analisi extra |
-| 6 | Report + Refinement | Documento finale, cleanup |
-
----
-
-## 🎯 Checklist Pre-Consegna
-
-- [ ] Tutti i notebook eseguiti end-to-end senza errori
-- [ ] README completo e testato
-- [ ] Codice commentato e pulito
-- [ ] Test automatici passano
-- [ ] Requirements.txt aggiornato
-- [ ] Almeno 1 modello trained salvato per metodo
-- [ ] Script `run_experiments.py` funzionante
-- [ ] Tutte le figure/tabelle del report generate
-- [ ] Self-assessment checklist compilato
-- [ ] Report 6-8 pagine completo
-- [ ] Git repo organizzato (.gitignore corretto)
+- [ ] All notebooks executed end-to-end without errors
+- [ ] Complete and tested README
+- [ ] Commented and clean code
+- [ ] Automated tests pass
+- [ ] Requirements.txt updated
+- [ ] At least 1 trained model saved per method
+- [ ] Script `run_experiments.py` working
+- [ ] All report figures/tables generated
+- [ ] Self-assessment checklist completed
+- [ ] Complete 6-8 page report
+- [ ] Organized git repo (correct .gitignore)
 
 ---
 
-## 📚 Risorse Chiave
+## 📚 Key Resources
 
-### Papers di Riferimento
+### Reference Papers
 - **PatchCore**: Roth et al., "Towards Total Recall in Industrial Anomaly Detection", CVPR 2022
 - **PaDiM**: Defard et al., "PaDiM: a Patch Distribution Modeling Framework for Anomaly Detection and Localization", 2021
 - **MVTec AD**: Bergmann et al., "MVTec AD — A Comprehensive Real-World Dataset for Unsupervised Anomaly Detection", CVPR 2019
 
-### Implementazioni di Riferimento
-- Anomalib: https://github.com/openvinotoolkit/anomalib
-- PatchCore original: https://github.com/amazon-science/patchcore-inspection
-
----
-
-*Pipeline preparata per progetto magistrale - focus su rigor scientifico, reproducibility, e best practices industriali.*
