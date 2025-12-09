@@ -89,13 +89,14 @@ We compare two one-class anomaly detection methods, both trained **only on norma
 For each category:
 
 - **Backbone**: ResNet-50 pre-trained on ImageNet, used as a frozen feature extractor.
-- **Feature extraction**: intermediate feature maps from multiple layers are upsampled and concatenated to obtain multi-scale feature maps.
+- **Feature extraction**: intermediate feature maps from multiple layers are locally aggregated (via average pooling), upsampled, and concatenated to obtain locally aware multi-scale feature maps.
 - **Patch embeddings**: patch-level feature vectors are extracted on a regular spatial grid.
 - **Memory bank**:
     - built from patch embeddings of normal images in **Train-clean** for that class;
-    - optionally reduced via **coreset sampling** (e.g., 10–20% of patches) to keep memory compact.
+    - reduced via **Greedy Coreset Subsampling** to approx. 1% - 10% of the total patches. This algorithm iteratively selects points that maximize the coverage of the feature space, ensuring high performance with low memory usage [Roth et al.].
 - **Anomaly scoring (nearest neighbour)**:
-    - for each test patch, compute the distance to its **nearest neighbour (k-NN, k = 1)** in the memory bank;
+    - for each test patch, compute the distance to its nearest neighbour in the memory bank;
+    - compute the distance to the **nearest neighbour (k=1)**. Crucially, this score is **reweighted** based on the local density of the retrieved neighbours in the memory bank to increase robustness against outliers.
     - aggregate patch scores into an **image-level anomaly score** (e.g., max or top-k percentile of the heatmap);
     - upsample patch scores to obtain an **anomaly heatmap** for localization.
 - **Decision rule**:
