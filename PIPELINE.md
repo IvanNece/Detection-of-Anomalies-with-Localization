@@ -98,7 +98,7 @@ Detection-of-Anomalies-with-Localization/
 **Obiettivo**: Preparare l'ambiente e scaricare il dataset
 
 #### Step 0.1: Environment Setup
-- [ ] Creare `requirements.txt` con dipendenze:
+- [x] Creare `requirements.txt` con dipendenze:
   - `torch`, `torchvision`
   - `anomalib` (per PaDiM)
   - `scikit-learn`, `scikit-image`
@@ -108,12 +108,12 @@ Detection-of-Anomalies-with-Localization/
   - `tensorboard` (opzionale per logging)
 
 #### Step 0.2: Download Dataset
-- [ ] Script per scaricare MVTec AD (Kaggle API o wget)
-- [ ] Verificare struttura: `hazelnut/`, `carpet/`, `zipper/`
-- [ ] Ogni classe: `train/good/`, `test/good/`, `test/<defect>/`, `ground_truth/<defect>/`
+- [x] Script per scaricare MVTec AD (Kaggle API o wget)
+- [x] Verificare struttura: `hazelnut/`, `carpet/`, `zipper/`
+- [x] Ogni classe: `train/good/`, `test/good/`, `test/<defect>/`, `ground_truth/<defect>/`
 
 #### Step 0.3: Configurazioni Base
-- [ ] File `configs/experiment_config.yaml`:
+- [x] File `configs/experiment_config.yaml`:
   - Seed globale: 42
   - Classi: [hazelnut, carpet, zipper]
   - Split ratios: Train 80%, Val 20%
