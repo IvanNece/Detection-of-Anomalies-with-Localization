@@ -139,7 +139,7 @@ class ProjectPaths:
         for dir_path in dirs:
             dir_path.mkdir(parents=True, exist_ok=True)
         
-        print("✓ Ensured all output directories exist")
+        print("Ensured all output directories exist")
     
     def get_mvtec_class_path(self, class_name: str, domain: str = 'clean') -> Path:
         """

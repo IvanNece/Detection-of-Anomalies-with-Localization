@@ -37,7 +37,7 @@ def download_from_kaggle() -> bool:
     try:
         import kaggle
         
-        print("📥 Downloading MVTec AD from Kaggle...")
+        print("Downloading MVTec AD from Kaggle...")
         print("   Dataset: ipythonx/mvtec-ad")
         
         # Create temp directory
@@ -61,7 +61,7 @@ def download_from_kaggle() -> bool:
         target_path = paths.DATA_RAW / 'mvtec_ad'
         
         if downloaded_path.exists():
-            print(f"📦 Extracting to {target_path}...")
+            print(f"Extracting to {target_path}...")
             if target_path.exists():
                 shutil.rmtree(target_path)
             shutil.move(str(downloaded_path), str(target_path))
@@ -70,17 +70,17 @@ def download_from_kaggle() -> bool:
             if temp_dir.exists():
                 shutil.rmtree(temp_dir)
             
-            print("✓ Download complete!")
+            print("Download complete!")
             return True
         else:
-            print("❌ Downloaded files not found in expected location")
+            print("ERROR: Downloaded files not found in expected location")
             return False
             
     except ImportError:
-        print("❌ Kaggle API not installed. Install with: pip install kaggle")
+        print("ERROR: Kaggle API not installed. Install with: pip install kaggle")
         return False
     except Exception as e:
-        print(f"❌ Error downloading from Kaggle: {e}")
+        print(f"ERROR: Error downloading from Kaggle: {e}")
         print("\nTroubleshooting:")
         print("1. Install kaggle API: pip install kaggle")
         print("2. Setup credentials: https://github.com/Kaggle/kaggle-api#api-credentials")
@@ -100,12 +100,12 @@ def verify_dataset() -> bool:
     Returns:
         True if verification passed, False otherwise
     """
-    print("\n🔍 Verifying dataset structure...")
+    print("\nVerifying dataset structure...")
     
     mvtec_path = paths.DATA_RAW / 'mvtec_ad'
     
     if not mvtec_path.exists():
-        print(f"❌ Dataset directory not found: {mvtec_path}")
+        print(f"ERROR: Dataset directory not found: {mvtec_path}")
         return False
     
     # Check for required classes
@@ -115,7 +115,7 @@ def verify_dataset() -> bool:
         class_path = mvtec_path / class_name
         
         if not class_path.exists():
-            print(f"❌ Class directory not found: {class_name}")
+            print(f"ERROR: Class directory not found: {class_name}")
             return False
         
         # Check for train/test structure
@@ -124,21 +124,21 @@ def verify_dataset() -> bool:
         ground_truth = class_path / 'ground_truth'
         
         if not train_good.exists():
-            print(f"❌ Train directory not found for {class_name}")
+            print(f"ERROR: Train directory not found for {class_name}")
             return False
         
         if not test_good.exists():
-            print(f"❌ Test directory not found for {class_name}")
+            print(f"ERROR: Test directory not found for {class_name}")
             return False
         
         # Count images
         train_count = len(list(train_good.glob('*.png')))
         test_count = len(list(test_good.glob('*.png')))
         
-        print(f"✓ {class_name}: {train_count} train, {test_count} test (good)")
+        print(f"OK: {class_name}: {train_count} train, {test_count} test (good)")
     
-    print("\n✅ Dataset verification passed!")
-    print(f"📂 Dataset location: {mvtec_path}")
+    print("\nDataset verification passed!")
+    print(f"Dataset location: {mvtec_path}")
     return True
 
 
@@ -175,7 +175,7 @@ def main():
     
     # Check if already downloaded
     if (paths.DATA_RAW / 'mvtec_ad').exists():
-        print("⚠️  Dataset already exists at data/raw/mvtec_ad")
+        print("WARNING: Dataset already exists at data/raw/mvtec_ad")
         response = input("Do you want to re-download? (y/N): ")
         if response.lower() != 'y':
             print("Skipping download. Verifying existing dataset...")
@@ -191,9 +191,9 @@ def main():
     if success:
         # Verify
         verify_dataset()
-        print("\n✅ Setup complete! You can now proceed with the notebooks.")
+        print("\nSetup complete! You can now proceed with the notebooks.")
     else:
-        print("\n❌ Download failed. Please try:")
+        print("\nERROR: Download failed. Please try:")
         print("   1. Different source: --source official")
         print("   2. Manual download from: https://www.mvtec.com/company/research/datasets/mvtec-ad")
         print("   3. Extract to: data/raw/mvtec_ad/")

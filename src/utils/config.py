@@ -65,7 +65,7 @@ class Config:
         with open(config_path, 'r') as f:
             config_dict = yaml.safe_load(f)
         
-        print(f"✓ Loaded configuration from {config_path}")
+        print(f"Loaded configuration from {config_path}")
         return cls(config_dict)
     
     def save(self, save_path: Union[str, Path]) -> None:
@@ -81,7 +81,7 @@ class Config:
         with open(save_path, 'w') as f:
             yaml.dump(self._config, f, default_flow_style=False, indent=2)
         
-        print(f"✓ Saved configuration to {save_path}")
+        print(f"Saved configuration to {save_path}")
     
     def get(self, key: str, default: Any = None) -> Any:
         """

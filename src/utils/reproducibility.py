@@ -48,7 +48,7 @@ def set_seed(seed: int = 42) -> None:
     # Environment variable for Python hash seed
     os.environ['PYTHONHASHSEED'] = str(seed)
     
-    print(f"✓ Random seed set to {seed} for reproducibility")
+    print(f"Random seed set to {seed} for reproducibility")
 
 
 def get_seed_from_config(config: dict, default: int = 42) -> int:
