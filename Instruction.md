@@ -16,6 +16,17 @@ reproducibility (covering setup, training, and evaluation) and the compiled self
 material such as additional figures, videos, or other artifacts that support the
 evaluation.
 
+*** Assessment and Grading ***
+Grading is based on the following pillars (building on the documentation and
+results required above, without repeating them):
+• Reproducibility & documentation: completeness and clarity of code,
+README, seeds, and scripts.
+• Experimental rigor: sound splits and protocols, well-motivated design
+choices, and ablation studies where appropriate.
+• Results & error analysis: quality of quantitative and qualitative evaluation, including confusion/error analysis and discussion of failure cases.
+• Critical discussion: insight into limitations, bias, and generalization,
+with well-argued future work.
+
 *** Assessment and Grading (Applies to All Projects) ***
 Grading is based on the following pillars (building on the documentation and
 results required above, without repeating them):
