@@ -185,3 +185,11 @@ All metrics are reported **per class** (hazelnut, carpet, zipper) and as **macro
 ### Schema del progetto
 
 ![Schema del progetto](Schema.png)
+
+## References
+
+- **Roth et al.** – Towards Total Recall in Industrial Anomaly Detection. *IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)*, 2022.
+
+- **Zhang et al.** – Prototypical Residual Networks for Anomaly Detection and Localization. *IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)*, 2023.
+
+- **Defard et al.** – Padim: a Patch Distribution Modeling Framework for Anomaly Detection and Localization. *arXiv preprint arXiv:2106.08265*, 2021.
