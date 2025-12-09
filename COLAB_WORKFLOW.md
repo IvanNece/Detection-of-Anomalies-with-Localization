@@ -8,6 +8,10 @@
 
 ## 🔄 Workflow (5 Step)
 
+
+### **0. Pushare**
+- Si deve pushare il notebook attuale prima di aprirlo
+
 ### **1. Apri da VS Code**
 - Click badge **"Open in Colab"** nel notebook
 
