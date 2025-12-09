@@ -1,7 +1,7 @@
 # Instructions
 ## 1.2 Scope, Common Guidelines, and Deliverables (Applies to All Projects)
 
-Documentation, Report, and Submission
+*** Documentation, Report, and Submission ***
 Each group must maintain comprehensive documentation of design, training,
 and evaluation, including preprocessing; the train/validation/test split with percentages and the underlying rationale; validation criteria and decision thresholds; loss functions and optimization strategies; quantitative and qualitative
 results; and an error/confusion analysis with a discussion of failure cases. The
@@ -16,7 +16,7 @@ reproducibility (covering setup, training, and evaluation) and the compiled self
 material such as additional figures, videos, or other artifacts that support the
 evaluation.
 
-Assessment and Grading (Applies to All Projects)
+*** Assessment and Grading (Applies to All Projects) ***
 Grading is based on the following pillars (building on the documentation and
 results required above, without repeating them):
 • Reproducibility & documentation: completeness and clarity of code,
