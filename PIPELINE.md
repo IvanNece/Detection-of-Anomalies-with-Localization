@@ -94,6 +94,8 @@ Detection-of-Anomalies-with-Localization/
 
 ## 🔄 Pipeline Step-by-Step
 
+> **⚠️ CRITICAL - Reproducibility:** All notebooks and scripts MUST start with `set_seed(42)` before any operation. The seed value (42) is defined in `configs/experiment_config.yaml`, but must be explicitly called via `set_seed()` in code. This ensures identical splits, fair method comparisons, and reproducible results.
+
 ### **PHASE 0: Initial Setup**
 **Goal**: Prepare the environment and download the dataset
 
@@ -439,6 +441,7 @@ Detection-of-Anomalies-with-Localization/
 - ✅ Structured logging
 
 ### Reproducibility
+- ✅ **ALWAYS use `set_seed(42)` at the start of every notebook/script**
 - ✅ Fixed seed in `reproducibility.py` (torch, numpy, random)
 - ✅ Library versions in `requirements.txt`
 - ✅ Save split indices, don't regenerate
