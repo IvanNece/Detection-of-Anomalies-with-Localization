@@ -21,15 +21,6 @@ outputs/features/
 !outputs/results/
 
 # ============================================================================
-# PROJECT-SPECIFIC: Visualizations (large PNG/JPG files)
-# ============================================================================
-outputs/visualizations/*.png
-outputs/visualizations/*.jpg
-outputs/visualizations/*.jpeg
-# Keep a few example visualizations
-!outputs/visualizations/example_*.png
-
-# ============================================================================
 # Kaggle Credentials (NEVER commit API keys!)
 # ============================================================================
 .kaggle/
