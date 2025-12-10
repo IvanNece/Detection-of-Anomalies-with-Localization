@@ -202,13 +202,14 @@ def create_all_clean_splits(
         all_splits[class_name] = split
         
         # Print summary
+        val_normal = len([l for l in split['val']['labels'] if l == 0])
+        val_anomalous = len([l for l in split['val']['labels'] if l == 1])
+        test_normal = len([l for l in split['test']['labels'] if l == 0])
+        test_anomalous = len([l for l in split['test']['labels'] if l == 1])
+        
         print(f"  Train: {len(split['train']['images'])} images (all normal)")
-        print(f"  Val:   {len(split['val']['images'])} images "
-              f"({sum(split['val']['labels'] == 0)} normal, "
-              f"{sum(split['val']['labels'])} anomalous)")
-        print(f"  Test:  {len(split['test']['images'])} images "
-              f"({len([l for l in split['test']['labels'] if l == 0])} normal, "
-              f"{len([l for l in split['test']['labels'] if l == 1])} anomalous)")
+        print(f"  Val:   {len(split['val']['images'])} images ({val_normal} normal, {val_anomalous} anomalous)")
+        print(f"  Test:  {len(split['test']['images'])} images ({test_normal} normal, {test_anomalous} anomalous)")
         print()
     
     return all_splits
