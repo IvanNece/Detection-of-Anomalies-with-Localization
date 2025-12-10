@@ -210,21 +210,31 @@ class ShiftDomainTransform:
         
         # Build albumentations pipeline for geometric transforms
         # These will be applied to both image and mask with same parameters
-        # Use BORDER_REFLECT_101 to avoid black borders (more realistic for industrial images)
+        # Strategy: First resize to target size, then apply geometric transforms with reflection
         self.geometric_transform = A.Compose([
+            # First resize to slightly larger than target to allow for rotation/translation
+            A.LongestMaxSize(max_size=int(self.image_size * 1.2)),
+            A.PadIfNeeded(
+                min_height=int(self.image_size * 1.2),
+                min_width=int(self.image_size * 1.2),
+                border_mode=cv2.BORDER_REFLECT_101
+            ),
+            # Apply geometric transforms with reflection border
             A.Affine(
-                translate_percent=self.geometric_config['translate_range'],
-                rotate=self.geometric_config['rotation_range'],  # Rotation handled here
-                scale=(self.geometric_config['scale_range'][0], self.geometric_config['scale_range'][1]),
+                translate_percent={"x": (-self.geometric_config['translate_range'], self.geometric_config['translate_range']),
+                                   "y": (-self.geometric_config['translate_range'], self.geometric_config['translate_range'])},
+                rotate=self.geometric_config['rotation_range'],
+                scale={"x": (self.geometric_config['scale_range'][0], self.geometric_config['scale_range'][1]),
+                       "y": (self.geometric_config['scale_range'][0], self.geometric_config['scale_range'][1])},
                 shear=0,
                 interpolation=cv2.INTER_LINEAR,
-                border_mode=cv2.BORDER_REFLECT_101,  # Reflect border to avoid black artifacts
+                border_mode=cv2.BORDER_REFLECT_101,
                 p=1.0
             ),
+            # Final crop to exact target size
             A.CenterCrop(
                 height=self.image_size,
-                width=self.image_size,
-                p=1.0
+                width=self.image_size
             )
         ])
     
