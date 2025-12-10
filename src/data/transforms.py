@@ -238,16 +238,22 @@ class ShiftDomainTransform:
             )
         ])
     
-    def _apply_photometric_transforms(self, image: np.ndarray) -> np.ndarray:
+    def _apply_photometric_transforms(self, image: np.ndarray, random_state: Optional[int] = None) -> np.ndarray:
         """
         Apply photometric transforms to image only (not mask).
         
         Args:
             image: RGB image as numpy array [0, 1] float32
+            random_state: Random seed for reproducibility
             
         Returns:
             Transformed image as numpy array [0, 1] float32
         """
+        # Set random state for reproducibility
+        if random_state is not None:
+            random.seed(random_state)
+            np.random.seed(random_state)
+        
         # Color jitter (brightness, contrast, saturation)
         photometric = A.Compose([
             A.ColorJitter(
@@ -263,6 +269,10 @@ class ShiftDomainTransform:
                 p=0.5
             )
         ])
+        
+        # Apply with fixed random state if provided
+        if random_state is not None:
+            A.core.transforms_interface.seed_everything(random_state)
         
         transformed = photometric(image=image)
         image = transformed['image']
@@ -307,6 +317,8 @@ class ShiftDomainTransform:
             random.seed(self.seed)
             np.random.seed(self.seed)
             torch.manual_seed(self.seed)
+            # Critical: also set albumentations random state
+            A.core.transforms_interface.seed_everything(self.seed)
         
         # Convert PIL to numpy
         image_np = np.array(image).astype(np.float32) / 255.0  # [0, 1]
@@ -331,7 +343,7 @@ class ShiftDomainTransform:
             image_np = transformed['image']
         
         # Apply photometric transforms (image only)
-        image_np = self._apply_photometric_transforms(image_np)
+        image_np = self._apply_photometric_transforms(image_np, random_state=self.seed)
         
         # Convert to tensor
         image_tensor = torch.from_numpy(image_np).permute(2, 0, 1)  # (H, W, C) -> (C, H, W)
