@@ -212,25 +212,18 @@ class ShiftDomainTransform:
         # These will be applied to both image and mask with same parameters
         # Use BORDER_REFLECT_101 to avoid black borders (more realistic for industrial images)
         self.geometric_transform = A.Compose([
-            A.Rotate(
-                limit=self.geometric_config['rotation_range'],
+            A.Affine(
+                translate_percent=self.geometric_config['translate_range'],
+                rotate=self.geometric_config['rotation_range'],  # Rotation handled here
+                scale=(self.geometric_config['scale_range'][0], self.geometric_config['scale_range'][1]),
+                shear=0,
                 interpolation=cv2.INTER_LINEAR,
                 border_mode=cv2.BORDER_REFLECT_101,  # Reflect border to avoid black artifacts
                 p=1.0
             ),
-            A.Affine(
-                translate_percent=self.geometric_config['translate_range'],
-                rotate=0,  # Already handled by Rotate above
-                scale=1.0,  # Scale handled by RandomResizedCrop below
-                shear=0,
-                interpolation=cv2.INTER_LINEAR,
-                p=1.0
-            ),
-            A.RandomResizedCrop(
-                size=(self.image_size, self.image_size),
-                scale=tuple(self.geometric_config['scale_range']),
-                ratio=tuple(self.geometric_config['aspect_ratio_range']),
-                interpolation=cv2.INTER_LINEAR,
+            A.CenterCrop(
+                height=self.image_size,
+                width=self.image_size,
                 p=1.0
             )
         ])
