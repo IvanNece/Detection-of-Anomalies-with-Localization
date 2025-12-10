@@ -13,6 +13,7 @@ import torchvision.transforms as T
 from torchvision.transforms import functional as TF
 from PIL import Image, ImageFilter
 import numpy as np
+import cv2
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
@@ -209,11 +210,12 @@ class ShiftDomainTransform:
         
         # Build albumentations pipeline for geometric transforms
         # These will be applied to both image and mask with same parameters
+        # Use BORDER_REFLECT_101 to avoid black borders (more realistic for industrial images)
         self.geometric_transform = A.Compose([
             A.Rotate(
                 limit=self.geometric_config['rotation_range'],
-                interpolation=1,  # INTER_LINEAR for image
-                border_mode=0,    # BORDER_CONSTANT
+                interpolation=cv2.INTER_LINEAR,
+                border_mode=cv2.BORDER_REFLECT_101,  # Reflect border to avoid black artifacts
                 p=1.0
             ),
             A.Affine(
@@ -221,14 +223,14 @@ class ShiftDomainTransform:
                 rotate=0,  # Already handled by Rotate above
                 scale=1.0,  # Scale handled by RandomResizedCrop below
                 shear=0,
-                interpolation=1,
+                interpolation=cv2.INTER_LINEAR,
                 p=1.0
             ),
             A.RandomResizedCrop(
                 size=(self.image_size, self.image_size),
                 scale=tuple(self.geometric_config['scale_range']),
                 ratio=tuple(self.geometric_config['aspect_ratio_range']),
-                interpolation=1,
+                interpolation=cv2.INTER_LINEAR,
                 p=1.0
             )
         ])
