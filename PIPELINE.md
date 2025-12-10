@@ -174,13 +174,13 @@ Detection-of-Anomalies-with-Localization/
 - [x] Test notebook with visualization and mask alignment verification
 
 #### Step 2.2: Generate MVTec-Shift Dataset (Notebook 03)
-- [x] For each split (Train-clean, Val-clean, Test-clean):
+- [ ] For each split (Train-clean, Val-clean, Test-clean):
   - Apply `ShiftTransform` to all images + masks
   - Save in `data/shifted/` maintaining structure
-- [x] Create `data/processed/shifted_splits.json`
-- [x] Verify generated dataset integrity and statistics
-- [x] Visualize original vs shifted comparisons
-- [x] Visualize clean vs shifted examples
+- [ ] Create `data/processed/shifted_splits.json`
+- [ ] Verify generated dataset integrity and statistics
+- [ ] Visualize original vs shifted comparisons
+- [ ] Visualize clean vs shifted examples
 
 ---
 
