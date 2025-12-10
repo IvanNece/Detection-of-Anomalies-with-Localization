@@ -222,7 +222,6 @@ class ShiftDomainTransform:
                 scale=1.0,  # Scale handled by RandomResizedCrop below
                 shear=0,
                 interpolation=1,
-                cval=0,  # Border fill value
                 p=1.0
             ),
             A.RandomResizedCrop(
