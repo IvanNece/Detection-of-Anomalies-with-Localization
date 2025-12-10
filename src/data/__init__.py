@@ -15,7 +15,12 @@ from .splitter import (
     load_splits,
     verify_split
 )
-from .transforms import get_clean_transforms, CleanDomainTransform
+from .transforms import (
+    get_clean_transforms,
+    get_shift_transforms,
+    CleanDomainTransform,
+    ShiftDomainTransform
+)
 
 __all__ = [
     # Dataset
@@ -29,5 +34,7 @@ __all__ = [
     'verify_split',
     # Transforms
     'get_clean_transforms',
+    'get_shift_transforms',
     'CleanDomainTransform',
+    'ShiftDomainTransform',
 ]

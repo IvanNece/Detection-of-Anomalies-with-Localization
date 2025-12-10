@@ -158,8 +158,8 @@ Detection-of-Anomalies-with-Localization/
 ### **PHASE 2: Domain Shift Generation**
 
 #### Step 2.1: Implement Shift Transformations (Notebook 03)
-- [ ] `src/data/transforms.py`:
-  - `ShiftTransform`:
+- [x] `src/data/transforms.py`:
+  - `ShiftDomainTransform`:
     - **Geometric** (apply to image + mask):
       - Random rotation [-10°, +10°]
       - Random resized crop [0.9, 1.0]
@@ -170,13 +170,17 @@ Detection-of-Anomalies-with-Localization/
       - Gaussian noise σ [0.01, 0.05]
     - Optional: simulated vignetting
   - Use `torchvision.transforms` and `albumentations` for consistency
+- [x] `get_shift_transforms()`: factory function with config support
+- [x] Test notebook with visualization and mask alignment verification
 
 #### Step 2.2: Generate MVTec-Shift Dataset (Notebook 03)
-- [ ] For each split (Train-clean, Val-clean, Test-clean):
+- [x] For each split (Train-clean, Val-clean, Test-clean):
   - Apply `ShiftTransform` to all images + masks
   - Save in `data/shifted/` maintaining structure
-- [ ] Create `data/processed/shifted_splits.json`
-- [ ] Visualize clean vs shifted examples
+- [x] Create `data/processed/shifted_splits.json`
+- [x] Verify generated dataset integrity and statistics
+- [x] Visualize original vs shifted comparisons
+- [x] Visualize clean vs shifted examples
 
 ---
 
