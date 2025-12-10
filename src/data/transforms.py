@@ -222,12 +222,11 @@ class ShiftDomainTransform:
                 scale=1.0,  # Scale handled by RandomResizedCrop below
                 shear=0,
                 interpolation=1,
-                mode=0,  # BORDER_CONSTANT
+                cval=0,  # Border fill value
                 p=1.0
             ),
             A.RandomResizedCrop(
-                height=self.image_size,
-                width=self.image_size,
+                size=(self.image_size, self.image_size),
                 scale=tuple(self.geometric_config['scale_range']),
                 ratio=tuple(self.geometric_config['aspect_ratio_range']),
                 interpolation=1,
