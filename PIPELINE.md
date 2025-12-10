@@ -127,11 +127,11 @@ Detection-of-Anomalies-with-Localization/
 ### **PHASE 1: Data Exploration & Preparation**
 
 #### Step 1.1: Exploratory Data Analysis (Notebook 01)
-- [ ] Count images per class and split
-- [ ] Visualize normal/anomalous examples for each class
-- [ ] Image size statistics
-- [ ] Distribution of defect types per class
-- [ ] Visualize ground truth masks
+- [x] Count images per class and split
+- [x] Visualize normal/anomalous examples for each class
+- [x] Image size statistics
+- [x] Distribution of defect types per class
+- [x] Visualize ground truth masks
 
 #### Step 1.2: Implement Data Split (Notebook 02)
 - [ ] `src/data/splitter.py`:
