@@ -337,7 +337,8 @@ class ShiftDomainTransform:
                                       blur_sigma: Optional[float] = None,
                                       apply_blur: bool = True,
                                       noise_sigma: Optional[float] = None,
-                                      apply_noise: bool = True) -> np.ndarray:
+                                      apply_noise: bool = True,
+                                      noise_seed: Optional[int] = None) -> np.ndarray:
         """
         Apply photometric transforms to image only (not mask).
         
@@ -348,6 +349,7 @@ class ShiftDomainTransform:
             apply_blur: Whether to apply blur
             noise_sigma: Fixed noise sigma (None = random)
             apply_noise: Whether to apply noise
+            noise_seed: Seed for noise generation (for reproducibility)
             
         Returns:
             Transformed image as numpy array [0, 1] float32
@@ -362,6 +364,10 @@ class ShiftDomainTransform:
         
         # Add Gaussian noise
         if apply_noise:
+            # Set seed for noise if in deterministic mode
+            if noise_seed is not None:
+                np.random.seed(noise_seed)
+            
             if noise_sigma is None:
                 # Random mode
                 sigma = random.uniform(*self.photometric_config['gaussian_noise']['sigma_range'])
@@ -462,11 +468,12 @@ class ShiftDomainTransform:
         
         # Apply photometric transforms (image only)
         if self.seed is not None:
-            # Deterministic mode
+            # Deterministic mode - pass noise seed for reproducible noise generation
             image_np = self._apply_photometric_transforms(
                 image_np, brightness, contrast, saturation,
                 blur_kernel, blur_sigma, apply_blur,
-                noise_sigma, apply_noise
+                noise_sigma, apply_noise,
+                noise_seed=self.seed + 9999  # Offset to avoid correlation with other random ops
             )
         else:
             # Random mode
