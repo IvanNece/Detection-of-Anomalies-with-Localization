@@ -134,22 +134,22 @@ Detection-of-Anomalies-with-Localization/
 - [x] Visualize ground truth masks
 
 #### Step 1.2: Implement Data Split (Notebook 02)
-- [ ] `src/data/splitter.py`:
+- [x] `src/data/splitter.py`:
   - Function `create_clean_split(class_name, train_ratio, val_anomaly_ratio, seed)`
   - Input: MVTec folders
   - Output: dictionaries with image/mask paths
   - Train-clean: 80% of `train/good`
   - Val-clean: 20% `train/good` + 30% anomalous from `test/`
   - Test-clean: remaining `test/good` + remaining anomalous
-- [ ] Save splits in `data/processed/clean_splits.json`
-- [ ] Verify balancing and counts
+- [x] Save splits in `data/processed/clean_splits.json`
+- [x] Verify balancing and counts
 
 #### Step 1.3: Implement Dataset Class (Notebook 02)
-- [ ] `src/data/dataset.py`:
+- [x] `src/data/dataset.py`:
   - `MVTecDataset(image_paths, mask_paths, transform, phase)`
   - `__getitem__`: return (image, mask, label, image_path)
   - Support phase='train' (only normal), 'val', 'test'
-- [ ] `src/data/transforms.py`:
+- [x] `src/data/transforms.py`:
   - `get_clean_transforms(train=False)`: resize, normalize ImageNet
   - Test on examples
 
