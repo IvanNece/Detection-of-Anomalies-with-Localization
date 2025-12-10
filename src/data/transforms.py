@@ -208,78 +208,166 @@ class ShiftDomainTransform:
             'gaussian_noise': {'sigma_range': [0.01, 0.05]}
         }
         
-        # Build albumentations pipeline for geometric transforms
-        # These will be applied to both image and mask with same parameters
-        # Strategy: First resize to target size, then apply geometric transforms with reflection
-        self.geometric_transform = A.Compose([
-            # First resize to slightly larger than target to allow for rotation/translation
-            A.LongestMaxSize(max_size=int(self.image_size * 1.2)),
-            A.PadIfNeeded(
-                min_height=int(self.image_size * 1.2),
-                min_width=int(self.image_size * 1.2),
-                border_mode=cv2.BORDER_REFLECT_101
-            ),
-            # Apply geometric transforms with reflection border
-            A.Affine(
-                translate_percent={"x": (-self.geometric_config['translate_range'], self.geometric_config['translate_range']),
-                                   "y": (-self.geometric_config['translate_range'], self.geometric_config['translate_range'])},
-                rotate=self.geometric_config['rotation_range'],
-                scale={"x": (self.geometric_config['scale_range'][0], self.geometric_config['scale_range'][1]),
-                       "y": (self.geometric_config['scale_range'][0], self.geometric_config['scale_range'][1])},
-                shear=0,
-                interpolation=cv2.INTER_LINEAR,
-                border_mode=cv2.BORDER_REFLECT_101,
-                p=1.0
-            ),
-            # Final crop to exact target size
-            A.CenterCrop(
-                height=self.image_size,
-                width=self.image_size
-            )
-        ])
+    def _build_geometric_transform(self, rotation: Optional[float] = None, 
+                                   translate_x: Optional[float] = None,
+                                   translate_y: Optional[float] = None,
+                                   scale_x: Optional[float] = None,
+                                   scale_y: Optional[float] = None) -> A.Compose:
+        """
+        Build geometric transform pipeline with deterministic parameters.
+        
+        Args:
+            rotation: Fixed rotation angle in degrees (if None, uses random from config)
+            translate_x: Fixed x translation percentage (if None, uses random from config)
+            translate_y: Fixed y translation percentage (if None, uses random from config)
+            scale_x: Fixed x scale factor (if None, uses random from config)
+            scale_y: Fixed y scale factor (if None, uses random from config)
+        
+        Returns:
+            Albumentations Compose pipeline for geometric transforms
+        """
+        # If parameters provided (deterministic mode), use them directly
+        if rotation is not None and translate_x is not None and scale_x is not None:
+            return A.Compose([
+                A.LongestMaxSize(max_size=int(self.image_size * 1.2)),
+                A.PadIfNeeded(
+                    min_height=int(self.image_size * 1.2),
+                    min_width=int(self.image_size * 1.2),
+                    border_mode=cv2.BORDER_REFLECT_101
+                ),
+                # Deterministic Affine with fixed parameters
+                A.Affine(
+                    translate_percent={"x": translate_x, "y": translate_y},
+                    rotate=rotation,
+                    scale={"x": scale_x, "y": scale_y},
+                    shear=0,
+                    interpolation=cv2.INTER_LINEAR,
+                    border_mode=cv2.BORDER_REFLECT_101,
+                    p=1.0
+                ),
+                A.CenterCrop(
+                    height=self.image_size,
+                    width=self.image_size
+                )
+            ])
+        else:
+            # Random mode - albumentations will sample parameters
+            return A.Compose([
+                A.LongestMaxSize(max_size=int(self.image_size * 1.2)),
+                A.PadIfNeeded(
+                    min_height=int(self.image_size * 1.2),
+                    min_width=int(self.image_size * 1.2),
+                    border_mode=cv2.BORDER_REFLECT_101
+                ),
+                A.Affine(
+                    translate_percent={"x": (-self.geometric_config['translate_range'], self.geometric_config['translate_range']),
+                                       "y": (-self.geometric_config['translate_range'], self.geometric_config['translate_range'])},
+                    rotate=self.geometric_config['rotation_range'],
+                    scale={"x": (self.geometric_config['scale_range'][0], self.geometric_config['scale_range'][1]),
+                           "y": (self.geometric_config['scale_range'][0], self.geometric_config['scale_range'][1])},
+                    shear=0,
+                    interpolation=cv2.INTER_LINEAR,
+                    border_mode=cv2.BORDER_REFLECT_101,
+                    p=1.0
+                ),
+                A.CenterCrop(
+                    height=self.image_size,
+                    width=self.image_size
+                )
+            ])
     
-    def _apply_photometric_transforms(self, image: np.ndarray, random_state: Optional[int] = None) -> np.ndarray:
+    def _build_photometric_transform(self, brightness: Optional[float] = None,
+                                     contrast: Optional[float] = None,
+                                     saturation: Optional[float] = None,
+                                     blur_kernel: Optional[int] = None,
+                                     blur_sigma: Optional[float] = None,
+                                     apply_blur: bool = True) -> A.Compose:
+        """
+        Build photometric transform pipeline with optional deterministic parameters.
+        
+        Args:
+            brightness: Fixed brightness factor (if None, uses random from config)
+            contrast: Fixed contrast factor (if None, uses random from config)
+            saturation: Fixed saturation factor (if None, uses random from config)
+            blur_kernel: Fixed blur kernel size (if None, uses random from config)
+            blur_sigma: Fixed blur sigma (if None, uses random from config)
+            apply_blur: Whether to apply blur (for deterministic control)
+        
+        Returns:
+            Albumentations Compose pipeline for photometric transforms
+        """
+        if brightness is not None and contrast is not None:
+            # Deterministic mode with fixed parameters
+            return A.Compose([
+                A.ColorJitter(
+                    brightness=(brightness, brightness),
+                    contrast=(contrast, contrast),
+                    saturation=(saturation, saturation),
+                    hue=0.0,
+                    p=1.0
+                ),
+                A.GaussianBlur(
+                    blur_limit=(blur_kernel, blur_kernel),
+                    sigma_limit=(blur_sigma, blur_sigma),
+                    p=1.0 if apply_blur else 0.0
+                )
+            ])
+        else:
+            # Random mode
+            return A.Compose([
+                A.ColorJitter(
+                    brightness=self.photometric_config['brightness_range'],
+                    contrast=self.photometric_config['contrast_range'],
+                    saturation=self.photometric_config['saturation_range'],
+                    hue=0.0,
+                    p=0.8
+                ),
+                A.GaussianBlur(
+                    blur_limit=tuple(self.photometric_config['gaussian_blur']['kernel_size']),
+                    sigma_limit=tuple(self.photometric_config['gaussian_blur']['sigma_range']),
+                    p=0.5
+                )
+            ])
+    
+    def _apply_photometric_transforms(self, image: np.ndarray,
+                                      brightness: Optional[float] = None,
+                                      contrast: Optional[float] = None,
+                                      saturation: Optional[float] = None,
+                                      blur_kernel: Optional[int] = None,
+                                      blur_sigma: Optional[float] = None,
+                                      apply_blur: bool = True,
+                                      noise_sigma: Optional[float] = None,
+                                      apply_noise: bool = True) -> np.ndarray:
         """
         Apply photometric transforms to image only (not mask).
         
         Args:
             image: RGB image as numpy array [0, 1] float32
-            random_state: Random seed for reproducibility
+            brightness, contrast, saturation: Fixed color jitter params (None = random)
+            blur_kernel, blur_sigma: Fixed blur params (None = random)
+            apply_blur: Whether to apply blur
+            noise_sigma: Fixed noise sigma (None = random)
+            apply_noise: Whether to apply noise
             
         Returns:
             Transformed image as numpy array [0, 1] float32
         """
-        # Set random state for reproducibility
-        if random_state is not None:
-            random.seed(random_state)
-            np.random.seed(random_state)
-        
-        # Color jitter (brightness, contrast, saturation)
-        photometric = A.Compose([
-            A.ColorJitter(
-                brightness=self.photometric_config['brightness_range'],
-                contrast=self.photometric_config['contrast_range'],
-                saturation=self.photometric_config['saturation_range'],
-                hue=0.0,  # Don't change hue
-                p=0.8
-            ),
-            A.GaussianBlur(
-                blur_limit=tuple(self.photometric_config['gaussian_blur']['kernel_size']),
-                sigma_limit=tuple(self.photometric_config['gaussian_blur']['sigma_range']),
-                p=0.5
-            )
-        ])
-        
-        # Apply with fixed random state if provided
-        if random_state is not None:
-            A.core.transforms_interface.seed_everything(random_state)
+        # Build pipeline with deterministic or random params
+        photometric = self._build_photometric_transform(
+            brightness, contrast, saturation, blur_kernel, blur_sigma, apply_blur
+        )
         
         transformed = photometric(image=image)
         image = transformed['image']
         
-        # Add Gaussian noise (not in albumentations, do manually)
-        if random.random() < 0.5:  # 50% probability
-            sigma = random.uniform(*self.photometric_config['gaussian_noise']['sigma_range'])
+        # Add Gaussian noise
+        if apply_noise:
+            if noise_sigma is None:
+                # Random mode
+                sigma = random.uniform(*self.photometric_config['gaussian_noise']['sigma_range'])
+            else:
+                # Deterministic mode
+                sigma = noise_sigma
             noise = np.random.normal(0, sigma, image.shape).astype(np.float32)
             image = np.clip(image + noise, 0, 1)
         
@@ -313,12 +401,42 @@ class ShiftDomainTransform:
             >>> image_shifted, mask_shifted = transform(pil_image, pil_mask)
         """
         # Set seed for reproducibility if provided
+        # When seed is set, sample transform parameters ONCE to ensure reproducibility
         if self.seed is not None:
             random.seed(self.seed)
             np.random.seed(self.seed)
             torch.manual_seed(self.seed)
-            # Critical: also set albumentations random state
-            A.core.transforms_interface.seed_everything(self.seed)
+            
+            # Sample geometric parameters deterministically
+            rotation = random.uniform(*self.geometric_config['rotation_range'])
+            translate_x = random.uniform(-self.geometric_config['translate_range'], 
+                                        self.geometric_config['translate_range'])
+            translate_y = random.uniform(-self.geometric_config['translate_range'],
+                                        self.geometric_config['translate_range'])
+            scale_x = random.uniform(*self.geometric_config['scale_range'])
+            scale_y = random.uniform(*self.geometric_config['scale_range'])
+            
+            # Sample photometric parameters deterministically
+            brightness = random.uniform(*self.photometric_config['brightness_range'])
+            contrast = random.uniform(*self.photometric_config['contrast_range'])
+            saturation = random.uniform(*self.photometric_config['saturation_range'])
+            blur_kernel = random.choice(self.photometric_config['gaussian_blur']['kernel_size'])
+            blur_sigma = random.uniform(*self.photometric_config['gaussian_blur']['sigma_range'])
+            apply_blur = random.random() < 0.5
+            noise_sigma = random.uniform(*self.photometric_config['gaussian_noise']['sigma_range'])
+            apply_noise = random.random() < 0.5
+            
+            # Build deterministic transforms
+            geometric_transform = self._build_geometric_transform(
+                rotation, translate_x, translate_y, scale_x, scale_y
+            )
+        else:
+            # Random mode - albumentations will sample parameters
+            rotation = None
+            geometric_transform = self._build_geometric_transform()
+            brightness = contrast = saturation = None
+            blur_kernel = blur_sigma = noise_sigma = None
+            apply_blur = apply_noise = True
         
         # Convert PIL to numpy
         image_np = np.array(image).astype(np.float32) / 255.0  # [0, 1]
@@ -335,15 +453,24 @@ class ShiftDomainTransform:
         
         # Apply geometric transforms (synchronized for image and mask)
         if mask_np is not None:
-            transformed = self.geometric_transform(image=image_np, mask=mask_np)
+            transformed = geometric_transform(image=image_np, mask=mask_np)
             image_np = transformed['image']
             mask_np = transformed['mask']
         else:
-            transformed = self.geometric_transform(image=image_np)
+            transformed = geometric_transform(image=image_np)
             image_np = transformed['image']
         
         # Apply photometric transforms (image only)
-        image_np = self._apply_photometric_transforms(image_np, random_state=self.seed)
+        if self.seed is not None:
+            # Deterministic mode
+            image_np = self._apply_photometric_transforms(
+                image_np, brightness, contrast, saturation,
+                blur_kernel, blur_sigma, apply_blur,
+                noise_sigma, apply_noise
+            )
+        else:
+            # Random mode
+            image_np = self._apply_photometric_transforms(image_np)
         
         # Convert to tensor
         image_tensor = torch.from_numpy(image_np).permute(2, 0, 1)  # (H, W, C) -> (C, H, W)
