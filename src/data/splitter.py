@@ -103,8 +103,10 @@ def create_clean_split(
             for img_path in defect_images:
                 img_name = img_path.name
                 
-                # Find corresponding mask
-                mask_path = mask_dir / img_name if mask_dir.exists() else None
+                # Find corresponding mask (MVTec AD masks have '_mask' suffix)
+                # e.g., image: 007.png -> mask: 007_mask.png
+                mask_name = img_name.replace('.png', '_mask.png')
+                mask_path = mask_dir / mask_name if mask_dir.exists() else None
                 
                 if mask_path and mask_path.exists():
                     anomalous_data.append((str(img_path), str(mask_path)))
