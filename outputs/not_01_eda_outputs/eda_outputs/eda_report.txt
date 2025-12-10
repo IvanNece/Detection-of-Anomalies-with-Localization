@@ -1,0 +1,21 @@
+================================================================================
+EXPLORATORY DATA ANALYSIS REPORT
+================================================================================
+
+1. CLASS DISTRIBUTION
+----------------------------------------
+  Hazelnut  : 431 normal,  70 anomalous (14.0% anomaly rate)
+  Carpet    : 308 normal,  89 anomalous (22.4% anomaly rate)
+  Zipper    : 272 normal, 119 anomalous (30.4% anomaly rate)
+
+2. IMAGE DIMENSIONS
+----------------------------------------
+  Hazelnut  : 1024 x 1024 pixels (avg)
+  Carpet    : 1024 x 1024 pixels (avg)
+  Zipper    : 1024 x 1024 pixels (avg)
+
+3. DEFECT TYPE DIVERSITY
+----------------------------------------
+  Hazelnut  : 4 defect types - hole, cut, print, crack
+  Carpet    : 5 defect types - cut, color, hole, metal_contamination, thread
+  Zipper    : 7 defect types - combined, fabric_border, broken_teeth, fabric_interior, rough

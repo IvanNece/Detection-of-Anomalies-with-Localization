@@ -1,0 +1,47 @@
+{
+  "classes": [
+    "hazelnut",
+    "carpet",
+    "zipper"
+  ],
+  "total_images": {
+    "normal": 1011,
+    "anomalous": 278
+  },
+  "class_details": {
+    "hazelnut": {
+      "normal": 431,
+      "anomalous": 70,
+      "defect_types": [
+        "hole",
+        "cut",
+        "print",
+        "crack"
+      ]
+    },
+    "carpet": {
+      "normal": 308,
+      "anomalous": 89,
+      "defect_types": [
+        "cut",
+        "color",
+        "hole",
+        "metal_contamination",
+        "thread"
+      ]
+    },
+    "zipper": {
+      "normal": 272,
+      "anomalous": 119,
+      "defect_types": [
+        "combined",
+        "fabric_border",
+        "broken_teeth",
+        "fabric_interior",
+        "rough",
+        "squeezed_teeth",
+        "split_teeth"
+      ]
+    }
+  }
+}
