@@ -216,13 +216,13 @@ class ShiftDomainTransform:
                 border_mode=0,    # BORDER_CONSTANT
                 p=1.0
             ),
-            A.ShiftScaleRotate(
-                shift_limit=self.geometric_config['translate_range'],
-                scale_limit=[self.geometric_config['scale_range'][0] - 1.0, 
-                           self.geometric_config['scale_range'][1] - 1.0],
-                rotate_limit=0,  # Already handled by Rotate above
+            A.Affine(
+                translate_percent=self.geometric_config['translate_range'],
+                rotate=0,  # Already handled by Rotate above
+                scale=1.0,  # Scale handled by RandomResizedCrop below
+                shear=0,
                 interpolation=1,
-                border_mode=0,
+                mode=0,  # BORDER_CONSTANT
                 p=1.0
             ),
             A.RandomResizedCrop(
