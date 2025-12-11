@@ -168,10 +168,14 @@ Detection-of-Anomalies-with-Localization/
       - ColorJitter (brightness, contrast, saturation [0.7, 1.3])
       - Gaussian blur (kernel 3-5)
       - Gaussian noise σ [0.01, 0.05]
-    - Optional: simulated vignetting
+    - **Illumination** (image only, applied to 50% of images):
+      - Non-uniform illumination gradients (linear/radial)
+      - Simulates spotlight effects from MVTec AD 2 (Fabric, Wall Plugs, Vial scenarios)
+      - Strength [0.4, 0.7], smooth transitions (σ=80)
   - Use `torchvision.transforms` and `albumentations` for consistency
 - [x] `get_shift_transforms()`: factory function with config support
 - [x] Test notebook with visualization and mask alignment verification
+- [x] Illumination visualization: linear (left/right/top/bottom) + radial gradients
 
 #### Step 2.2: Generate MVTec-Shift Dataset (Notebook 03)
 - [ ] For each split (Train-clean, Val-clean, Test-clean):

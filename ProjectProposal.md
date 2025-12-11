@@ -63,8 +63,12 @@ For each image–mask pair:
     - Color jitter: brightness, contrast, saturation factors sampled in [0.7, 1.3],
     - Gaussian blur (kernel size 3–5),
     - Additive Gaussian noise with σ in [0.01, 0.05] (images normalized to [0, 1]).
-- **Optional illumination / background variations**:
-    - mild vignetting or local darkening to simulate non-uniform industrial lighting.
+- **Optional illumination variations** (applied to 50% of shifted images):
+    - **Non-uniform illumination gradients** to simulate industrial spotlight conditions:
+      - **Linear gradients**: spotlight from side (left/right/top/bottom random) - simulates Fabric, Wall Plugs, Walnuts scenarios from MVTec AD 2
+      - **Radial gradients**: center/edge lighting variations - simulates Vial scenario from MVTec AD 2
+      - Darkening factor: [0.4, 0.7] (40-70% brightness reduction on gradient edge)
+      - Smooth Gaussian transition (σ=80) for natural appearance
 
 From the transformed data we define:
 

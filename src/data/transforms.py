@@ -205,8 +205,20 @@ class ShiftDomainTransform:
             'contrast_range': [0.7, 1.3],
             'saturation_range': [0.7, 1.3],
             'gaussian_blur': {'kernel_size': [3, 5], 'sigma_range': [0.1, 2.0]},
-            'gaussian_noise': {'sigma_range': [0.01, 0.05]}
+            'gaussian_noise': {'sigma_range': [0.01, 0.05]},
+            'illumination': {
+                'enabled': True,
+                'type': 'linear',
+                'direction': 'random',
+                'strength_range': [0.4, 0.7],
+                'probability': 0.5,
+                'smooth_sigma': 80
+            }
         }
+        
+        # Override with provided photometric config if illumination params exist
+        if photometric_config and 'illumination' in photometric_config:
+            self.photometric_config['illumination'].update(photometric_config['illumination'])
         
     def _build_geometric_transform(self, rotation: Optional[float] = None, 
                                    translate_x: Optional[float] = None,
@@ -379,6 +391,107 @@ class ShiftDomainTransform:
         
         return image
     
+    def _apply_nonuniform_illumination(self, image: np.ndarray,
+                                       illumination_type: Optional[str] = None,
+                                       direction: Optional[str] = None,
+                                       strength: Optional[float] = None,
+                                       smooth_sigma: Optional[float] = None,
+                                       apply_illumination: bool = True) -> np.ndarray:
+        """
+        Apply non-uniform illumination to simulate industrial lighting conditions.
+        
+        Simulates spotlight gradients and uneven lighting based on MVTec AD 2 paper:
+        - Linear gradients: spotlight from one side (Fabric, Wall Plugs, Walnuts)
+        - Radial gradients: center/edge illumination variations (Vial)
+        
+        Args:
+            image: RGB image as numpy array [0, 1] float32
+            illumination_type: 'linear' or 'radial' (None = use config)
+            direction: Direction for linear gradient ('left', 'right', 'top', 'bottom', 'random')
+            strength: Darkening factor [0, 1] (None = random from config)
+            smooth_sigma: Gaussian smoothing sigma (None = use config)
+            apply_illumination: Whether to apply effect
+            
+        Returns:
+            Transformed image as numpy array [0, 1] float32
+        """
+        if not apply_illumination:
+            return image
+        
+        h, w = image.shape[:2]
+        
+        # Get parameters from config if not provided
+        illum_config = self.photometric_config['illumination']
+        if illumination_type is None:
+            illumination_type = illum_config['type']
+        if strength is None:
+            strength = random.uniform(*illum_config['strength_range'])
+        if smooth_sigma is None:
+            smooth_sigma = illum_config['smooth_sigma']
+        if direction is None:
+            direction = illum_config['direction']
+        
+        # Create gradient mask
+        if illumination_type == 'linear':
+            # Linear gradient from one side (simulates spotlight from edge)
+            if direction == 'random':
+                direction = random.choice(['left', 'right', 'top', 'bottom'])
+            
+            if direction == 'left':
+                # Dark on left, bright on right
+                gradient = np.linspace(strength, 1.0, w, dtype=np.float32)
+                gradient = np.tile(gradient, (h, 1))
+            elif direction == 'right':
+                # Dark on right, bright on left
+                gradient = np.linspace(1.0, strength, w, dtype=np.float32)
+                gradient = np.tile(gradient, (h, 1))
+            elif direction == 'top':
+                # Dark on top, bright on bottom
+                gradient = np.linspace(strength, 1.0, h, dtype=np.float32)
+                gradient = np.tile(gradient.reshape(-1, 1), (1, w))
+            else:  # 'bottom'
+                # Dark on bottom, bright on top
+                gradient = np.linspace(1.0, strength, h, dtype=np.float32)
+                gradient = np.tile(gradient.reshape(-1, 1), (1, w))
+        
+        elif illumination_type == 'radial':
+            # Radial gradient (simulates center/edge illumination)
+            center_x, center_y = w // 2, h // 2
+            y, x = np.ogrid[:h, :w]
+            
+            # Distance from center, normalized
+            distances = np.sqrt((x - center_x)**2 + (y - center_y)**2)
+            max_distance = np.sqrt(center_x**2 + center_y**2)
+            distances = distances / max_distance
+            
+            # Randomly choose: dark center or dark edges
+            if random.random() < 0.5:
+                # Dark center, bright edges
+                gradient = strength + (1.0 - strength) * distances
+            else:
+                # Bright center, dark edges
+                gradient = 1.0 - (1.0 - strength) * distances
+            
+            gradient = gradient.astype(np.float32)
+        else:
+            raise ValueError(f"Unknown illumination type: {illumination_type}")
+        
+        # Apply Gaussian smoothing for natural transition
+        if smooth_sigma > 0:
+            from scipy.ndimage import gaussian_filter
+            gradient = gaussian_filter(gradient, sigma=smooth_sigma)
+            # Renormalize after smoothing
+            gradient = np.clip(gradient, 0, 1)
+        
+        # Apply gradient to all channels
+        if image.ndim == 3:
+            gradient = gradient[:, :, np.newaxis]  # (H, W, 1)
+        
+        image = image * gradient
+        image = np.clip(image, 0, 1)
+        
+        return image
+    
     def __call__(
         self,
         image: Image.Image,
@@ -432,6 +545,16 @@ class ShiftDomainTransform:
             noise_sigma = random.uniform(*self.photometric_config['gaussian_noise']['sigma_range'])
             apply_noise = random.random() < 0.5
             
+            # Sample illumination parameters deterministically
+            illum_config = self.photometric_config['illumination']
+            apply_illumination = illum_config['enabled'] and (random.random() < illum_config['probability'])
+            illum_type = illum_config['type']
+            illum_direction = illum_config['direction']
+            if illum_direction == 'random':
+                illum_direction = random.choice(['left', 'right', 'top', 'bottom'])
+            illum_strength = random.uniform(*illum_config['strength_range'])
+            illum_sigma = illum_config['smooth_sigma']
+            
             # Build deterministic transforms
             geometric_transform = self._build_geometric_transform(
                 rotation, translate_x, translate_y, scale_x, scale_y
@@ -443,6 +566,14 @@ class ShiftDomainTransform:
             brightness = contrast = saturation = None
             blur_kernel = blur_sigma = noise_sigma = None
             apply_blur = apply_noise = True
+            
+            # Random illumination parameters
+            illum_config = self.photometric_config['illumination']
+            apply_illumination = illum_config['enabled'] and (random.random() < illum_config['probability'])
+            illum_type = illum_config['type']
+            illum_direction = illum_config['direction']
+            illum_strength = None  # Will be sampled in _apply_nonuniform_illumination
+            illum_sigma = illum_config['smooth_sigma']
         
         # Convert PIL to numpy
         image_np = np.array(image).astype(np.float32) / 255.0  # [0, 1]
@@ -478,6 +609,18 @@ class ShiftDomainTransform:
         else:
             # Random mode
             image_np = self._apply_photometric_transforms(image_np)
+        
+        # Apply non-uniform illumination (simulates spotlight gradients)
+        if self.seed is not None:
+            # Deterministic mode with sampled parameters
+            image_np = self._apply_nonuniform_illumination(
+                image_np, illum_type, illum_direction, illum_strength, illum_sigma, apply_illumination
+            )
+        else:
+            # Random mode
+            image_np = self._apply_nonuniform_illumination(
+                image_np, illum_type, illum_direction, illum_strength, illum_sigma, apply_illumination
+            )
         
         # Convert to tensor
         image_tensor = torch.from_numpy(image_np).permute(2, 0, 1)  # (H, W, C) -> (C, H, W)

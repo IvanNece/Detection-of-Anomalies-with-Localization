@@ -53,10 +53,15 @@ domain_shift:
     gaussian_noise:
       sigma_range: [0.01, 0.05]  # for images normalized to [0, 1]
   
-  # Optional illumination effects
-  vignetting:
-    enabled: false
-    strength_range: [0.3, 0.7]
+  # Optional illumination effects (simulates non-uniform industrial lighting)
+  # Based on MVTec AD 2: spotlight gradients, uneven illumination
+  illumination:
+    enabled: true
+    type: 'linear'  # 'linear' (spotlight from side) or 'radial' (center/edge)
+    direction: 'random'  # 'random', 'left', 'right', 'top', 'bottom' (for linear)
+    strength_range: [0.4, 0.7]  # Darkening factor (0.4 = 60% brightness on dark edge)
+    probability: 0.5  # Apply to 50% of shifted images
+    smooth_sigma: 80  # Smoothness of gradient transition
 
 # Paths Configuration
 paths:
