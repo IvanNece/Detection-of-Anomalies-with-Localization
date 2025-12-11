@@ -197,3 +197,5 @@ All metrics are reported **per class** (hazelnut, carpet, zipper) and as **macro
 - **Zhang et al.** – Prototypical Residual Networks for Anomaly Detection and Localization. *IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)*, 2023.
 
 - **Defard et al.** – Padim: a Patch Distribution Modeling Framework for Anomaly Detection and Localization. *arXiv preprint arXiv:2106.08265*, 2021.
+
+- **Bergmann et al.** – The MVTec AD 2 Dataset: Advanced Scenarios for Unsupervised Anomaly Detection. *arXiv preprint arXiv:2503.21622*, 2025. [https://arxiv.org/abs/2503.21622](https://arxiv.org/abs/2503.21622)

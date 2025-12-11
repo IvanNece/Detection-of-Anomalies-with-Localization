@@ -63,9 +63,33 @@ Detection-of-Anomalies-with-Localization/
 │   └── experiment_config.yaml             # General experiment setup
 │
 ├── data/
-│   ├── raw/                               # Original MVTec AD
-│   ├── processed/                         # Saved splits (pickle/json)
-│   └── shifted/                           # Generated MVTec-Shift
+│   ├── raw/                               # Original MVTec AD (NOT pre-split)
+│   │   └── mvtec_ad/
+│   │       ├── hazelnut/
+│   │       │   ├── train/good/           # All normal training images
+│   │       │   ├── test/good/            # Normal test images
+│   │       │   ├── test/<defect_type>/   # Anomalous images by defect
+│   │       │   └── ground_truth/<defect_type>/  # Pixel-wise masks
+│   │       ├── carpet/
+│   │       └── zipper/
+│   │
+│   ├── processed/                         # Split definitions (JSON files)
+│   │   ├── clean_splits.json             # Train/Val/Test splits for clean domain
+│   │   └── shifted_splits.json           # Train/Val/Test splits for shifted domain
+│   │
+│   └── shifted/                           # Generated MVTec-Shift (PRE-SPLIT)
+│       ├── hazelnut/
+│       │   ├── train/                    # Train split images/masks
+│       │   │   ├── images/
+│       │   │   └── masks/
+│       │   ├── val/                      # Val split images/masks
+│       │   │   ├── images/
+│       │   │   └── masks/
+│       │   └── test/                     # Test split images/masks
+│       │       ├── images/
+│       │       └── masks/
+│       ├── carpet/
+│       └── zipper/
 │
 ├── outputs/
 │   ├── models/                            # Memory banks, checkpoints
@@ -92,7 +116,36 @@ Detection-of-Anomalies-with-Localization/
 
 ---
 
-## 🔄 Pipeline Step-by-Step
+## � Dataset Organization
+
+### **RAW Dataset (MVTec AD - Original)**
+The original MVTec AD dataset follows the official structure:
+- **NOT pre-split** for validation/test
+- Contains `train/good/`, `test/good/`, `test/<defect>/`, `ground_truth/<defect>/`
+- Split into Train/Val/Test is defined via `data/processed/clean_splits.json`
+- The JSON file maps which images belong to train, val, or test splits
+- Splitting logic in Step 1.2 creates reproducible splits with seed 42
+
+**Key point:** The raw dataset remains unchanged. All split information is in the JSON.
+
+### **SHIFTED Dataset (MVTec-Shift - Generated)**
+The shifted dataset is generated in Step 2.2 and is **physically pre-split**:
+- Images are saved directly into `train/`, `val/`, `test/` folders
+- Each split folder contains `images/` and `masks/` subfolders
+- All files have `_shifted.png` suffix for easy identification
+- Split paths are tracked in `data/processed/shifted_splits.json`
+
+**Key point:** The shifted dataset mirrors the split structure, making it ready for direct loading.
+
+**Summary:**
+| Dataset | Physical Structure | Split Definition |
+|---------|-------------------|------------------|
+| **RAW** | train/good/, test/good/, test/\<defect\>/, ground_truth/ | `clean_splits.json` |
+| **SHIFTED** | train/images/, val/images/, test/images/ (+ masks/) | `shifted_splits.json` |
+
+---
+
+## �🔄 Pipeline Step-by-Step
 
 > **⚠️ CRITICAL - Reproducibility:** All notebooks and scripts MUST start with `set_seed(42)` before any operation. The seed value (42) is defined in `configs/experiment_config.yaml`, but must be explicitly called via `set_seed()` in code. This ensures identical splits, fair method comparisons, and reproducible results.
 
@@ -136,12 +189,13 @@ Detection-of-Anomalies-with-Localization/
 #### Step 1.2: Implement Data Split (Notebook 02)
 - [x] `src/data/splitter.py`:
   - Function `create_clean_split(class_name, train_ratio, val_anomaly_ratio, seed)`
-  - Input: MVTec folders
+  - Input: MVTec RAW folders (train/good/, test/good/, test/\<defect\>/, ground_truth/)
   - Output: dictionaries with image/mask paths
   - Train-clean: 80% of `train/good`
   - Val-clean: 20% `train/good` + 30% anomalous from `test/`
   - Test-clean: remaining `test/good` + remaining anomalous
 - [x] Save splits in `data/processed/clean_splits.json`
+- [x] **Important:** RAW dataset is NOT physically split - the JSON maps images to splits
 - [x] Verify balancing and counts
 
 #### Step 1.3: Implement Dataset Class (Notebook 02)
@@ -178,13 +232,17 @@ Detection-of-Anomalies-with-Localization/
 - [x] Illumination visualization: linear (left/right/top/bottom) + radial gradients.
 
 #### Step 2.2: Generate MVTec-Shift Dataset (Notebook 03)
-- [ ] For each split (Train-clean, Val-clean, Test-clean):
-  - Apply `ShiftTransform` to all images + masks
-  - Save in `data/shifted/` maintaining structure
-- [ ] Create `data/processed/shifted_splits.json`
-- [ ] Verify generated dataset integrity and statistics
-- [ ] Visualize original vs shifted comparisons
-- [ ] Visualize clean vs shifted examples
+- [x] For each split (Train-clean, Val-clean, Test-clean):
+  - Apply `ShiftTransform` to all images + masks with reproducible seeds
+  - **Save physically split** in `data/shifted/{class}/{split}/images/` and `masks/`
+  - Naming convention: `original_name_shifted.png`
+  - Seed strategy: incremental (base_seed + image_index) for variety + reproducibility
+- [x] Create `data/processed/shifted_splits.json` with paths to split images
+- [x] **Important:** SHIFTED dataset IS physically pre-split (unlike RAW)
+- [x] Verify generated dataset integrity and statistics (1289 images, 278 masks)
+- [x] Visualize original vs shifted comparisons
+- [x] Visualize clean vs shifted examples
+- [x] Upload to Google Drive: `/content/drive/MyDrive/mvtec_shifted/`
 
 ---
 
@@ -491,4 +549,7 @@ Detection-of-Anomalies-with-Localization/
 - **PatchCore**: Roth et al., "Towards Total Recall in Industrial Anomaly Detection", CVPR 2022
 - **PaDiM**: Defard et al., "PaDiM: a Patch Distribution Modeling Framework for Anomaly Detection and Localization", 2021
 - **MVTec AD**: Bergmann et al., "MVTec AD — A Comprehensive Real-World Dataset for Unsupervised Anomaly Detection", CVPR 2019
+- **MVTec AD 2**: Bergmann et al., "The MVTec AD 2 Dataset: Advanced Scenarios for Unsupervised Anomaly Detection", arXiv:2503.21622, 2025. [https://arxiv.org/abs/2503.21622](https://arxiv.org/abs/2503.21622)
+
+
 
