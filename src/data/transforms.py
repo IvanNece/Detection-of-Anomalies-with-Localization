@@ -396,7 +396,8 @@ class ShiftDomainTransform:
                                        direction: Optional[str] = None,
                                        strength: Optional[float] = None,
                                        smooth_sigma: Optional[float] = None,
-                                       apply_illumination: bool = True) -> np.ndarray:
+                                       apply_illumination: bool = True,
+                                       radial_invert: Optional[bool] = None) -> np.ndarray:
         """
         Apply non-uniform illumination to simulate industrial lighting conditions.
         
@@ -411,6 +412,7 @@ class ShiftDomainTransform:
             strength: Darkening factor [0, 1] (None = random from config)
             smooth_sigma: Gaussian smoothing sigma (None = use config)
             apply_illumination: Whether to apply effect
+            radial_invert: For radial type, True=dark center, False=dark edges (None=random)
             
         Returns:
             Transformed image as numpy array [0, 1] float32
@@ -464,8 +466,11 @@ class ShiftDomainTransform:
             max_distance = np.sqrt(center_x**2 + center_y**2)
             distances = distances / max_distance
             
-            # Randomly choose: dark center or dark edges
-            if random.random() < 0.5:
+            # Choose: dark center or dark edges
+            if radial_invert is None:
+                radial_invert = random.random() < 0.5
+            
+            if radial_invert:
                 # Dark center, bright edges
                 gradient = strength + (1.0 - strength) * distances
             else:
@@ -554,6 +559,7 @@ class ShiftDomainTransform:
                 illum_direction = random.choice(['left', 'right', 'top', 'bottom'])
             illum_strength = random.uniform(*illum_config['strength_range'])
             illum_sigma = illum_config['smooth_sigma']
+            illum_radial_invert = random.random() < 0.5  # For radial: dark center vs dark edges
             
             # Build deterministic transforms
             geometric_transform = self._build_geometric_transform(
@@ -574,6 +580,7 @@ class ShiftDomainTransform:
             illum_direction = illum_config['direction']
             illum_strength = None  # Will be sampled in _apply_nonuniform_illumination
             illum_sigma = illum_config['smooth_sigma']
+            illum_radial_invert = None  # Will be sampled in _apply_nonuniform_illumination
         
         # Convert PIL to numpy
         image_np = np.array(image).astype(np.float32) / 255.0  # [0, 1]
@@ -614,12 +621,12 @@ class ShiftDomainTransform:
         if self.seed is not None:
             # Deterministic mode with sampled parameters
             image_np = self._apply_nonuniform_illumination(
-                image_np, illum_type, illum_direction, illum_strength, illum_sigma, apply_illumination
+                image_np, illum_type, illum_direction, illum_strength, illum_sigma, apply_illumination, illum_radial_invert
             )
         else:
-            # Random mode
+            # Random mode (radial_invert will be sampled inside function)
             image_np = self._apply_nonuniform_illumination(
-                image_np, illum_type, illum_direction, illum_strength, illum_sigma, apply_illumination
+                image_np, illum_type, illum_direction, illum_strength, illum_sigma, apply_illumination, None
             )
         
         # Convert to tensor
