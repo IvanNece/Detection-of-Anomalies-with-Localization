@@ -175,7 +175,7 @@ Detection-of-Anomalies-with-Localization/
   - Use `torchvision.transforms` and `albumentations` for consistency
 - [x] `get_shift_transforms()`: factory function with config support
 - [x] Test notebook with visualization and mask alignment verification
-- [x] Illumination visualization: linear (left/right/top/bottom) + radial gradients
+- [x] Illumination visualization: linear (left/right/top/bottom) + radial gradients.
 
 #### Step 2.2: Generate MVTec-Shift Dataset (Notebook 03)
 - [ ] For each split (Train-clean, Val-clean, Test-clean):
