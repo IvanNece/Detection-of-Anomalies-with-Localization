@@ -549,6 +549,7 @@ class ShiftDomainTransform:
             apply_blur = random.random() < 0.5
             noise_sigma = random.uniform(*self.photometric_config['gaussian_noise']['sigma_range'])
             apply_noise = random.random() < 0.5
+            noise_seed = self.seed + 999  # Offset for noise generation
             
             # Sample illumination parameters deterministically
             illum_config = self.photometric_config['illumination']
@@ -572,6 +573,7 @@ class ShiftDomainTransform:
             brightness = contrast = saturation = None
             blur_kernel = blur_sigma = noise_sigma = None
             apply_blur = apply_noise = True
+            noise_seed = None  # Random noise
             
             # Random illumination parameters
             illum_config = self.photometric_config['illumination']
@@ -611,7 +613,7 @@ class ShiftDomainTransform:
                 image_np, brightness, contrast, saturation,
                 blur_kernel, blur_sigma, apply_blur,
                 noise_sigma, apply_noise,
-                noise_seed=self.seed + 9999  # Offset to avoid correlation with other random ops
+                noise_seed=noise_seed  # Use the pre-sampled noise seed
             )
         else:
             # Random mode
