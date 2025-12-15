@@ -108,19 +108,32 @@ class MVTecDataset(Dataset):
         """
         # Load image
         image_path = self.images[idx]
-        image = Image.open(image_path).convert('RGB')
+        try:
+            image = Image.open(image_path).convert('RGB')
+        except Exception as e:
+            raise RuntimeError(f"Failed to load image {image_path}: {e}")
         
         # Load mask (if available)
         mask_path = self.masks[idx]
         mask = None
         
         if mask_path is not None:
-            # Load mask as grayscale
-            mask = Image.open(mask_path).convert('L')
+            try:
+                # Load mask as grayscale
+                mask = Image.open(mask_path).convert('L')
+            except Exception as e:
+                raise RuntimeError(f"Failed to load mask {mask_path}: {e}")
         
         # Apply transforms
         if self.transform is not None:
-            image, mask = self.transform(image, mask)
+            try:
+                image, mask = self.transform(image, mask)
+            except Exception as e:
+                raise RuntimeError(f"Transform failed for {image_path}: {e}")
+        
+        # Validate that image is not None
+        if image is None:
+            raise RuntimeError(f"Transform returned None for image {image_path}")
         
         # Get label
         label = self.labels[idx]
