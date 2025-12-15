@@ -133,7 +133,7 @@ Both PatchCore and PaDiM are **non-parametric** with respect to anomaly scoring:
 - **Training data**: normal images from Train-clean (and Train-shift for the adaptation experiments).
 - **Procedure**:
     - forward pass to extract patch features for all training images;
-    - build the memory bank (with optional coreset sampling).
+    - build the memory bank (with coreset sampling).
 - **Main hyperparameters**:
     - input image size,
     - backbone layers used for features,

@@ -249,16 +249,16 @@ The shifted dataset is generated in Step 2.2 and is **physically pre-split**:
 ### **PHASE 3: PatchCore - Clean Domain**
 
 #### Step 3.1: Implement Backbone (Notebook 04)
-- [ ] `src/models/backbones.py`:
+- [x] `src/models/backbones.py`:
   - `ResNet50FeatureExtractor`:
     - Pre-trained ImageNet
-    - Hook on intermediate layers (e.g., layer2, layer3)
+    - Hook on intermediate layers (layer2, layer3)
     - Forward → multi-scale features
     - Local average pooling to reduce dimensionality
     - Concatenation and upsampling to common resolution
 
 #### Step 3.2: Implement Memory Bank (Notebook 04)
-- [ ] `src/models/memory_bank.py`:
+- [x] `src/models/memory_bank.py`:
   - `GreedyCoresetSubsampling`:
     - Input: patch features from Train-clean
     - Greedy selection: iteratively select patches that maximize min-distance to already selected ones
@@ -269,7 +269,7 @@ The shifted dataset is generated in Step 2.2 and is **physically pre-split**:
     - Reweighting based on local density
 
 #### Step 3.3: Implement PatchCore (Notebook 04)
-- [ ] `src/models/patchcore.py`:
+- [x] `src/models/patchcore.py`:
   - `PatchCore`:
     - `fit(train_loader)`: extract features, build memory bank
     - `predict(image)`: 
@@ -280,11 +280,12 @@ The shifted dataset is generated in Step 2.2 and is **physically pre-split**:
     - `save/load`: save memory bank
 
 #### Step 3.4: Training PatchCore - Clean (Notebook 04)
-- [ ] For each class (hazelnut, carpet, zipper):
+- [x] For each class (hazelnut, carpet, zipper):
   - Load Train-clean
   - Fit PatchCore
-  - Save memory bank in `outputs/models/patchcore_{class}_clean.pkl`
-- [ ] Training time and memory bank size
+  - Save memory bank in `outputs/models/patchcore_{class}_clean.npy`
+- [x] Training time and memory bank size
+- [x] Unit tests and validation visualizations
 
 ---
 
