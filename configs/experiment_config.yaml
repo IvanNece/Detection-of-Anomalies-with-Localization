@@ -93,7 +93,7 @@ patchcore:
   stride: 1
   
   # Memory bank
-  coreset_sampling_ratio: 0.01  # 1% of patches (can vary: 0.01, 0.05, 0.10)
+  coreset_sampling_ratio: 0.05  # 5% of patches (optimal balance: speed, accuracy, memory)
   
   # Anomaly scoring
   n_neighbors: 9  # k-NN for reweighting (paper uses 9)
