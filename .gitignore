@@ -12,7 +12,6 @@ data/shifted/
 # ============================================================================
 outputs/models/*.pt
 outputs/models/*.pkl
-outputs/models/*.pth
 outputs/models/*.h5
 outputs/features/
 
