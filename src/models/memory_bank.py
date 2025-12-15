@@ -98,13 +98,16 @@ class GreedyCoresetSubsampling:
                 last_selected = selected_indices[-1]
                 last_feat = features_proj[last_selected]
                 
-                # Update minimum distances
-                for idx in remaining_indices:
-                    dist = np.linalg.norm(features_proj[idx] - last_feat)
-                    min_distances[idx] = min(min_distances[idx], dist)
+                # Update minimum distances (VECTORIZED for speed)
+                remaining_list = np.array(list(remaining_indices))
+                dists = np.linalg.norm(
+                    features_proj[remaining_list] - last_feat, axis=1
+                )
+                min_distances[remaining_list] = np.minimum(
+                    min_distances[remaining_list], dists
+                )
                 
                 # Select point with maximum minimum distance (furthest point)
-                remaining_list = list(remaining_indices)
                 remaining_dists = min_distances[remaining_list]
                 furthest_idx_rel = np.argmax(remaining_dists)
                 furthest_idx = remaining_list[furthest_idx_rel]
