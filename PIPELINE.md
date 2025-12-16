@@ -308,13 +308,13 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 ### **PHASE 4: PaDiM - Clean Domain**
 
 #### Step 4.1: Setup PaDiM with Anomalib (Notebook 05)
-- [ ] `src/models/padim_wrapper.py`:
+- [x] `src/models/padim_wrapper.py`:
   - Wrapper for `anomalib.models.Padim`
   - ResNet backbone configuration
   - Unified interface with PatchCore
 
 #### Step 4.2: Training PaDiM - Clean (Notebook 05)
-- [ ] For each class:
+- [x] For each class:
   - Adapt dataloader for anomalib
   - Fit PaDiM on Train-clean
   - Save model in `outputs/models/padim_{class}_clean.pkl`
