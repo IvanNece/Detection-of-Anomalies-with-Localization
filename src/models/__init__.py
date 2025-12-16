@@ -1,12 +1,17 @@
 """
-Models package initialization.
+Models module for anomaly detection.
 
-This module provides wrappers for anomaly detection models used in the project.
-
-NOTE: When PatchCore implementation is merged from the PatchCore branch,
-      add PatchCoreWrapper to imports below.
+Contains implementations of PatchCore, PaDiM, and supporting components.
 """
 
-from src.models.padim_wrapper import PadimWrapper
+from .backbones import ResNet50FeatureExtractor, get_resnet50_feature_extractor
+from .memory_bank import MemoryBank, GreedyCoresetSubsampling
+from .patchcore import PatchCore
 
-__all__ = ['PadimWrapper']
+__all__ = [
+    'ResNet50FeatureExtractor',
+    'get_resnet50_feature_extractor',
+    'MemoryBank',
+    'GreedyCoresetSubsampling',
+    'PatchCore',
+]
