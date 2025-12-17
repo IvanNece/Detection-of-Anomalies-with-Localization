@@ -324,7 +324,7 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 ### **PHASE 5: Threshold Calibration & Evaluation - Clean Domain**
 
 #### Step 5.1: Implement Threshold Selection (Notebook 06)
-- [ ] `src/metrics/threshold_selection.py`:
+- [x] `src/metrics/threshold_selection.py`:
   - `calibrate_threshold(scores_normal, scores_anomalous)`:
     - Gridsearch thresholds
     - Calculate F1 for each threshold
@@ -332,29 +332,32 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
   - Apply on Val-clean for each class and method
 
 #### Step 5.2: Implement Metrics (Notebook 06)
-- [ ] `src/metrics/image_metrics.py`:
+- [x] `src/metrics/image_metrics.py`:
   - `compute_auroc(y_true, scores)`
   - `compute_auprc(y_true, scores)`
   - `compute_f1_at_threshold(y_true, scores, threshold)`
   - `compute_accuracy_precision_recall(y_true, y_pred)`
 
-- [ ] `src/metrics/pixel_metrics.py`:
+- [x] `src/metrics/pixel_metrics.py`:
   - `compute_pixel_auroc(masks_true, heatmaps)`
   - `compute_pro(masks_true, heatmaps)` (Per-Region Overlap)
 
 #### Step 5.3: Evaluation on Test-Clean (Notebook 06)
-- [ ] For each class and method:
+- [x] For each class and method:
   - Predict on Test-clean
   - Apply threshold from Val-clean
   - Calculate all image-level and pixel-level metrics
-- [ ] Save results in `outputs/results/clean_results.json`
-- [ ] Tables per class and macro-average
+- [x] Save results in `outputs/results/clean_results.json`
+- [x] Tables per class and macro-average
 
 #### Step 5.4: Visualizations (Notebook 06)
-- [ ] Top-K best/worst predictions
-- [ ] Heatmaps overlay on anomalous images
-- [ ] Confusion matrix
-- [ ] ROC and Precision-Recall curves
+- [x] Top-K best/worst predictions
+- [x] Heatmaps overlay on anomalous images
+- [x] Confusion matrix
+- [x] ROC and Precision-Recall curves
+
+---
+
 
 ---
 
