@@ -1,7 +1,7 @@
 {
   "metadata": {
     "phase": "Phase 5 - Evaluation Clean Domain",
-    "timestamp": "2025-12-17T14:27:46.501583",
+    "timestamp": "2025-12-17T16:05:26.487435",
     "seed": 42,
     "classes": [
       "hazelnut",
@@ -32,8 +32,8 @@
       "pixel_level": {
         "n_images": 89,
         "n_anomalous_images": 49,
-        "pixel_auroc": 0.988839853389114,
-        "pro": 0.8247629621470636
+        "pixel_auroc": 0.9888398513405771,
+        "pro": 0.824763131366141
       }
     },
     "carpet": {
@@ -58,8 +58,8 @@
       "pixel_level": {
         "n_images": 91,
         "n_anomalous_images": 63,
-        "pixel_auroc": 0.9834702588628333,
-        "pro": 0.7873751259156434
+        "pixel_auroc": 0.9834702464179323,
+        "pro": 0.7873780382031575
       }
     },
     "zipper": {
@@ -84,8 +84,8 @@
       "pixel_level": {
         "n_images": 116,
         "n_anomalous_images": 84,
-        "pixel_auroc": 0.9885520428066176,
-        "pro": 0.8736994342158921
+        "pixel_auroc": 0.9885520518264275,
+        "pro": 0.873695505752502
       }
     },
     "macro_average": {
@@ -107,111 +107,111 @@
         "false_negatives": 2.6666666666666665
       },
       "pixel_level": {
-        "pixel_auroc": 0.9869540516861882,
-        "pro": 0.8286125074261997
+        "pixel_auroc": 0.9869540498616457,
+        "pro": 0.8286122251072667
       }
     }
   },
   "padim": {
     "hazelnut": {
-      "threshold": 52.33760087565976,
+      "threshold": 47.431213241439686,
       "image_level": {
-        "auroc": 0.7005102040816327,
-        "auprc": 0.737612612091052,
+        "auroc": 0.9709183673469387,
+        "auprc": 0.9746250707642262,
         "n_samples": 89,
         "n_normal": 40,
         "n_anomalous": 49,
-        "threshold": 52.33760087565976,
-        "accuracy": 0.550561797752809,
-        "precision": 0.550561797752809,
-        "recall": 1.0,
-        "specificity": 0.0,
-        "f1": 0.7101449275362319,
-        "true_positives": 49,
-        "true_negatives": 0,
-        "false_positives": 40,
-        "false_negatives": 0
+        "threshold": 47.431213241439686,
+        "accuracy": 0.8651685393258427,
+        "precision": 0.9512195121951219,
+        "recall": 0.7959183673469388,
+        "specificity": 0.95,
+        "f1": 0.8666666666666667,
+        "true_positives": 39,
+        "true_negatives": 38,
+        "false_positives": 2,
+        "false_negatives": 10
       },
       "pixel_level": {
         "n_images": 89,
         "n_anomalous_images": 49,
-        "pixel_auroc": 0.26349281082923864,
-        "pro": 0.040695917318337924
+        "pixel_auroc": 0.9633206221187376,
+        "pro": 0.7970307164131808
       }
     },
     "carpet": {
-      "threshold": 36.14297437599114,
+      "threshold": 30.387693796014645,
       "image_level": {
-        "auroc": 0.778344671201814,
-        "auprc": 0.915511653654324,
+        "auroc": 0.9586167800453514,
+        "auprc": 0.9844830153565387,
         "n_samples": 91,
         "n_normal": 28,
         "n_anomalous": 63,
-        "threshold": 36.14297437599114,
-        "accuracy": 0.6923076923076923,
-        "precision": 0.6923076923076923,
-        "recall": 1.0,
-        "specificity": 0.0,
-        "f1": 0.8181818181818182,
-        "true_positives": 63,
-        "true_negatives": 0,
-        "false_positives": 28,
-        "false_negatives": 0
+        "threshold": 30.387693796014645,
+        "accuracy": 0.9010989010989011,
+        "precision": 1.0,
+        "recall": 0.8571428571428571,
+        "specificity": 1.0,
+        "f1": 0.9230769230769231,
+        "true_positives": 54,
+        "true_negatives": 28,
+        "false_positives": 0,
+        "false_negatives": 9
       },
       "pixel_level": {
         "n_images": 91,
         "n_anomalous_images": 63,
-        "pixel_auroc": 0.7659769985233017,
-        "pro": 0.4667033213045576
+        "pixel_auroc": 0.9839391999281658,
+        "pro": 0.5337515365127476
       }
     },
     "zipper": {
-      "threshold": 33.868185479619484,
+      "threshold": 24.447626696406186,
       "image_level": {
-        "auroc": 0.6145833333333334,
-        "auprc": 0.8275478751731141,
+        "auroc": 0.8616071428571429,
+        "auprc": 0.9419245840802596,
         "n_samples": 116,
         "n_normal": 32,
         "n_anomalous": 84,
-        "threshold": 33.868185479619484,
-        "accuracy": 0.7241379310344828,
-        "precision": 0.7241379310344828,
-        "recall": 1.0,
-        "specificity": 0.0,
-        "f1": 0.84,
-        "true_positives": 84,
-        "true_negatives": 0,
-        "false_positives": 32,
-        "false_negatives": 0
+        "threshold": 24.447626696406186,
+        "accuracy": 0.8448275862068966,
+        "precision": 0.875,
+        "recall": 0.9166666666666666,
+        "specificity": 0.65625,
+        "f1": 0.8953488372093024,
+        "true_positives": 77,
+        "true_negatives": 21,
+        "false_positives": 11,
+        "false_negatives": 7
       },
       "pixel_level": {
         "n_images": 116,
         "n_anomalous_images": 84,
-        "pixel_auroc": 0.7770029051606123,
-        "pro": 0.3934904691822631
+        "pixel_auroc": 0.9718998740374604,
+        "pro": 0.7974670797760689
       }
     },
     "macro_average": {
       "image_level": {
-        "auroc": 0.6978127362055934,
-        "auprc": 0.8268907136394966,
+        "auroc": 0.9303807634164777,
+        "auprc": 0.9670108900670081,
         "n_samples": 98.66666666666667,
         "n_normal": 33.333333333333336,
         "n_anomalous": 65.33333333333333,
-        "threshold": 40.78292024375679,
-        "accuracy": 0.6556691403649947,
-        "precision": 0.6556691403649947,
-        "recall": 1.0,
-        "specificity": 0.0,
-        "f1": 0.7894422485726834,
-        "true_positives": 65.33333333333333,
-        "true_negatives": 0.0,
-        "false_positives": 33.333333333333336,
-        "false_negatives": 0.0
+        "threshold": 34.0888445779535,
+        "accuracy": 0.8703650088772136,
+        "precision": 0.9420731707317073,
+        "recall": 0.8565759637188207,
+        "specificity": 0.86875,
+        "f1": 0.8950308089842974,
+        "true_positives": 56.666666666666664,
+        "true_negatives": 29.0,
+        "false_positives": 4.333333333333333,
+        "false_negatives": 8.666666666666666
       },
       "pixel_level": {
-        "pixel_auroc": 0.6021575715043842,
-        "pro": 0.30029656926838616
+        "pixel_auroc": 0.9730532320281212,
+        "pro": 0.7094164442339991
       }
     }
   }
