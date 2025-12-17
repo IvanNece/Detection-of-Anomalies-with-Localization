@@ -1,0 +1,4 @@
+class,n_train_images,n_features,spatial_resolution,training_time,model_size_mb
+hazelnut,312,100,56x56,74.93s,120.8251953125
+carpet,224,100,56x56,59.10s,120.8251953125
+zipper,192,100,56x56,40.54s,120.8251953125

@@ -1,0 +1,27 @@
+{
+  "classes": [
+    "hazelnut",
+    "carpet",
+    "zipper"
+  ],
+  "num_train_samples": [
+    312,
+    224,
+    192
+  ],
+  "training_time_seconds": [
+    74.93496870994568,
+    59.098944425582886,
+    40.537200689315796
+  ],
+  "memory_bank_size_mb": [
+    120.8251953125,
+    120.8251953125,
+    120.8251953125
+  ],
+  "model_path": [
+    "/content/Detection-of-Anomalies-with-Localization/outputs/models/padim_hazelnut_clean.pt",
+    "/content/Detection-of-Anomalies-with-Localization/outputs/models/padim_carpet_clean.pt",
+    "/content/Detection-of-Anomalies-with-Localization/outputs/models/padim_zipper_clean.pt"
+  ]
+}
