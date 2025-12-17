@@ -1,0 +1,218 @@
+{
+  "metadata": {
+    "phase": "Phase 5 - Evaluation Clean Domain",
+    "timestamp": "2025-12-17T14:27:46.501583",
+    "seed": 42,
+    "classes": [
+      "hazelnut",
+      "carpet",
+      "zipper"
+    ]
+  },
+  "patchcore": {
+    "hazelnut": {
+      "threshold": 5.644050216409895,
+      "image_level": {
+        "auroc": 1.0,
+        "auprc": 1.0,
+        "n_samples": 89,
+        "n_normal": 40,
+        "n_anomalous": 49,
+        "threshold": 5.644050216409895,
+        "accuracy": 0.9887640449438202,
+        "precision": 1.0,
+        "recall": 0.9795918367346939,
+        "specificity": 1.0,
+        "f1": 0.9896907216494846,
+        "true_positives": 48,
+        "true_negatives": 40,
+        "false_positives": 0,
+        "false_negatives": 1
+      },
+      "pixel_level": {
+        "n_images": 89,
+        "n_anomalous_images": 49,
+        "pixel_auroc": 0.988839853389114,
+        "pro": 0.8247629621470636
+      }
+    },
+    "carpet": {
+      "threshold": 2.06812568683882,
+      "image_level": {
+        "auroc": 0.9450113378684807,
+        "auprc": 0.9787828425323584,
+        "n_samples": 91,
+        "n_normal": 28,
+        "n_anomalous": 63,
+        "threshold": 2.06812568683882,
+        "accuracy": 0.8461538461538461,
+        "precision": 0.8888888888888888,
+        "recall": 0.8888888888888888,
+        "specificity": 0.75,
+        "f1": 0.8888888888888888,
+        "true_positives": 56,
+        "true_negatives": 21,
+        "false_positives": 7,
+        "false_negatives": 7
+      },
+      "pixel_level": {
+        "n_images": 91,
+        "n_anomalous_images": 63,
+        "pixel_auroc": 0.9834702588628333,
+        "pro": 0.7873751259156434
+      }
+    },
+    "zipper": {
+      "threshold": 1.7630764328735369,
+      "image_level": {
+        "auroc": 0.9888392857142857,
+        "auprc": 0.9954949709588203,
+        "n_samples": 116,
+        "n_normal": 32,
+        "n_anomalous": 84,
+        "threshold": 1.7630764328735369,
+        "accuracy": 0.9741379310344828,
+        "precision": 0.9655172413793104,
+        "recall": 1.0,
+        "specificity": 0.90625,
+        "f1": 0.9824561403508771,
+        "true_positives": 84,
+        "true_negatives": 29,
+        "false_positives": 3,
+        "false_negatives": 0
+      },
+      "pixel_level": {
+        "n_images": 116,
+        "n_anomalous_images": 84,
+        "pixel_auroc": 0.9885520428066176,
+        "pro": 0.8736994342158921
+      }
+    },
+    "macro_average": {
+      "image_level": {
+        "auroc": 0.9779502078609221,
+        "auprc": 0.9914259378303929,
+        "n_samples": 98.66666666666667,
+        "n_normal": 33.333333333333336,
+        "n_anomalous": 65.33333333333333,
+        "threshold": 3.1584174453740843,
+        "accuracy": 0.9363519407107163,
+        "precision": 0.9514687100893998,
+        "recall": 0.9561602418745275,
+        "specificity": 0.8854166666666666,
+        "f1": 0.9536785836297502,
+        "true_positives": 62.666666666666664,
+        "true_negatives": 30.0,
+        "false_positives": 3.3333333333333335,
+        "false_negatives": 2.6666666666666665
+      },
+      "pixel_level": {
+        "pixel_auroc": 0.9869540516861882,
+        "pro": 0.8286125074261997
+      }
+    }
+  },
+  "padim": {
+    "hazelnut": {
+      "threshold": 52.33760087565976,
+      "image_level": {
+        "auroc": 0.7005102040816327,
+        "auprc": 0.737612612091052,
+        "n_samples": 89,
+        "n_normal": 40,
+        "n_anomalous": 49,
+        "threshold": 52.33760087565976,
+        "accuracy": 0.550561797752809,
+        "precision": 0.550561797752809,
+        "recall": 1.0,
+        "specificity": 0.0,
+        "f1": 0.7101449275362319,
+        "true_positives": 49,
+        "true_negatives": 0,
+        "false_positives": 40,
+        "false_negatives": 0
+      },
+      "pixel_level": {
+        "n_images": 89,
+        "n_anomalous_images": 49,
+        "pixel_auroc": 0.26349281082923864,
+        "pro": 0.040695917318337924
+      }
+    },
+    "carpet": {
+      "threshold": 36.14297437599114,
+      "image_level": {
+        "auroc": 0.778344671201814,
+        "auprc": 0.915511653654324,
+        "n_samples": 91,
+        "n_normal": 28,
+        "n_anomalous": 63,
+        "threshold": 36.14297437599114,
+        "accuracy": 0.6923076923076923,
+        "precision": 0.6923076923076923,
+        "recall": 1.0,
+        "specificity": 0.0,
+        "f1": 0.8181818181818182,
+        "true_positives": 63,
+        "true_negatives": 0,
+        "false_positives": 28,
+        "false_negatives": 0
+      },
+      "pixel_level": {
+        "n_images": 91,
+        "n_anomalous_images": 63,
+        "pixel_auroc": 0.7659769985233017,
+        "pro": 0.4667033213045576
+      }
+    },
+    "zipper": {
+      "threshold": 33.868185479619484,
+      "image_level": {
+        "auroc": 0.6145833333333334,
+        "auprc": 0.8275478751731141,
+        "n_samples": 116,
+        "n_normal": 32,
+        "n_anomalous": 84,
+        "threshold": 33.868185479619484,
+        "accuracy": 0.7241379310344828,
+        "precision": 0.7241379310344828,
+        "recall": 1.0,
+        "specificity": 0.0,
+        "f1": 0.84,
+        "true_positives": 84,
+        "true_negatives": 0,
+        "false_positives": 32,
+        "false_negatives": 0
+      },
+      "pixel_level": {
+        "n_images": 116,
+        "n_anomalous_images": 84,
+        "pixel_auroc": 0.7770029051606123,
+        "pro": 0.3934904691822631
+      }
+    },
+    "macro_average": {
+      "image_level": {
+        "auroc": 0.6978127362055934,
+        "auprc": 0.8268907136394966,
+        "n_samples": 98.66666666666667,
+        "n_normal": 33.333333333333336,
+        "n_anomalous": 65.33333333333333,
+        "threshold": 40.78292024375679,
+        "accuracy": 0.6556691403649947,
+        "precision": 0.6556691403649947,
+        "recall": 1.0,
+        "specificity": 0.0,
+        "f1": 0.7894422485726834,
+        "true_positives": 65.33333333333333,
+        "true_negatives": 0.0,
+        "false_positives": 33.333333333333336,
+        "false_negatives": 0.0
+      },
+      "pixel_level": {
+        "pixel_auroc": 0.6021575715043842,
+        "pro": 0.30029656926838616
+      }
+    }
+  }
+}
