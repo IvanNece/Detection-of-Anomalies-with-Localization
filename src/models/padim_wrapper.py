@@ -12,8 +12,8 @@ PaDiM Overview:
 - No gradient-based training required (statistical approach like PatchCore)
 
 Key Implementation Notes:
+- Uses anomalib's native PadimModel implementation
 - Interface aligned with PatchCore for fair comparison
-- Uses anomalib's Padim implementation under the hood
 - Batch processing for efficiency
 - Consistent save/load format
 
@@ -29,14 +29,11 @@ import json
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import numpy as np
-from scipy.ndimage import gaussian_filter
 from tqdm import tqdm
 
-# anomalib imports (dynamically import to avoid dependency issues)
+# anomalib imports
 try:
-    from anomalib.models.image.padim import Padim
     from anomalib.models.image.padim.torch_model import PadimModel
     ANOMALIB_AVAILABLE = True
 except ImportError:
@@ -55,13 +52,18 @@ class PadimWrapper(nn.Module):
     - Training and inference methods aligned with our pipeline
     - Model persistence (save/load)
     
+    IMPORTANT: This implementation uses anomalib's native methods for:
+    - Gaussian fitting (MultiVariateGaussian)
+    - Anomaly map generation (AnomalyMapGenerator with Mahalanobis distance)
+    - Feature extraction and embedding generation
+    
     Interface Design:
     - fit(train_loader) - train on normal samples
     - predict(images, return_heatmaps) - batch prediction (same as PatchCore)
     - save/load - model persistence
     
     Attributes:
-        model_torch: PadimModel (anomalib's underlying PyTorch model)
+        model: PadimModel (anomalib's PyTorch model)
         device: torch.device for computation
         backbone: Feature extractor backbone name
         layers: List of layers for multi-scale feature extraction
@@ -108,11 +110,10 @@ class PadimWrapper(nn.Module):
         self.image_size = image_size
         self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
         
-        # Initialize anomalib PaDiM's underlying torch model
-        # Note: We use PadimModel directly for more control
-        self.model_torch = PadimModel(
-            layers=layers,
+        # Initialize anomalib PadimModel - uses native implementation
+        self.model = PadimModel(
             backbone=backbone,
+            layers=layers,
             pre_trained=True,
             n_features=n_features
         ).to(self.device)
@@ -125,9 +126,6 @@ class PadimWrapper(nn.Module):
             'training_time_seconds': 0.0,
             'memory_bank_size_mb': 0.0
         }
-        
-        # Spatial dimensions for heatmap reconstruction
-        self.spatial_dims: Optional[Tuple[int, int]] = None
     
     def fit(
         self, 
@@ -135,12 +133,12 @@ class PadimWrapper(nn.Module):
         verbose: bool = True
     ) -> None:
         """
-        Fit PaDiM on normal training data (ALIGNED WITH PATCHCORE INTERFACE).
+        Fit PaDiM on normal training data using anomalib's native implementation.
         
         This method:
-        1. Extracts multi-scale features from all training images
-        2. Computes Gaussian parameters (mean, covariance) per spatial location
-        3. Stores statistics for anomaly detection
+        1. Sets model to training mode
+        2. Runs forward pass on all training images (accumulates embeddings in memory bank)
+        3. Calls model.fit() to compute Gaussian parameters (mean, covariance)
         
         Args:
             train_loader: DataLoader with normal training samples (only label=0)
@@ -164,11 +162,11 @@ class PadimWrapper(nn.Module):
             print(f"Device: {self.device}")
             print(f"{'='*60}\n")
         
-        self.model_torch.train()
+        # Set model to training mode - this makes forward() accumulate in memory_bank
+        self.model.train()
         start_time = time.time()
         
-        # Collect all embeddings from training images
-        embeddings_list = []
+        num_samples = 0
         
         with torch.no_grad():
             for images, _, labels, _ in tqdm(
@@ -181,56 +179,36 @@ class PadimWrapper(nn.Module):
                 
                 images = images.to(self.device)
                 
-                # Extract patch embeddings (multi-scale features)
-                features = self.model_torch.feature_extractor(images)
-                embeddings = self.model_torch.generate_embedding(features)
-                embeddings_list.append(embeddings)
-        
-        # Concatenate all embeddings
-        all_embeddings = torch.cat(embeddings_list, dim=0)
-        B, C, H, W = all_embeddings.shape
-        
-        self.training_stats['num_samples'] = B
-        self.spatial_dims = (H, W)
+                # Forward pass in training mode accumulates embeddings in memory_bank
+                # This is anomalib's native behavior
+                self.model(images)
+                
+                num_samples += images.shape[0]
         
         if verbose:
-            print(f"\nComputing Gaussian distributions...")
-            print(f"  Embedding shape: {all_embeddings.shape}")
-            print(f"  Spatial resolution: {H}x{W}")
+            print(f"\nFitting Gaussian distributions...")
+            print(f"  Total samples: {num_samples}")
+            print(f"  Memory bank size: {len(self.model.memory_bank)} batches")
         
-        # Compute mean and covariance per spatial location
-        # Reshape: (B, C, H, W) -> (H*W, B, C)
-        embeddings_reshaped = all_embeddings.permute(2, 3, 0, 1).reshape(H * W, B, C)
-        
-        # Compute statistics
-        mean = torch.mean(embeddings_reshaped, dim=1)  # (H*W, C)
-        
-        # Covariance with regularization
-        embeddings_centered = embeddings_reshaped - mean.unsqueeze(1)
-        cov = torch.einsum('lbc,lbd->lcd', embeddings_centered, embeddings_centered) / (B - 1)
-        
-        # Add regularization (identity matrix * epsilon)
-        identity = torch.eye(C, device=self.device).unsqueeze(0).repeat(H * W, 1, 1)
-        cov = cov + 0.01 * identity
-        
-        # Store in model
-        self.model_torch.mean = mean.reshape(H, W, C)  # (H, W, C)
-        self.model_torch.cov = cov.reshape(H, W, C, C)  # (H, W, C, C)
-        self.model_torch.cov_inv = torch.linalg.inv(cov).reshape(H, W, C, C)
+        # Fit Gaussian to memory bank using anomalib's native method
+        # This computes mean and inverse covariance for Mahalanobis distance
+        self.model.fit()
         
         self.fitted = True
+        self.training_stats['num_samples'] = num_samples
         self.training_stats['training_time_seconds'] = time.time() - start_time
         
-        # Estimate memory usage
-        mean_size_mb = self.model_torch.mean.element_size() * self.model_torch.mean.nelement() / (1024 ** 2)
-        cov_size_mb = self.model_torch.cov.element_size() * self.model_torch.cov.nelement() / (1024 ** 2)
-        self.training_stats['memory_bank_size_mb'] = mean_size_mb + cov_size_mb
+        # Estimate memory usage from Gaussian parameters
+        mean_size = self.model.gaussian.mean.element_size() * self.model.gaussian.mean.nelement()
+        cov_size = self.model.gaussian.inv_covariance.element_size() * self.model.gaussian.inv_covariance.nelement()
+        self.training_stats['memory_bank_size_mb'] = (mean_size + cov_size) / (1024 ** 2)
         
         if verbose:
             print(f"\n{'='*60}")
             print(f"[OK] Training completed in {self.training_stats['training_time_seconds']:.2f}s")
-            print(f"  Memory bank size: {self.training_stats['memory_bank_size_mb']:.2f} MB")
-            print(f"  Gaussian distributions: {H}x{W} spatial locations")
+            print(f"  Gaussian mean shape: {self.model.gaussian.mean.shape}")
+            print(f"  Inv covariance shape: {self.model.gaussian.inv_covariance.shape}")
+            print(f"  Memory usage: {self.training_stats['memory_bank_size_mb']:.2f} MB")
             print(f"{'='*60}\n")
     
     @torch.no_grad()
@@ -240,7 +218,7 @@ class PadimWrapper(nn.Module):
         return_heatmaps: bool = True
     ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
         """
-        Predict anomaly scores for batch of images (ALIGNED WITH PATCHCORE).
+        Predict anomaly scores using anomalib's native forward pass.
         
         Args:
             images: Input images (B, 3, H, W) or (3, H, W) for single image
@@ -260,7 +238,8 @@ class PadimWrapper(nn.Module):
         if not self.fitted:
             raise RuntimeError("Model must be fitted before prediction. Call .fit() first.")
         
-        self.model_torch.eval()
+        # Set model to eval mode - this makes forward() compute anomaly maps
+        self.model.eval()
         
         # Handle single image input
         if images.ndim == 3:
@@ -270,62 +249,24 @@ class PadimWrapper(nn.Module):
             single_image = False
         
         images = images.to(self.device)
-        B, _, H_img, W_img = images.shape
         
-        # Extract embeddings (multi-scale features concatenated)
-        features = self.model_torch.feature_extractor(images)
-        embeddings = self.model_torch.generate_embedding(features)  # (B, C, H, W)
-        _, C, H, W = embeddings.shape
+        # Forward pass in eval mode returns InferenceBatch with pred_score and anomaly_map
+        # This uses anomalib's native AnomalyMapGenerator with Mahalanobis distance
+        output = self.model(images)
         
-        assert self.spatial_dims == (H, W), f"Spatial dims mismatch: {self.spatial_dims} vs {(H, W)}"
+        # Extract scores and heatmaps from InferenceBatch
+        image_scores = output.pred_score.cpu().numpy()
         
-        # Reshape embeddings: (B, C, H, W) -> (B, H*W, C)
-        embeddings_flat = embeddings.permute(0, 2, 3, 1).reshape(B, H * W, C)
-        
-        # Compute Mahalanobis distance for each patch
-        # Distance = (x - mu)^T * Sigma^{-1} * (x - mu)
-        mean = self.model_torch.mean.reshape(H * W, C)  # (H*W, C)
-        cov_inv = self.model_torch.cov_inv.reshape(H * W, C, C)  # (H*W, C, C)
-        
-        # Vectorized computation
-        diff = embeddings_flat - mean.unsqueeze(0)  # (B, H*W, C)
-        
-        # Mahalanobis distance: d = sqrt(diff^T * Sigma^{-1} * diff)
-        # Paper Eq. 2: M(x_ij) = sqrt((x - μ)^T * Σ^{-1} * (x - μ))
-        distances = torch.zeros(B, H * W, device=self.device)
-        for i in range(H * W):
-            temp = torch.matmul(diff[:, i, :].unsqueeze(1), cov_inv[i])  # (B, 1, C)
-            d_squared = torch.sum(temp * diff[:, i, :].unsqueeze(1), dim=2).squeeze()
-            # Apply sqrt as per paper (Eq. 2)
-            distances[:, i] = torch.sqrt(torch.clamp(d_squared, min=0))
-        
-        # Reshape to spatial map: (B, H*W) -> (B, H, W)
-        distance_maps = distances.reshape(B, H, W)
-        
-        # Image-level score: maximum distance (Eq. 6 in paper)
-        image_scores = torch.max(distance_maps.reshape(B, -1), dim=1)[0]
-        image_scores = image_scores.cpu().numpy()
-        
-        # Heatmaps: upsample to input resolution and apply Gaussian smoothing
-        # Paper (Sect. 4.2): "We use a Gaussian filter on the anomaly maps with parameter σ = 4"
         heatmaps = None
         if return_heatmaps:
-            # Upsample (B, H, W) -> (B, H_img, W_img)
-            distance_maps_upsampled = F.interpolate(
-                distance_maps.unsqueeze(1),  # Add channel dim: (B, 1, H, W)
-                size=(H_img, W_img),
-                mode='bilinear',
-                align_corners=False
-            ).squeeze(1)  # Remove channel: (B, H_img, W_img)
-            
-            heatmaps = distance_maps_upsampled.cpu().numpy()
-            
-            # Apply Gaussian smoothing (σ=4 as per PaDiM paper)
-            heatmaps = np.array([gaussian_filter(h, sigma=4) for h in heatmaps])
+            heatmaps = output.anomaly_map.cpu().numpy()
+            # Remove channel dimension if present (B, 1, H, W) -> (B, H, W)
+            if heatmaps.ndim == 4 and heatmaps.shape[1] == 1:
+                heatmaps = heatmaps.squeeze(1)
         
         # Handle single image output
         if single_image:
-            image_scores = image_scores[0]
+            image_scores = image_scores[0] if image_scores.ndim > 0 else float(image_scores)
             if heatmaps is not None:
                 heatmaps = heatmaps[0]
         
@@ -361,7 +302,7 @@ class PadimWrapper(nn.Module):
         if not self.fitted:
             raise RuntimeError("Model must be fitted before prediction.")
         
-        self.model_torch.eval()
+        self.model.eval()
         
         all_scores = []
         all_labels = []
@@ -377,24 +318,27 @@ class PadimWrapper(nn.Module):
                 # Batch prediction
                 scores, heatmaps = self.predict(images, return_heatmaps=return_heatmaps)
                 
-                all_scores.append(scores)
-                all_labels.append(labels.cpu().numpy())
+                # Handle both single and batch outputs
+                if isinstance(scores, np.ndarray):
+                    if scores.ndim == 0:
+                        all_scores.append(float(scores))
+                    else:
+                        all_scores.extend(scores.flatten().tolist())
+                else:
+                    all_scores.append(float(scores))
+                
+                all_labels.extend(labels.cpu().numpy().tolist())
                 all_paths.extend(paths)
                 
-                if return_heatmaps:
-                    # Handle single vs batch
+                if return_heatmaps and heatmaps is not None:
                     if heatmaps.ndim == 2:  # Single image
                         all_heatmaps.append(heatmaps)
                     else:  # Batch
-                        all_heatmaps.extend(heatmaps)
-        
-        # Concatenate results
-        all_scores = np.concatenate(all_scores) if len(all_scores) > 0 else np.array([])
-        all_labels = np.concatenate(all_labels) if len(all_labels) > 0 else np.array([])
+                        all_heatmaps.extend([h for h in heatmaps])
         
         results = {
-            'scores': all_scores,
-            'labels': all_labels,
+            'scores': np.array(all_scores),
+            'labels': np.array(all_labels),
             'image_paths': all_paths
         }
         
@@ -405,7 +349,7 @@ class PadimWrapper(nn.Module):
     
     def save(self, save_path: Path, include_stats: bool = True) -> None:
         """
-        Save trained PaDiM model (ALIGNED WITH PATCHCORE).
+        Save trained PaDiM model.
         
         Args:
             save_path: Path to save model (.pt or .pth)
@@ -420,19 +364,20 @@ class PadimWrapper(nn.Module):
         save_path = Path(save_path)
         save_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # Prepare checkpoint (store Gaussian parameters + config)
+        # Prepare checkpoint with Gaussian parameters and configuration
         checkpoint = {
-            # Model parameters
-            'mean': self.model_torch.mean.cpu(),
-            'cov': self.model_torch.cov.cpu(),
-            'cov_inv': self.model_torch.cov_inv.cpu(),
+            # Gaussian parameters (from anomalib's MultiVariateGaussian)
+            'gaussian_mean': self.model.gaussian.mean.cpu(),
+            'gaussian_inv_covariance': self.model.gaussian.inv_covariance.cpu(),
+            
+            # Random feature indices (important for reproducibility)
+            'idx': self.model.idx.cpu(),
             
             # Configuration
             'backbone': self.backbone,
             'layers': self.layers,
             'n_features': self.n_features,
             'image_size': self.image_size,
-            'spatial_dims': self.spatial_dims,
             
             # Metadata
             'fitted': self.fitted,
@@ -441,7 +386,7 @@ class PadimWrapper(nn.Module):
         
         torch.save(checkpoint, save_path)
         
-        # Save stats as separate JSON for easy inspection (same as PatchCore)
+        # Save stats as separate JSON for easy inspection
         if include_stats:
             stats_path = save_path.with_suffix('.json')
             with open(stats_path, 'w') as f:
@@ -455,7 +400,7 @@ class PadimWrapper(nn.Module):
     
     def load(self, load_path: Path) -> None:
         """
-        Load trained PaDiM model (ALIGNED WITH PATCHCORE).
+        Load trained PaDiM model.
         
         Args:
             load_path: Path to saved model (.pt or .pth)
@@ -468,35 +413,36 @@ class PadimWrapper(nn.Module):
         if not load_path.exists():
             raise FileNotFoundError(f"Model file not found: {load_path}")
         
-        checkpoint = torch.load(load_path, map_location=self.device)
+        checkpoint = torch.load(load_path, map_location=self.device, weights_only=False)
         
         # Restore configuration
         self.backbone = checkpoint['backbone']
         self.layers = checkpoint['layers']
         self.n_features = checkpoint.get('n_features', None)
         self.image_size = checkpoint['image_size']
-        self.spatial_dims = checkpoint.get('spatial_dims', None)
         self.fitted = checkpoint['fitted']
         self.training_stats = checkpoint.get('training_stats', {})
         
         # Reinitialize model with saved config
-        self.model_torch = PadimModel(
-            layers=self.layers,
+        self.model = PadimModel(
             backbone=self.backbone,
+            layers=self.layers,
             pre_trained=True,
             n_features=self.n_features
         ).to(self.device)
         
+        # Restore random feature indices (critical for reproducibility)
+        self.model.idx = checkpoint['idx'].to(self.device)
+        
         # Restore Gaussian parameters
-        self.model_torch.mean = checkpoint['mean'].to(self.device)
-        self.model_torch.cov = checkpoint['cov'].to(self.device)
-        self.model_torch.cov_inv = checkpoint['cov_inv'].to(self.device)
+        self.model.gaussian.mean = checkpoint['gaussian_mean'].to(self.device)
+        self.model.gaussian.inv_covariance = checkpoint['gaussian_inv_covariance'].to(self.device)
         
         print(f"[OK] Model loaded: {load_path.name}")
     
     def get_info(self) -> Dict:
         """
-        Get model information and statistics (ALIGNED WITH PATCHCORE).
+        Get model information and statistics.
         
         Returns:
             Dictionary with model configuration and training stats
@@ -505,15 +451,21 @@ class PadimWrapper(nn.Module):
             >>> info = model.get_info()
             >>> print(info['training_stats'])
         """
-        return {
+        info = {
             'model_type': 'PaDiM',
             'backbone': self.backbone,
             'layers': self.layers,
             'n_features': self.n_features,
             'image_size': self.image_size,
-            'spatial_dims': self.spatial_dims,
             'device': str(self.device),
             'fitted': self.fitted,
             'training_stats': self.training_stats,
-            'distance_metric': 'mahalanobis'
+            'distance_metric': 'mahalanobis',
+            'implementation': 'anomalib_native'
         }
+        
+        if self.fitted:
+            info['gaussian_mean_shape'] = list(self.model.gaussian.mean.shape)
+            info['gaussian_inv_cov_shape'] = list(self.model.gaussian.inv_covariance.shape)
+        
+        return info
