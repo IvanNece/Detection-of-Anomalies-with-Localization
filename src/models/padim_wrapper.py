@@ -31,6 +31,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
+from scipy.ndimage import gaussian_filter
 from tqdm import tqdm
 
 # anomalib imports (dynamically import to avoid dependency issues)
@@ -302,7 +303,8 @@ class PadimWrapper(nn.Module):
         image_scores = torch.max(distance_maps.reshape(B, -1), dim=1)[0]
         image_scores = image_scores.cpu().numpy()
         
-        # Heatmaps: upsample to input resolution
+        # Heatmaps: upsample to input resolution and apply Gaussian smoothing
+        # Paper (Sect. 4.2): "We use a Gaussian filter on the anomaly maps with parameter σ = 4"
         heatmaps = None
         if return_heatmaps:
             # Upsample (B, H, W) -> (B, H_img, W_img)
@@ -314,6 +316,9 @@ class PadimWrapper(nn.Module):
             ).squeeze(1)  # Remove channel: (B, H_img, W_img)
             
             heatmaps = distance_maps_upsampled.cpu().numpy()
+            
+            # Apply Gaussian smoothing (σ=4 as per PaDiM paper)
+            heatmaps = np.array([gaussian_filter(h, sigma=4) for h in heatmaps])
         
         # Handle single image output
         if single_image:
