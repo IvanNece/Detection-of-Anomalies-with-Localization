@@ -290,11 +290,14 @@ class PadimWrapper(nn.Module):
         # Vectorized computation
         diff = embeddings_flat - mean.unsqueeze(0)  # (B, H*W, C)
         
-        # Mahalanobis distance: d^2 = diff^T * Sigma^{-1} * diff
+        # Mahalanobis distance: d = sqrt(diff^T * Sigma^{-1} * diff)
+        # Paper Eq. 2: M(x_ij) = sqrt((x - μ)^T * Σ^{-1} * (x - μ))
         distances = torch.zeros(B, H * W, device=self.device)
         for i in range(H * W):
             temp = torch.matmul(diff[:, i, :].unsqueeze(1), cov_inv[i])  # (B, 1, C)
-            distances[:, i] = torch.sum(temp * diff[:, i, :].unsqueeze(1), dim=2).squeeze()
+            d_squared = torch.sum(temp * diff[:, i, :].unsqueeze(1), dim=2).squeeze()
+            # Apply sqrt as per paper (Eq. 2)
+            distances[:, i] = torch.sqrt(torch.clamp(d_squared, min=0))
         
         # Reshape to spatial map: (B, H*W) -> (B, H, W)
         distance_maps = distances.reshape(B, H, W)
