@@ -389,24 +389,24 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 ### **PHASE 7: Domain Shift - With Full Adaptation**
 
 #### Step 7.1: Re-training on Train-Shift (Notebook X)
-- [ ] **PatchCore**:
+- [x] **PatchCore**:
   - Rebuild memory bank using Train-shift
   - Save in `outputs/models/patchcore_{class}_shift.pkl`
-- [ ] **PaDiM**:
+- [x] **PaDiM**:
   - Re-fit on Train-shift
   - Save in `outputs/models/padim_{class}_shift.pkl`
 
 #### Step 7.2: Re-calibrate Thresholds on Val-Shift (Notebook X)
-- [ ] Predict on Val-shift with new models
-- [ ] Calibrate new thresholds maximizing F1
-- [ ] Save in `outputs/thresholds/shift_thresholds.json`
+- [x] Predict on Val-shift with new models
+- [x] Calibrate new thresholds maximizing F1
+- [x] Save in `outputs/thresholds/shift_thresholds.json`
 
 #### Step 7.3: Evaluation on Test-Shift with Adaptation (Notebook X)
-- [ ] Predict with adapted models
-- [ ] Apply thresholds from Val-shift
-- [ ] Calculate metrics
-- [ ] Save in `outputs/results/shift_with_adaptation_results.json`
-- [ ] **Improvement analysis** compared to no-adaptation
+- [x] Predict with adapted models
+- [x] Apply thresholds from Val-shift
+- [x] Calculate metrics
+- [x] Save in `outputs/results/shift_with_adaptation_results.json`
+- [x] **Improvement analysis** compared to no-adaptation
 
 ---
 

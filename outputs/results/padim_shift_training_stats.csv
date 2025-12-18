@@ -1,0 +1,4 @@
+,n_train_images,training_time_seconds,memory_bank_size_mb
+hazelnut,312.0,373.26,120.8251953125
+carpet,224.0,273.63,120.8251953125
+zipper,192.0,227.08,120.8251953125
