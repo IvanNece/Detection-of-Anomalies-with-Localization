@@ -45,7 +45,8 @@ Exact image counts per split will be reported in the final report; splits are ge
 
 **Global model.**
 
-In addition to the per-class setup, we may train a **single global model** pooling all normal images from the 3 classes, used only as an extra comparison to study the limitations of a heterogeneous notion of “normality”.
+In addition to the per-class setup, we may train a **single global model** pooling all normal images from the 3 classes.
+This setup serves as a baseline to demonstrate the "identical shortcut" problem and the difficulty of modeling heterogeneous distributions without class-conditional information, as discussed in the context of unified anomaly detection benchmarks [You et al., 2022].
 
 ### Split – Phase 2 (shifted domain)
 
@@ -205,3 +206,5 @@ All metrics are reported **per class** (hazelnut, carpet, zipper) and as **macro
 - **Guo et al.** – On Calibration of Modern Neural Networks. *International Conference on Machine Learning (ICML)*, 2017.
 
 - **Niculescu-Mizil & Caruana** – Predicting Good Probabilities with Supervised Learning. *International Conference on Machine Learning (ICML)*, 2005.
+
+- **You et al.** – UniAD: A Unified Real World Anomaly Detection Benchmark. *Conference on Computer Vision and Pattern Recognition (CVPR)*, 2022.

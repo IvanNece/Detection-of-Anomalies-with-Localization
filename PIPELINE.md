@@ -412,11 +412,21 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 
 ### **PHASE 8: Global Model**
 
-#### Step 8.1: Training Global Model
-- [ ] Pool all normal images from the 3 classes
-- [ ] Train PatchCore/PaDiM on the pool
-- [ ] Evaluate on each class separately
-- [ ] **Limitations analysis** of heterogeneous normality
+### **PHASE 8: Global Model (Unified Training)**
+
+#### Step 8.1: Training Global Model (Notebook 10)
+- [ ] **Data Prep**: Merge standard training splits from all classes into a single `global_train` set.
+- [ ] **Training**:
+    - Train a single PatchCore model on `global_train` (coreset 5%).
+    - Train a single PaDiM model on `global_train`.
+    - Save models as `patchcore_global` and `padim_global`.
+
+#### Step 8.2: Evaluation of Global Model
+- [ ] Evaluate on Test-Clean for each class separately (using the same Global Model).
+- [ ] **Analysis**:
+    - Quantify the performance gap (F1/AUROC) vs. Per-Class models.
+    - Test the hypothesis from [You et al., 2022] regarding "identical shortcut" and distribution complexity.
+    - Visualize if anomalies in one class (e.g., Hazelnut cracks) are mistaken for normal features from another class (e.g., Carpet texture).
 
 ---
 
@@ -586,6 +596,7 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 - **Test-Time Adaptation**: Wang et al., "Tent: Fully Test-Time Adaptation by Entropy Minimization", ICLR 2021
 - **Calibration in Deep Learning**: Guo et al., "On Calibration of Modern Neural Networks", ICML 2017
 - **Threshold Recalibration for Domain Shift**: Niculescu-Mizil & Caruana, "Predicting Good Probabilities with Supervised Learning", ICML 2005
+- **You et al.** – UniAD: A Unified Real World Anomaly Detection Benchmark. *Conference on Computer Vision and Pattern Recognition (CVPR)*, 2022.
 
 
 
