@@ -372,15 +372,15 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 - [x] **Performance degradation analysis** compared to Test-clean
 
 #### Step 6.2: Evaluation with Threshold-Only Adaptation (Notebook 08)
-- [ ] Use models trained on Train-clean (NO retraining)
-- [ ] **RE-calibrate thresholds** on Val-shift
+- [x] Use models trained on Train-clean (NO retraining)
+- [x] **RE-calibrate thresholds** on Val-shift
   - Predict scores on Val-shift with clean-trained models
   - Find threshold maximizing F1 on Val-shift
   - Save in `outputs/thresholds/shift_threshold_only.json`
-- [ ] Apply new thresholds to Test-shift predictions
-- [ ] Calculate metrics
-- [ ] Save in `outputs/results/shift_threshold_only_results.json`
-- [ ] **Ablation analysis**:
+- [x] Apply new thresholds to Test-shift predictions
+- [x] Calculate metrics
+- [x] Save in `outputs/results/shift_threshold_only_results.json`
+- [x] **Ablation analysis**:
   - Improvement vs Step 6.1 (threshold contribution)
   - Remaining gap vs PHASE 7 (model contribution)
 

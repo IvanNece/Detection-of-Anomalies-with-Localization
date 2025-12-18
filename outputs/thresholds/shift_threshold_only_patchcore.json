@@ -1,0 +1,40 @@
+{
+  "method": "patchcore",
+  "thresholds": {
+    "hazelnut": 1627.0023226461324,
+    "carpet": 1522.3187512536952,
+    "zipper": 1551.351384207694
+  },
+  "calibration_metrics": {
+    "hazelnut": {
+      "threshold": 1627.0023226461324,
+      "f1": 0.4745762711864407,
+      "precision": 0.3684210526315789,
+      "recall": 0.6666666666666666,
+      "accuracy": 0.69,
+      "n_samples": 100,
+      "n_normal": 79,
+      "n_anomalous": 21
+    },
+    "carpet": {
+      "threshold": 1522.3187512536952,
+      "f1": 0.5714285714285714,
+      "precision": 0.45454545454545453,
+      "recall": 0.7692307692307693,
+      "accuracy": 0.6341463414634146,
+      "n_samples": 82,
+      "n_normal": 56,
+      "n_anomalous": 26
+    },
+    "zipper": {
+      "threshold": 1551.351384207694,
+      "f1": 0.5982905982905983,
+      "precision": 0.4268292682926829,
+      "recall": 1.0,
+      "accuracy": 0.43373493975903615,
+      "n_samples": 83,
+      "n_normal": 48,
+      "n_anomalous": 35
+    }
+  }
+}
