@@ -241,3 +241,33 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+# ============================================================================
+# LaTeX Generated Files (Report)
+# ============================================================================
+# Auxiliary files
+*.aux
+*.out
+*.toc
+*.toa
+*.lot
+*.lof
+
+# Log files
+*.log
+
+# Latexmk files
+*.fls
+*.fdb_latexmk
+
+# SyncTeX
+*.synctex.gz
+*.synctex
+
+# BibTeX
+*.bbl
+*.blg
+
+# Other generated files
+*.dvi
+*.ps
+*.eps
