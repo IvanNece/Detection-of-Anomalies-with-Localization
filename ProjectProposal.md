@@ -199,3 +199,9 @@ All metrics are reported **per class** (hazelnut, carpet, zipper) and as **macro
 - **Defard et al.** – Padim: a Patch Distribution Modeling Framework for Anomaly Detection and Localization. *arXiv preprint arXiv:2106.08265*, 2021.
 
 - **Bergmann et al.** – The MVTec AD 2 Dataset: Advanced Scenarios for Unsupervised Anomaly Detection. *arXiv preprint arXiv:2503.21622*, 2025. [https://arxiv.org/abs/2503.21622](https://arxiv.org/abs/2503.21622)
+
+- **Wang et al.** – Tent: Fully Test-Time Adaptation by Entropy Minimization. *International Conference on Learning Representations (ICLR)*, 2021.
+
+- **Guo et al.** – On Calibration of Modern Neural Networks. *International Conference on Machine Learning (ICML)*, 2017.
+
+- **Niculescu-Mizil & Caruana** – Predicting Good Probabilities with Supervised Learning. *International Conference on Machine Learning (ICML)*, 2005.

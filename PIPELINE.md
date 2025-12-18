@@ -363,19 +363,32 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 
 ### **PHASE 6: Domain Shift - No Adaptation**
 
-#### Step 6.1: Evaluation on Test-Shift without Adaptation (Notebook 09)
-- [ ] Use models trained on Train-clean
-- [ ] Use thresholds calibrated on Val-clean (same as PHASE 5)
-- [ ] Predict on Test-shift
+#### Step 6.1: Evaluation on Test-Shift without ANY Adaptation (Notebook 07)
+- [x] Use models trained on Train-clean
+- [x] Use thresholds calibrated on Val-clean (same as PHASE 5)
+- [x] Predict on Test-shift
+- [x] Calculate metrics
+- [x] Save in `outputs/results/shifted_no_adaptation_results.json`
+- [x] **Performance degradation analysis** compared to Test-clean
+
+#### Step 6.2: Evaluation with Threshold-Only Adaptation (Notebook 08)
+- [ ] Use models trained on Train-clean (NO retraining)
+- [ ] **RE-calibrate thresholds** on Val-shift
+  - Predict scores on Val-shift with clean-trained models
+  - Find threshold maximizing F1 on Val-shift
+  - Save in `outputs/thresholds/shift_threshold_only.json`
+- [ ] Apply new thresholds to Test-shift predictions
 - [ ] Calculate metrics
-- [ ] Save in `outputs/results/shift_no_adaptation_results.json`
-- [ ] **Performance degradation analysis** compared to Test-clean
+- [ ] Save in `outputs/results/shift_threshold_only_results.json`
+- [ ] **Ablation analysis**:
+  - Improvement vs Step 6.1 (threshold contribution)
+  - Remaining gap vs PHASE 7 (model contribution)
 
 ---
 
-### **PHASE 7: Domain Shift - With Adaptation**
+### **PHASE 7: Domain Shift - With Full Adaptation**
 
-#### Step 7.1: Re-training on Train-Shift (Notebook 07, 08)
+#### Step 7.1: Re-training on Train-Shift (Notebook X)
 - [ ] **PatchCore**:
   - Rebuild memory bank using Train-shift
   - Save in `outputs/models/patchcore_{class}_shift.pkl`
@@ -383,12 +396,12 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
   - Re-fit on Train-shift
   - Save in `outputs/models/padim_{class}_shift.pkl`
 
-#### Step 7.2: Re-calibrate Thresholds on Val-Shift (Notebook 07, 08)
+#### Step 7.2: Re-calibrate Thresholds on Val-Shift (Notebook X)
 - [ ] Predict on Val-shift with new models
 - [ ] Calibrate new thresholds maximizing F1
 - [ ] Save in `outputs/thresholds/shift_thresholds.json`
 
-#### Step 7.3: Evaluation on Test-Shift with Adaptation (Notebook 09)
+#### Step 7.3: Evaluation on Test-Shift with Adaptation (Notebook X)
 - [ ] Predict with adapted models
 - [ ] Apply thresholds from Val-shift
 - [ ] Calculate metrics
@@ -570,6 +583,9 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 - **PaDiM**: Defard et al., "PaDiM: a Patch Distribution Modeling Framework for Anomaly Detection and Localization", 2021
 - **MVTec AD**: Bergmann et al., "MVTec AD — A Comprehensive Real-World Dataset for Unsupervised Anomaly Detection", CVPR 2019
 - **MVTec AD 2**: Bergmann et al., "The MVTec AD 2 Dataset: Advanced Scenarios for Unsupervised Anomaly Detection", arXiv:2503.21622, 2025. [https://arxiv.org/abs/2503.21622](https://arxiv.org/abs/2503.21622)
+- **Test-Time Adaptation**: Wang et al., "Tent: Fully Test-Time Adaptation by Entropy Minimization", ICLR 2021
+- **Calibration in Deep Learning**: Guo et al., "On Calibration of Modern Neural Networks", ICML 2017
+- **Threshold Recalibration for Domain Shift**: Niculescu-Mizil & Caruana, "Predicting Good Probabilities with Supervised Learning", ICML 2005
 
 
 
