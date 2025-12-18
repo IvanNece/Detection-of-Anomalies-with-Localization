@@ -9,6 +9,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import models
+from torchvision.models import ResNet50_Weights
 from typing import List, Dict, Tuple
 
 
@@ -41,8 +42,11 @@ class ResNet50FeatureExtractor(nn.Module):
         self.layers = layers
         self.patch_size = patch_size
         
-        # Load pre-trained ResNet-50
-        self.backbone = models.resnet50(pretrained=pretrained)
+        # Load pre-trained ResNet-50 (using updated torchvision API)
+        if pretrained:
+            self.backbone = models.resnet50(weights=ResNet50_Weights.DEFAULT)
+        else:
+            self.backbone = models.resnet50(weights=None)
         
         # Freeze all parameters - no training needed
         for param in self.backbone.parameters():
