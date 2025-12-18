@@ -88,7 +88,7 @@ class ProjectPaths:
         Get path for split file.
         
         Args:
-            domain: Domain ('clean', 'shift')
+            domain: Domain ('clean', 'shifted')
         
         Returns:
             Path to split JSON file
