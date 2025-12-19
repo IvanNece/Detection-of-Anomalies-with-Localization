@@ -593,9 +593,6 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 - **PaDiM**: Defard et al., "PaDiM: a Patch Distribution Modeling Framework for Anomaly Detection and Localization", 2021
 - **MVTec AD**: Bergmann et al., "MVTec AD — A Comprehensive Real-World Dataset for Unsupervised Anomaly Detection", CVPR 2019
 - **MVTec AD 2**: Bergmann et al., "The MVTec AD 2 Dataset: Advanced Scenarios for Unsupervised Anomaly Detection", arXiv:2503.21622, 2025. [https://arxiv.org/abs/2503.21622](https://arxiv.org/abs/2503.21622)
-- **Test-Time Adaptation**: Wang et al., "Tent: Fully Test-Time Adaptation by Entropy Minimization", ICLR 2021
-- **Calibration in Deep Learning**: Guo et al., "On Calibration of Modern Neural Networks", ICML 2017
-- **Threshold Recalibration for Domain Shift**: Niculescu-Mizil & Caruana, "Predicting Good Probabilities with Supervised Learning", ICML 2005
 - **You et al.** – UniAD: A Unified Real World Anomaly Detection Benchmark. *Conference on Computer Vision and Pattern Recognition (CVPR)*, 2022.
 
 
