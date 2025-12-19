@@ -415,15 +415,15 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 ### **PHASE 8: Global Model (Unified Training)**
 
 #### Step 8.1: Training Global Model (Notebook 10)
-- [ ] **Data Prep**: Merge standard training splits from all classes into a single `global_train` set.
-- [ ] **Training**:
+- [x] **Data Prep**: Merge standard training splits from all classes into a single `global_train` set.
+- [x] **Training**:
     - Train a single PatchCore model on `global_train` (coreset 5%).
     - Train a single PaDiM model on `global_train`.
     - Save models as `patchcore_global` and `padim_global`.
 
 #### Step 8.2: Evaluation of Global Model
-- [ ] Evaluate on Test-Clean for each class separately (using the same Global Model).
-- [ ] **Analysis**:
+- [x] Evaluate on Test-Clean for each class separately (using the same Global Model).
+- [x] **Analysis**:
     - Quantify the performance gap (F1/AUROC) vs. Per-Class models.
     - Test the hypothesis from [You et al., 2022] regarding "identical shortcut" and distribution complexity.
     - Visualize if anomalies in one class (e.g., Hazelnut cracks) are mistaken for normal features from another class (e.g., Carpet texture).
