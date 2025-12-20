@@ -16,6 +16,6 @@ EXPLORATORY DATA ANALYSIS REPORT
 
 3. DEFECT TYPE DIVERSITY
 ----------------------------------------
-  Hazelnut  : 4 defect types - hole, cut, print, crack
-  Carpet    : 5 defect types - cut, color, hole, metal_contamination, thread
-  Zipper    : 7 defect types - combined, fabric_border, broken_teeth, fabric_interior, rough
+  Hazelnut  : 4 defect types - print, hole, crack, cut
+  Carpet    : 5 defect types - hole, metal_contamination, thread, cut, color
+  Zipper    : 7 defect types - split_teeth, rough, squeezed_teeth, combined, broken_teeth

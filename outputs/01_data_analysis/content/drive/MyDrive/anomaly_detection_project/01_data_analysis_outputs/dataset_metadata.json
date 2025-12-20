@@ -13,34 +13,34 @@
       "normal": 431,
       "anomalous": 70,
       "defect_types": [
-        "hole",
-        "cut",
         "print",
-        "crack"
+        "hole",
+        "crack",
+        "cut"
       ]
     },
     "carpet": {
       "normal": 308,
       "anomalous": 89,
       "defect_types": [
-        "cut",
-        "color",
         "hole",
         "metal_contamination",
-        "thread"
+        "thread",
+        "cut",
+        "color"
       ]
     },
     "zipper": {
       "normal": 272,
       "anomalous": 119,
       "defect_types": [
-        "combined",
-        "fabric_border",
-        "broken_teeth",
-        "fabric_interior",
+        "split_teeth",
         "rough",
         "squeezed_teeth",
-        "split_teeth"
+        "combined",
+        "broken_teeth",
+        "fabric_interior",
+        "fabric_border"
       ]
     }
   }
