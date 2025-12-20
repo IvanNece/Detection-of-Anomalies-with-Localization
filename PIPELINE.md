@@ -457,13 +457,13 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 
 ### **PHASE 9: Error Analysis & Results Visualization**
 
-#### Step 9.1: Error Analysis (Notebook 10)
+#### Step 9.1: Error Analysis 
 - [ ] `src/evaluation/error_analysis.py`:
   - Identify failure cases (FP, FN)
   - Analyze common patterns (e.g., small defects, occlusions)
   - Detailed confusion matrices per defect type
 
-#### Step 9.2: Comparative Analysis (Notebook 10)
+#### Step 9.2: Comparative Analysis 
 - [ ] Comparative tables:
   - PatchCore vs PaDiM
   - Clean vs Shift (no-adapt) vs Shift (adapt)
@@ -474,7 +474,7 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
   - Comparison heatmap
   - Multiple ROC curves
 
-#### Step 9.3: Ablation Studies (Notebook 10)
+#### Step 9.3: Ablation Studies 
 - [ ] **PatchCore**:
   - Vary coreset fraction (1%, 5%, 10%)
   - Vary backbone layers
