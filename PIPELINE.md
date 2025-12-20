@@ -455,33 +455,157 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 
 ---
 
-### **PHASE 9: Error Analysis & Results Visualization**
+### **PHASE 9: Error Analysis, Comparative Analysis & Ablation Studies**
 
-#### Step 9.1: Error Analysis 
-- [ ] `src/evaluation/error_analysis.py`:
-  - Identify failure cases (FP, FN)
-  - Analyze common patterns (e.g., small defects, occlusions)
-  - Detailed confusion matrices per defect type
+This phase contains all the analyses required for the final report, organized into structured steps.
 
-#### Step 9.2: Comparative Analysis 
-- [ ] Comparative tables:
-  - PatchCore vs PaDiM
-  - Clean vs Shift (no-adapt) vs Shift (adapt)
-  - Per-class performance
-- [ ] Plots:
-  - Bar plots of metrics per class
-  - Scatter plots AUROC image vs pixel
-  - Comparison heatmap
-  - Multiple ROC curves
+#### Step 9.1: Error Analysis
 
-#### Step 9.3: Ablation Studies 
-- [ ] **PatchCore**:
-  - Vary coreset fraction (1%, 5%, 10%)
-  - Vary backbone layers
-  - Vary aggregation method (max, top-k)
-- [ ] **Domain Shift**:
-  - Impact of individual transformations (photometric only, geometric only)
-  - Transformation severity levels
+Qualitative analysis to understand **WHY** the models fail.
+
+- [ ] **False Positives (FP) Analysis**:
+  - Identify NORMAL images predicted as ANOMALOUS
+  - Analyze visual patterns that confuse the model (reflections, unusual but normal textures)
+  - Visualize FP cases with heatmap overlay
+  
+- [ ] **False Negatives (FN) Analysis**:
+  - Identify ANOMALOUS images predicted as NORMAL
+  - Analyze defect characteristics: size, location, similarity to normal patterns
+  - Are small defects missed? Are border defects harder to detect?
+
+- [ ] **Confusion Matrix per Defect Type**:
+  - For each class (Hazelnut, Carpet, Zipper), MVTec AD has multiple defect types
+  - Create breakdown: which defect types are detected well vs poorly?
+  - Example: Hazelnut → {crack, cut, hole, print} detection rates
+
+- [ ] **Borderline Cases Visualization**:
+  - Show images with scores closest to threshold
+  - Compare predicted heatmap vs ground truth mask
+  - Top-K best/worst predictions with overlay
+
+---
+
+#### Step 9.2: Comparative Analysis
+
+Quantitative analysis with tables and visualizations.
+
+##### **9.2.1 Comparative Tables**
+
+- [ ] **Method Comparison (PatchCore vs PaDiM)**:
+  | Metric | PatchCore | PaDiM | Δ |
+  |--------|-----------|-------|---|
+  | AUROC  | ... | ... | ... |
+  | F1     | ... | ... | ... |
+  | Pixel AUROC | ... | ... | ... |
+  | PRO    | ... | ... | ... |
+
+- [ ] **Domain Comparison (All Scenarios)**:
+  | Scenario | PatchCore AUROC | PaDiM AUROC | Notes |
+  |----------|-----------------|-------------|-------|
+  | Test-Clean | ... | ... | Baseline |
+  | Test-Shift (No Adaptation) | ... | ... | Degradation |
+  | Test-Shift (Threshold-Only) | ... | ... | Partial recovery |
+  | Test-Shift (Full Adaptation) | ... | ... | Full recovery |
+
+- [ ] **Per-Class Breakdown**:
+  - Separate tables for Hazelnut, Carpet, Zipper
+  - Macro-average across classes
+
+- [ ] **Global Model vs Per-Class Models**:
+  | Setting | Hazelnut F1 | Carpet F1 | Zipper F1 | Macro F1 |
+  |---------|-------------|-----------|-----------|----------|
+  | Per-Class Models | ... | ... | ... | ... |
+  | Global Model | ... | ... | ... | ... |
+  | Δ (Gap) | ... | ... | ... | ... |
+
+##### **9.2.2 Visualization Plots**
+
+- [ ] **Bar Plots**: Metrics per class and method (grouped bars)
+- [ ] **ROC Curves**: Multiple curves overlaid (Clean vs Shift scenarios)
+- [ ] **Precision-Recall Curves**: For imbalanced evaluation
+- [ ] **Heatmap Matrix**: [Method × Class × Domain] with F1 scores
+- [ ] **Scatter Plot**: Image AUROC vs Pixel AUROC for each configuration
+
+---
+
+#### Step 9.3: Ablation Studies
+
+Systematic experiments to understand the contribution of each component.
+
+##### **9.3.1 Coreset Fraction Ablation (PatchCore)**
+
+Test different coreset sampling ratios to understand the memory-performance trade-off.
+
+| Coreset Ratio | Description | Expected Trade-off |
+|---------------|-------------|-------------------|
+| **1%** | Minimal memory bank | ⚡ Fast, 💾 Low memory, ⚠️ Potential underfitting |
+| **5%** | Default (current) | ⚖️ Balanced |
+| **10%** | Large memory bank | 🎯 Better coverage, 🐌 Slower, 💾 More memory |
+
+- [ ] Train 3 PatchCore models with `coreset_ratio ∈ {0.01, 0.05, 0.10}`
+- [ ] Evaluate on Test-Clean for each class
+- [ ] Record: AUROC, F1, Training Time, Memory Bank Size (MB)
+- [ ] Create plot: Coreset % vs AUROC (with error bars if possible)
+
+**Output Table:**
+| Coreset | AUROC | F1 | Train Time | Memory (MB) |
+|---------|-------|-----|------------|-------------|
+| 1% | ... | ... | ... | ... |
+| 5% | ... | ... | ... | ... |
+| 10% | ... | ... | ... | ... |
+
+---
+
+##### **9.3.2 Aggregation Method Ablation (PatchCore)**
+
+Test different methods to aggregate patch-level scores into image-level scores.
+
+| Method | Formula | Description |
+|--------|---------|-------------|
+| **Max** (default) | `score = max(patch_scores)` | Sensitive to single defects, but also to noise |
+| **Top-K Percentile** | `score = percentile(patch_scores, k)` | More robust, less sensitive to outliers |
+
+- [ ] Implement aggregation variants in prediction pipeline
+- [ ] Test with `k ∈ {90, 95, 99}` percentiles
+- [ ] Evaluate on Test-Clean
+- [ ] Compare: Which method works best for small vs large defects?
+
+**Output Table:**
+| Aggregation | Hazelnut F1 | Carpet F1 | Zipper F1 | Macro F1 |
+|-------------|-------------|-----------|-----------|----------|
+| Max | ... | ... | ... | ... |
+| Top-90% | ... | ... | ... | ... |
+| Top-95% | ... | ... | ... | ... |
+| Top-99% | ... | ... | ... | ... |
+
+---
+
+##### **9.3.3 Single Transform Impact Analysis**
+
+Isolate the effect of each transformation type to understand robustness.
+
+Instead of applying ALL transformations together, test ONE type at a time.
+
+| Experiment | Transforms Applied | What It Tests |
+|------------|-------------------|---------------|
+| **Photometric Only** | ColorJitter + Blur + Noise | Robustness to illumination/sensor changes |
+| **Geometric Only** | Rotation + Scale + Translation | Robustness to pose/viewpoint changes |
+| **Illumination Only** | Gradient lighting (spotlight) | Robustness to industrial lighting |
+| **All (default)** | Everything combined | Worst-case scenario |
+
+- [ ] Generate 3 additional shifted datasets (photometric-only, geometric-only, illumination-only)
+- [ ] Evaluate clean-trained models on each shifted version
+- [ ] Compare degradation: Which transform hurts most?
+- [ ] Hypothesis: PaDiM is more sensitive to geometric (position-dependent) than PatchCore
+
+**Output Table:**
+| Shift Type | PatchCore AUROC | PaDiM AUROC | PC Δ | PaDiM Δ |
+|------------|-----------------|-------------|------|---------|
+| Clean (baseline) | ... | ... | 0% | 0% |
+| Photometric Only | ... | ... | ...% | ...% |
+| Geometric Only | ... | ... | ...% | ...% |
+| Illumination Only | ... | ... | ...% | ...% |
+| All Combined | ... | ... | ...% | ...% |
 
 ---
 
@@ -507,61 +631,6 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 - [ ] Error analysis & failure cases
 - [ ] Critical discussion: limitations, bias, generalization
 - [ ] Future work
-
----
-
-## 📊 Required Analyses (Confirmed)
-
-### Mandatory Analyses to Implement:
-
-1. **Performance on Test-clean** (clean domain)
-   - All metrics for each class and method
-
-2. **Performance on Test-shift - No Adaptation**
-   - Same thresholds from Val-clean
-   - Performance degradation study
-
-3. **Performance on Test-shift - With Adaptation**
-   - Re-training on Train-shift + re-calibration on Val-shift
-   - Performance recovery study
-
-4. **Global Model Comparison** 
-   - Single model on pool of all classes
-   - Comparison with per-class models
-
----
-
-## 💡 Proposed Additional Analyses
-
-### A. Interpretability and Explainability Analysis
-- **Feature Attention Maps**: visualize which backbone regions contribute most
-- **T-SNE/UMAP of Patch Embeddings**: visualize normal vs anomalous clustering in latent space
-- **Feature Importance Analysis**: which ResNet layers are most discriminative
-
-### B. Advanced Robustness Analysis
-- **Severity Levels**: test shifts at different intensities (mild, moderate, severe)
-- **Single-Transformation Analysis**: isolate the effect of each transformation (rotation, noise, blur, etc.)
-- **Cross-Shift Generalization**: train on shift A, test on shift B
-
-### C. Statistical Analysis and Confidence
-- **Bootstrap Confidence Intervals**: confidence intervals for metrics
-- **Statistical Significance Tests**: t-test between PatchCore and PaDiM
-- **Per-Defect Type Performance**: breakdown by specific defect type (crack, hole, etc.)
-
-### D. Efficiency and Scalability
-- **Inference Time Analysis**: latency per image (important for industrial setting)
-- **Memory Bank Size vs Performance Trade-off**: coreset fraction vs AUROC curve
-- **Feature Dimension Reduction**: PCA/Random Projection impact
-
-### E. Advanced Failure Mode Analysis
-- **Difficult Cases Study**: in-depth analysis of cases where both methods fail
-- **Defect Size Sensitivity**: performance vs defect size (small, medium, large)
-- **Border Effects**: performance on border vs central defects
-
-### F. Alternative Threshold Comparison
-- **Multiple Threshold Strategies**: max, mean, percentile-based
-- **Per-Region Threshold**: adaptive thresholds for different image zones
-- **Calibration Curves**: reliability diagrams for confidence scores
 
 ---
 
