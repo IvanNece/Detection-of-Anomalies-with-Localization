@@ -410,9 +410,28 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 
 ---
 
-### **PHASE 8: Global Model**
+### **PHASE 8: Global Model (Model-Unified Setting)**
 
-### **PHASE 8: Global Model (Unified Training)**
+> ⚠️ **Terminological Clarification** (see [Heo & Kang, 2025]):
+> 
+> In multi-class anomaly detection literature, there are two distinct settings:
+> 
+> | Setting | Training | Inference | Threshold |
+> |---------|----------|-----------|-----------|
+> | **Per-Class** | Separate model per class | Class known | Per-class threshold |
+> | **Model-Unified** | Single model for all classes | Class known | Per-class threshold |
+> | **Absolute-Unified** | Single model for all classes | Class UNKNOWN | Single global threshold |
+> 
+> **Our Implementation**: We use the **Model-Unified** setting:
+> - ✅ **ONE model** trained on merged data from all 3 classes
+> - ✅ **Per-class thresholds** calibrated on each class's validation set
+> - ✅ At inference, we **know the class** and apply the corresponding threshold
+> 
+> This is NOT "Absolute-Unified" (which would require a single threshold without class knowledge).
+> The Model-Unified setting is still valuable for demonstrating:
+> 1. The "identical shortcut" problem [You et al., 2022]
+> 2. The performance gap vs. per-class models
+> 3. Feature space contamination in shared representations
 
 #### Step 8.1: Training Global Model (Notebook 10)
 - [x] **Data Prep**: Merge standard training splits from all classes into a single `global_train` set.
@@ -421,12 +440,18 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
     - Train a single PaDiM model on `global_train`.
     - Save models as `patchcore_global` and `padim_global`.
 
-#### Step 8.2: Evaluation of Global Model
-- [x] Evaluate on Test-Clean for each class separately (using the same Global Model).
+#### Step 8.2: Threshold Calibration (Per-Class)
+- [x] **IMPORTANT**: Although we have ONE global model, we calibrate **separate thresholds** for each class on their respective Val-clean sets.
+- [x] This is the **Model-Unified** approach (not Absolute-Unified).
+- [x] Rationale: Allows fair comparison with per-class models by optimizing thresholds per class.
+
+#### Step 8.3: Evaluation of Global Model
+- [x] Evaluate on Test-Clean for each class separately (using the same Global Model + per-class thresholds).
 - [x] **Analysis**:
     - Quantify the performance gap (F1/AUROC) vs. Per-Class models.
     - Test the hypothesis from [You et al., 2022] regarding "identical shortcut" and distribution complexity.
-    - Visualize if anomalies in one class (e.g., Hazelnut cracks) are mistaken for normal features from another class (e.g., Carpet texture).
+    - Cross-class confusion analysis: Do normals from Class A trigger anomaly threshold for Class B?
+    - T-SNE visualization of feature space mixing.
 
 ---
 
@@ -593,7 +618,13 @@ Evaluated coreset ratios of 1%, 5%, and 10% on validation set:
 - **PaDiM**: Defard et al., "PaDiM: a Patch Distribution Modeling Framework for Anomaly Detection and Localization", 2021
 - **MVTec AD**: Bergmann et al., "MVTec AD — A Comprehensive Real-World Dataset for Unsupervised Anomaly Detection", CVPR 2019
 - **MVTec AD 2**: Bergmann et al., "The MVTec AD 2 Dataset: Advanced Scenarios for Unsupervised Anomaly Detection", arXiv:2503.21622, 2025. [https://arxiv.org/abs/2503.21622](https://arxiv.org/abs/2503.21622)
-- **You et al.** – UniAD: A Unified Real World Anomaly Detection Benchmark. *Conference on Computer Vision and Pattern Recognition (CVPR)*, 2022.
 
+- **CADA**: Guo J., Han H., Lu S., Zhang W., Li H. – *Absolute-Unified Multi-Class Anomaly Detection via Class-Agnostic Distribution Alignment*. arXiv:2404.00724, 2024. [https://arxiv.org/abs/2404.00724](https://arxiv.org/abs/2404.00724)
 
+### Unified / Multi-class Anomaly Detection (Related Works)
+- **HierCore (Main Paper)**: Heo J., Kang P. – *Multi-class Image Anomaly Detection for Practical Applications: Requirements and Robust Solutions*. arXiv:2508.02477, 2025. [https://arxiv.org/abs/2508.02477](https://arxiv.org/abs/2508.02477)
+
+- **UniAD**: You Z., Cui L., Shen Y., Yang K., Lu X., Zheng Y., Le X. – *A Unified Model for Multi-class Anomaly Detection*. Advances in Neural Information Processing Systems (NeurIPS), 2022. [https://arxiv.org/abs/2206.03687](https://arxiv.org/abs/2206.03687)
+
+- **OmniAL**: Zhao Y. – *OmniAL: A Unified CNN Framework for Unsupervised Anomaly Localization*. IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2023. [https://openaccess.thecvf.com/content/CVPR2023/papers/Zhao_OmniAL_A_Unified_CNN_Framework_for_Unsupervised_Anomaly_Localization_CVPR_2023_paper.pdf](https://openaccess.thecvf.com/content/CVPR2023/papers/Zhao_OmniAL_A_Unified_CNN_Framework_for_Unsupervised_Anomaly_Localization_CVPR_2023_paper.pdf)
 

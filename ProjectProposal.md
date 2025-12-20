@@ -202,3 +202,13 @@ All metrics are reported **per class** (hazelnut, carpet, zipper) and as **macro
 - **Bergmann et al.** – The MVTec AD 2 Dataset: Advanced Scenarios for Unsupervised Anomaly Detection. *arXiv preprint arXiv:2503.21622*, 2025. [https://arxiv.org/abs/2503.21622](https://arxiv.org/abs/2503.21622)
 
 - **You et al.** – UniAD: A Unified Real World Anomaly Detection Benchmark. *Conference on Computer Vision and Pattern Recognition (CVPR)*, 2022.
+
+### Unified / Multi-class Anomaly Detection (Related Works)
+
+- **Heo J., Kang P.** – Multi-class Image Anomaly Detection for Practical Applications: Requirements and Robust Solutions. *arXiv preprint arXiv:2508.02477*, 2025. [https://arxiv.org/abs/2508.02477](https://arxiv.org/abs/2508.02477) *(Main reference for unified model)*
+
+- **Guo J., Han H., Lu S., Zhang W., Li H.** – Absolute-Unified Multi-Class Anomaly Detection via Class-Agnostic Distribution Alignment. *arXiv preprint arXiv:2404.00724*, 2024. [https://arxiv.org/abs/2404.00724](https://arxiv.org/abs/2404.00724)
+
+- **Zhao Y.** – OmniAL: A Unified CNN Framework for Unsupervised Anomaly Localization. *IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)*, 2023. [https://openaccess.thecvf.com/content/CVPR2023/papers/Zhao_OmniAL_A_Unified_CNN_Framework_for_Unsupervised_Anomaly_Localization_CVPR_2023_paper.pdf](https://openaccess.thecvf.com/content/CVPR2023/papers/Zhao_OmniAL_A_Unified_CNN_Framework_for_Unsupervised_Anomaly_Localization_CVPR_2023_paper.pdf)
+
+- **You Z., Cui L., Shen Y., Yang K., Lu X., Zheng Y., Le X.** – A Unified Model for Multi-class Anomaly Detection. *Advances in Neural Information Processing Systems (NeurIPS)*, 2022. [https://arxiv.org/abs/2206.03687](https://arxiv.org/abs/2206.03687)
