@@ -4,8 +4,6 @@ PyTorch Dataset class for MVTec AD.
 This module provides the dataset implementation for loading MVTec AD images
 with proper handling of normal/anomalous images and ground truth masks.
 """
-
-from pathlib import Path
 from typing import Callable, List, Optional, Tuple
 
 import torch
@@ -48,19 +46,6 @@ class MVTecDataset(Dataset):
             
         Raises:
             ValueError: If lists have different lengths or invalid phase
-            
-        Example:
-            >>> from src.data.dataset import MVTecDataset
-            >>> from src.data.transforms import get_clean_transforms
-            >>> 
-            >>> transform = get_clean_transforms()
-            >>> dataset = MVTecDataset(
-            ...     images=['path/to/img1.png', 'path/to/img2.png'],
-            ...     masks=[None, 'path/to/mask2.png'],
-            ...     labels=[0, 1],
-            ...     transform=transform,
-            ...     phase='train'
-            ... )
         """
         # Validate inputs
         if not (len(images) == len(masks) == len(labels)):
@@ -170,7 +155,7 @@ class MVTecDataset(Dataset):
         """
         Create dataset from split dictionary.
         
-        Convenience constructor for creating dataset directly from
+        Constructor for creating dataset directly from
         the split dictionary returned by splitter functions.
         
         Args:
@@ -180,15 +165,6 @@ class MVTecDataset(Dataset):
             
         Returns:
             MVTecDataset instance
-            
-        Example:
-            >>> from src.data.splitter import load_splits
-            >>> splits = load_splits(Path('data/processed/clean_splits.json'))
-            >>> train_dataset = MVTecDataset.from_split(
-            ...     splits['hazelnut']['train'],
-            ...     transform=get_clean_transforms(),
-            ...     phase='train'
-            ... )
         """
         return cls(
             images=split_dict['images'],

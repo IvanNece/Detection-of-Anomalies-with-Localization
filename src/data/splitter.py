@@ -8,7 +8,7 @@ for the clean domain, following the project's split strategy.
 import json
 import random
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import numpy as np
 
@@ -40,12 +40,6 @@ def create_clean_split(
         - 'images': list of image paths (as strings)
         - 'masks': list of mask paths (None for normal images)
         - 'labels': list of labels (0=normal, 1=anomalous)
-        
-    Example:
-        >>> split = create_clean_split('hazelnut', Path('data/raw/mvtec_ad'))
-        >>> print(len(split['train']['images']))  # ~313 for hazelnut
-        >>> print(len(split['val']['images']))    # ~99 for hazelnut
-        >>> print(len(split['test']['images']))   # ~89 for hazelnut
     """
     # Set random seed for reproducibility
     random.seed(seed)
@@ -192,13 +186,6 @@ def create_all_clean_splits(
         
     Returns:
         Dictionary mapping class names to their splits
-        
-    Example:
-        >>> splits = create_all_clean_splits(
-        ...     Path('data/raw/mvtec_ad'),
-        ...     ['hazelnut', 'carpet', 'zipper']
-        ... )
-        >>> print(splits.keys())  # dict_keys(['hazelnut', 'carpet', 'zipper'])
     """
     all_splits = {}
     
@@ -239,10 +226,6 @@ def save_splits(
         splits: Dictionary of splits (from create_all_clean_splits)
         output_path: Path to output JSON file
         metadata: Optional metadata to include (seed, date, config, etc.)
-        
-    Example:
-        >>> splits = create_all_clean_splits(...)
-        >>> save_splits(splits, Path('data/processed/clean_splits.json'))
     """
     output_path.parent.mkdir(parents=True, exist_ok=True)
     

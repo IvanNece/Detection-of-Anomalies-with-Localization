@@ -9,13 +9,11 @@ import random
 from typing import Optional, Tuple, Dict, Any
 
 import torch
-import torchvision.transforms as T
 from torchvision.transforms import functional as TF
-from PIL import Image, ImageFilter
+from PIL import Image
 import numpy as np
 import cv2
 import albumentations as A
-from albumentations.pytorch import ToTensorV2
 
 
 class MVTecTransform:
@@ -65,14 +63,14 @@ class MVTecTransform:
 
 class CleanDomainTransform(MVTecTransform):
     """
-    Transform pipeline for clean domain (Phase 1).
+    Transform pipeline for clean domain.
     
     Applies only basic preprocessing:
     - Resize to target size
     - Convert to tensor
     - Normalize with ImageNet statistics
     
-    No augmentation applied (deterministic preprocessing).
+    No augmentation applied.
     """
     
     def __call__(
@@ -117,7 +115,7 @@ def get_clean_transforms(
     """
     Factory function to get clean domain transforms.
     
-    This is the transform used for Phase 1 (clean domain) for all splits:
+    This is the transform used for clean domain for all splits:
     train, validation, and test.
     
     Args:
@@ -127,11 +125,6 @@ def get_clean_transforms(
         
     Returns:
         CleanDomainTransform instance
-        
-    Example:
-        >>> from src.data.transforms import get_clean_transforms
-        >>> transform = get_clean_transforms()
-        >>> image_tensor, mask_tensor = transform(pil_image, pil_mask)
     """
     return CleanDomainTransform(
         image_size=image_size,
