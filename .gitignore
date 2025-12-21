@@ -8,11 +8,10 @@ data/shifted/
 !data/processed/
 
 # ============================================================================
-# PROJECT-SPECIFIC: Models and Cache (large files)
+# PROJECT-SPECIFIC: Models and Cache
 # ============================================================================
-outputs/models/*.pt
-outputs/models/*.pkl
-outputs/models/*.h5
+# NOTE: .npy, .pt, .pth files are tracked via Git LFS (see .gitattributes)
+# Only exclude features cache
 outputs/features/
 
 # Keep thresholds and results (small JSON/CSV)
