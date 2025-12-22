@@ -1,0 +1,50 @@
+{
+  "hazelnut": {
+    "carpet": {
+      "n_samples": 224,
+      "false_positives": 0,
+      "fp_rate": 0.0,
+      "mean_score": 114.81880950927734,
+      "max_score": 135.2587890625
+    },
+    "zipper": {
+      "n_samples": 192,
+      "false_positives": 0,
+      "fp_rate": 0.0,
+      "mean_score": 111.55054473876953,
+      "max_score": 132.3544921875
+    }
+  },
+  "carpet": {
+    "hazelnut": {
+      "n_samples": 312,
+      "false_positives": 0,
+      "fp_rate": 0.0,
+      "mean_score": 123.18191528320312,
+      "max_score": 151.3505859375
+    },
+    "zipper": {
+      "n_samples": 192,
+      "false_positives": 0,
+      "fp_rate": 0.0,
+      "mean_score": 111.55054473876953,
+      "max_score": 132.3544921875
+    }
+  },
+  "zipper": {
+    "hazelnut": {
+      "n_samples": 312,
+      "false_positives": 0,
+      "fp_rate": 0.0,
+      "mean_score": 123.18191528320312,
+      "max_score": 151.3505859375
+    },
+    "carpet": {
+      "n_samples": 224,
+      "false_positives": 0,
+      "fp_rate": 0.0,
+      "mean_score": 114.81880950927734,
+      "max_score": 135.2587890625
+    }
+  }
+}
