@@ -532,80 +532,38 @@ Quantitative analysis with tables and visualizations.
 
 Systematic experiments to understand the contribution of each component.
 
-##### **9.3.1 Coreset Fraction Ablation (PatchCore)**
+##### **9.3.1 Coreset Ratio Ablation (PatchCore)**
 
-Test different coreset sampling ratios to understand the memory-performance trade-off.
+Ablation study to understand the memory-performance trade-off of coreset size on the shifted domain.
+
+**Objective**: Evaluate how different coreset ratios affect model performance when training and testing on the same (shifted) domain, isolating the effect of coreset size without domain shift confounding.
 
 | Coreset Ratio | Description | Expected Trade-off |
 |---------------|-------------|-------------------|
 | **1%** | Minimal memory bank | ⚡ Fast, 💾 Low memory, ⚠️ Potential underfitting |
-| **5%** | Default (current) | ⚖️ Balanced |
+| **5%** | Default (baseline) | ⚖️ Balanced |
 | **10%** | Large memory bank | 🎯 Better coverage, 🐌 Slower, 💾 More memory |
 
-- [ ] Train 3 PatchCore models with `coreset_ratio ∈ {0.01, 0.05, 0.10}`
-- [ ] Evaluate on Test-Clean for each class
-- [ ] Record: AUROC, F1, Training Time, Memory Bank Size (MB)
-- [ ] Create plot: Coreset % vs AUROC (with error bars if possible)
+**Experimental Setup:**
+- [ ] Train 3 PatchCore models on **Train-Shifted** with `coreset_ratio ∈ {0.01, 0.05, 0.10}`
+- [ ] Calibrate thresholds on **Val-Shifted** for each model
+- [ ] Evaluate each model on **Test-Shifted**
+- [ ] Record: AUROC, F1, Training Time, Memory Bank Size (patches)
 
 **Output Table:**
-| Coreset | AUROC | F1 | Train Time | Memory (MB) |
-|---------|-------|-----|------------|-------------|
-| 1% | ... | ... | ... | ... |
-| 5% | ... | ... | ... | ... |
-| 10% | ... | ... | ... | ... |
+| Coreset | AUROC | F1 | Δ from Baseline (5%) | Train Time | Memory Bank Size |
+|---------|-------|-----|----------------------|------------|------------------|
+| 1% | ... | ... | ...% | ... | ... patches |
+| 5% (baseline) | ... | ... | 0% | ... | ... patches |
+| 10% | ... | ... | ...% | ... | ... patches |
 
----
+**Analysis Questions:**
+- Does a larger coreset (10%) significantly improve detection performance?
+- Is the improvement worth the additional memory and computation cost?
+- What is the optimal trade-off for production deployment?
 
-##### **9.3.2 Aggregation Method Ablation (PatchCore)**
-
-Test different methods to aggregate patch-level scores into image-level scores.
-
-| Method | Formula | Description |
-|--------|---------|-------------|
-| **Max** (default) | `score = max(patch_scores)` | Sensitive to single defects, but also to noise |
-| **Top-K Percentile** | `score = percentile(patch_scores, k)` | More robust, less sensitive to outliers |
-
-- [ ] Implement aggregation variants in prediction pipeline
-- [ ] Test with `k ∈ {90, 95, 99}` percentiles
-- [ ] Evaluate on Test-Clean
-- [ ] Compare: Which method works best for small vs large defects?
-
-**Output Table:**
-| Aggregation | Hazelnut F1 | Carpet F1 | Zipper F1 | Macro F1 |
-|-------------|-------------|-----------|-----------|----------|
-| Max | ... | ... | ... | ... |
-| Top-90% | ... | ... | ... | ... |
-| Top-95% | ... | ... | ... | ... |
-| Top-99% | ... | ... | ... | ... |
-
----
-
-##### **9.3.3 Single Transform Impact Analysis**
-
-Isolate the effect of each transformation type to understand robustness.
-
-Instead of applying ALL transformations together, test ONE type at a time.
-
-| Experiment | Transforms Applied | What It Tests |
-|------------|-------------------|---------------|
-| **Photometric Only** | ColorJitter + Blur + Noise | Robustness to illumination/sensor changes |
-| **Geometric Only** | Rotation + Scale + Translation | Robustness to pose/viewpoint changes |
-| **Illumination Only** | Gradient lighting (spotlight) | Robustness to industrial lighting |
-| **All (default)** | Everything combined | Worst-case scenario |
-
-- [ ] Generate 3 additional shifted datasets (photometric-only, geometric-only, illumination-only)
-- [ ] Evaluate clean-trained models on each shifted version
-- [ ] Compare degradation: Which transform hurts most?
-- [ ] Hypothesis: PaDiM is more sensitive to geometric (position-dependent) than PatchCore
-
-**Output Table:**
-| Shift Type | PatchCore AUROC | PaDiM AUROC | PC Δ | PaDiM Δ |
-|------------|-----------------|-------------|------|---------|
-| Clean (baseline) | ... | ... | 0% | 0% |
-| Photometric Only | ... | ... | ...% | ...% |
-| Geometric Only | ... | ... | ...% | ...% |
-| Illumination Only | ... | ... | ...% | ...% |
-| All Combined | ... | ... | ...% | ...% |
+**Expected Conclusion Format:**
+> *"Increasing the coreset ratio from 5% to 10% improves AUROC from X to Y (+Z%), with a trade-off of N% increase in memory usage and M% slower training time. The 5% ratio provides the best balance between performance and efficiency for this application."*
 
 ---
 
