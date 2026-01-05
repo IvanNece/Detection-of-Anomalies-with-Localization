@@ -251,9 +251,6 @@ def load_splits(splits_path: Path) -> Dict[str, Dict[str, Dict[str, List]]]:
     Returns:
         Dictionary of splits
         
-    Example:
-        >>> splits = load_splits(Path('data/processed/clean_splits.json'))
-        >>> train_images = splits['hazelnut']['train']['images']
     """
     with open(splits_path, 'r') as f:
         data = json.load(f)

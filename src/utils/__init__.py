@@ -3,6 +3,7 @@
 from .config import Config, load_config
 from .paths import ProjectPaths, paths
 from .reproducibility import set_seed
+from .utils import denormalize
 
 __all__ = [
     'Config',
@@ -10,4 +11,5 @@ __all__ = [
     'ProjectPaths',
     'paths',
     'set_seed',
+    'denormalize',
 ]

@@ -135,7 +135,7 @@ def get_clean_transforms(
 
 class ShiftDomainTransform:
     """
-    Transform pipeline for shifted domain (Phase 2).
+    Transform pipeline for shifted domain.
     
     Applies realistic domain shift transformations to simulate variations in
     acquisition conditions (illumination, sensor noise, geometric perturbations).
@@ -171,13 +171,7 @@ class ShiftDomainTransform:
             geometric_config: Dict with rotation_range, scale_range, etc.
             photometric_config: Dict with brightness_range, blur params, etc.
             seed: Random seed for reproducibility (optional)
-            
-        Example:
-            >>> transform = ShiftDomainTransform(
-            ...     geometric_config={'rotation_range': [-10, 10]},
-            ...     photometric_config={'brightness_range': [0.7, 1.3]},
-            ...     seed=42
-            ... )
+
         """
         self.image_size = image_size
         self.normalize_mean = normalize_mean
@@ -513,9 +507,6 @@ class ShiftDomainTransform:
             - image: (3, H, W) normalized float tensor
             - mask: (1, H, W) binary float tensor [0, 1] or None
             
-        Example:
-            >>> transform = ShiftDomainTransform(seed=42)
-            >>> image_shifted, mask_shifted = transform(pil_image, pil_mask)
         """
         # Set seed for reproducibility if provided
         # When seed is set, sample transform parameters ONCE to ensure reproducibility
@@ -652,7 +643,7 @@ def get_shift_transforms(
     """
     Factory function to get shift domain transforms.
     
-    This is the transform used for Phase 2 (domain shift) to simulate
+    This is the transform used to simulate
     realistic variations in acquisition conditions.
     
     Args:
@@ -665,19 +656,6 @@ def get_shift_transforms(
         
     Returns:
         ShiftDomainTransform instance
-        
-    Example:
-        >>> from src.data.transforms import get_shift_transforms
-        >>> from src.utils.config import Config
-        >>> 
-        >>> config = Config.load('configs/experiment_config.yaml')
-        >>> transform = get_shift_transforms(
-        ...     image_size=config.dataset.image_size,
-        ...     geometric_config=config.domain_shift.geometric,
-        ...     photometric_config=config.domain_shift.photometric,
-        ...     seed=config.seed
-        ... )
-        >>> image_shifted, mask_shifted = transform(pil_image, pil_mask)
     """
     return ShiftDomainTransform(
         image_size=image_size,
