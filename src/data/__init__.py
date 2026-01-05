@@ -7,7 +7,7 @@ This package provides utilities for:
 - Image transformations (transforms.py)
 """
 
-from .dataset import MVTecDataset, create_dataloaders
+from .dataset import MVTecDataset
 from .splitter import (
     create_clean_split,
     create_all_clean_splits,
@@ -25,7 +25,6 @@ from .transforms import (
 __all__ = [
     # Dataset
     'MVTecDataset',
-    'create_dataloaders',
     # Splitter
     'create_clean_split',
     'create_all_clean_splits',

@@ -1,21 +1,9 @@
 """
-PaDiM (Probabilistic Anomaly Detection with Multi-scale features) wrapper.
+PaDiM wrapper.
 
 This module provides a clean interface for anomalib's PaDiM implementation,
 maintaining consistency with our project structure (PatchCore interface) and 
 enabling easy comparison between methods.
-
-PaDiM Overview:
-- Extracts multi-scale features from pre-trained CNN (ResNet)
-- Models normal appearance using multivariate Gaussian distributions per spatial location
-- Computes Mahalanobis distance for anomaly scoring
-- No gradient-based training required (statistical approach like PatchCore)
-
-Key Implementation Notes:
-- Uses anomalib's native PadimModel implementation
-- Interface aligned with PatchCore for fair comparison
-- Batch processing for efficiency
-- Consistent save/load format
 
 Reference:
     Defard et al. "PaDiM: a Patch Distribution Modeling Framework for Anomaly Detection
@@ -44,24 +32,7 @@ except ImportError:
 class PadimWrapper(nn.Module):
     """
     Wrapper for anomalib PaDiM with PatchCore-compatible interface.
-    
-    This wrapper provides:
-    - Consistent interface with PatchCore for fair comparison
-    - Batch processing capabilities
-    - Easy configuration from experiment_config.yaml
-    - Training and inference methods aligned with our pipeline
-    - Model persistence (save/load)
-    
-    IMPORTANT: This implementation uses anomalib's native methods for:
-    - Gaussian fitting (MultiVariateGaussian)
-    - Anomaly map generation (AnomalyMapGenerator with Mahalanobis distance)
-    - Feature extraction and embedding generation
-    
-    Interface Design:
-    - fit(train_loader) - train on normal samples
-    - predict(images, return_heatmaps) - batch prediction (same as PatchCore)
-    - save/load - model persistence
-    
+        
     Attributes:
         model: PadimModel (anomalib's PyTorch model)
         device: torch.device for computation
@@ -149,10 +120,6 @@ class PadimWrapper(nn.Module):
             PaDiM does NOT require gradient-based optimization.
             This is a statistical approach (like PatchCore's memory bank).
         
-        Example:
-            >>> from torch.utils.data import DataLoader
-            >>> train_loader = DataLoader(train_dataset, batch_size=32)
-            >>> model.fit(train_loader, verbose=True)
         """
         if verbose:
             print(f"\n{'='*60}")
@@ -229,11 +196,6 @@ class PadimWrapper(nn.Module):
             - image_scores: Per-image scores (B,) - higher = more anomalous
             - heatmaps: Spatial anomaly maps (B, H_out, W_out) or None
             
-        Example:
-            >>> images = torch.randn(4, 3, 224, 224)
-            >>> scores, heatmaps = model.predict(images, return_heatmaps=True)
-            >>> print(scores.shape)  # (4,)
-            >>> print(heatmaps.shape)  # (4, 224, 224)
         """
         if not self.fitted:
             raise RuntimeError("Model must be fitted before prediction. Call .fit() first.")
