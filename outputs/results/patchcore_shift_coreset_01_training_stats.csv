@@ -1,0 +1,4 @@
+,n_train_images,memory_bank_size,training_time_seconds,spatial_dims
+hazelnut,312,2446,688.54,"(28, 28)"
+carpet,224,1756,423.45,"(28, 28)"
+zipper,192,1505,318.52,"(28, 28)"

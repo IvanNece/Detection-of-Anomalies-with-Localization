@@ -1,0 +1,252 @@
+{
+  "global_model_results": {
+    "patchcore": {
+      "hazelnut": {
+        "auroc": 1.0,
+        "auprc": 1.0,
+        "f1": 1.0,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "pixel_auroc": 0.9793175026752402,
+        "pro": 0.8379538359790331
+      },
+      "carpet": {
+        "auroc": 0.967687074829932,
+        "auprc": 0.9885019070551304,
+        "f1": 0.9508196721311475,
+        "accuracy": 0.9340659340659341,
+        "precision": 0.9830508474576272,
+        "recall": 0.9206349206349206,
+        "pixel_auroc": 0.982293785035023,
+        "pro": 0.7795124098078157
+      },
+      "zipper": {
+        "auroc": 0.984375,
+        "auprc": 0.994185358711756,
+        "f1": 0.9595375722543352,
+        "accuracy": 0.9396551724137931,
+        "precision": 0.9325842696629213,
+        "recall": 0.9880952380952381,
+        "pixel_auroc": 0.9804956027709076,
+        "pro": 0.7856673593142599
+      }
+    },
+    "padim": {
+      "hazelnut": {
+        "auroc": 0.8413265306122449,
+        "auprc": 0.8370871628936891,
+        "f1": 0.7472527472527473,
+        "accuracy": 0.7415730337078652,
+        "precision": 0.8095238095238095,
+        "recall": 0.6938775510204082,
+        "pixel_auroc": 0.9568492699750912,
+        "pro": 0.8155089531997898
+      },
+      "carpet": {
+        "auroc": 0.9223356009070295,
+        "auprc": 0.970078274173763,
+        "f1": 0.8739495798319328,
+        "accuracy": 0.8351648351648352,
+        "precision": 0.9285714285714286,
+        "recall": 0.8253968253968254,
+        "pixel_auroc": 0.9597986536144891,
+        "pro": 0.5472785830292657
+      },
+      "zipper": {
+        "auroc": 0.8683035714285714,
+        "auprc": 0.9356299278842307,
+        "f1": 0.9273743016759777,
+        "accuracy": 0.8879310344827587,
+        "precision": 0.8736842105263158,
+        "recall": 0.9880952380952381,
+        "pixel_auroc": 0.8851686318566185,
+        "pro": 0.6409504660856674
+      }
+    }
+  },
+  "thresholds_global": {
+    "patchcore": {
+      "hazelnut": 400.18906004393057,
+      "carpet": 186.91817235448337,
+      "zipper": 151.66519673848654
+    },
+    "padim": {
+      "hazelnut": 41.153741138045845,
+      "carpet": 22.579695021196887,
+      "zipper": 18.109472057840847
+    }
+  },
+  "gap_analysis": {
+    "patchcore": {
+      "hazelnut": {
+        "per_class_auroc": 1.0,
+        "global_auroc": 1.0,
+        "gap": 0.0
+      },
+      "carpet": {
+        "per_class_auroc": 0.9450113378684807,
+        "global_auroc": 0.967687074829932,
+        "gap": -0.02267573696145131
+      },
+      "zipper": {
+        "per_class_auroc": 0.9888392857142857,
+        "global_auroc": 0.984375,
+        "gap": 0.004464285714285698
+      }
+    },
+    "padim": {
+      "hazelnut": {
+        "per_class_auroc": 0.9709183673469387,
+        "global_auroc": 0.8413265306122449,
+        "gap": 0.12959183673469377
+      },
+      "carpet": {
+        "per_class_auroc": 0.9586167800453514,
+        "global_auroc": 0.9223356009070295,
+        "gap": 0.03628117913832196
+      },
+      "zipper": {
+        "per_class_auroc": 0.8616071428571429,
+        "global_auroc": 0.8683035714285714,
+        "gap": -0.006696428571428492
+      }
+    }
+  },
+  "identical_shortcut_analysis": {
+    "patchcore": {
+      "hazelnut": {
+        "carpet": {
+          "n_samples": 224,
+          "false_positives": 0,
+          "fp_rate": 0.0,
+          "mean_score": 114.81880950927734,
+          "max_score": 135.2587890625
+        },
+        "zipper": {
+          "n_samples": 192,
+          "false_positives": 0,
+          "fp_rate": 0.0,
+          "mean_score": 111.55054473876953,
+          "max_score": 132.3544921875
+        }
+      },
+      "carpet": {
+        "hazelnut": {
+          "n_samples": 312,
+          "false_positives": 0,
+          "fp_rate": 0.0,
+          "mean_score": 123.18191528320312,
+          "max_score": 151.3505859375
+        },
+        "zipper": {
+          "n_samples": 192,
+          "false_positives": 0,
+          "fp_rate": 0.0,
+          "mean_score": 111.55054473876953,
+          "max_score": 132.3544921875
+        }
+      },
+      "zipper": {
+        "hazelnut": {
+          "n_samples": 312,
+          "false_positives": 0,
+          "fp_rate": 0.0,
+          "mean_score": 123.18191528320312,
+          "max_score": 151.3505859375
+        },
+        "carpet": {
+          "n_samples": 224,
+          "false_positives": 0,
+          "fp_rate": 0.0,
+          "mean_score": 114.81880950927734,
+          "max_score": 135.2587890625
+        }
+      }
+    },
+    "padim": {
+      "hazelnut": {
+        "carpet": {
+          "n_samples": 224,
+          "false_positives": 0,
+          "fp_rate": 0.0,
+          "mean_score": 14.99870491027832,
+          "max_score": 21.492929458618164
+        },
+        "zipper": {
+          "n_samples": 192,
+          "false_positives": 0,
+          "fp_rate": 0.0,
+          "mean_score": 14.066607475280762,
+          "max_score": 25.550622940063477
+        }
+      },
+      "carpet": {
+        "hazelnut": {
+          "n_samples": 312,
+          "false_positives": 21,
+          "fp_rate": 0.0673076923076923,
+          "mean_score": 18.634883880615234,
+          "max_score": 24.498668670654297
+        },
+        "zipper": {
+          "n_samples": 192,
+          "false_positives": 2,
+          "fp_rate": 0.010416666666666666,
+          "mean_score": 14.066607475280762,
+          "max_score": 25.550622940063477
+        }
+      },
+      "zipper": {
+        "hazelnut": {
+          "n_samples": 312,
+          "false_positives": 166,
+          "fp_rate": 0.532051282051282,
+          "mean_score": 18.634883880615234,
+          "max_score": 24.498668670654297
+        },
+        "carpet": {
+          "n_samples": 224,
+          "false_positives": 12,
+          "fp_rate": 0.05357142857142857,
+          "mean_score": 14.99870491027832,
+          "max_score": 21.492929458618164
+        }
+      }
+    }
+  },
+  "metadata": {
+    "classes": [
+      "hazelnut",
+      "carpet",
+      "zipper"
+    ],
+    "setting": "Model-Unified (per-class thresholds)",
+    "patchcore_coreset_ratio": 0.05,
+    "padim_backbone": "resnet50",
+    "seed": 42
+  },
+  "files_generated": {
+    "models": [
+      "patchcore_global_clean.npy",
+      "patchcore_global_clean_config.pth",
+      "padim_global_clean.pt"
+    ],
+    "thresholds": [
+      "global_thresholds.json"
+    ],
+    "results": [
+      "global_results.json",
+      "global_vs_perclass_gap.json",
+      "identical_shortcut_analysis.json",
+      "identical_shortcut_analysis_padim.json",
+      "global_model_summary.csv"
+    ],
+    "visualizations": [
+      "global_vs_perclass_gap.png",
+      "identical_shortcut_confusion.png",
+      "identical_shortcut_confusion_padim.png",
+      "global_model_tsne.png"
+    ]
+  }
+}
