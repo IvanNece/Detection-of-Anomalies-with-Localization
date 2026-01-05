@@ -8,7 +8,7 @@ Industrial Anomaly Detection" (Roth et al., CVPR 2022).
 import torch
 import torch.nn as nn
 from pathlib import Path
-from typing import Optional, Tuple, Dict
+from typing import Optional, Tuple
 import numpy as np
 from torch.utils.data import DataLoader
 from tqdm import tqdm

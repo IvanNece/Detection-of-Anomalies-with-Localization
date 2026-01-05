@@ -85,11 +85,6 @@ class MVTecDataset(Dataset):
             - label: Integer label (0=normal, 1=anomalous)
             - image_path: String path to the image file
             
-        Example:
-            >>> dataset = MVTecDataset(...)
-            >>> image, mask, label, path = dataset[0]
-            >>> print(image.shape)  # torch.Size([3, 224, 224])
-            >>> print(label)        # 0 or 1
         """
         # Load image
         image_path = self.images[idx]
@@ -178,9 +173,6 @@ class MVTecDataset(Dataset):
 def create_dataloaders(
     splits: dict,
     transform: Callable,
-    batch_size: int = 32,
-    num_workers: int = 4,
-    pin_memory: bool = True
 ) -> Tuple[Dataset, Dataset, Dataset]:
     """
     Create train, val, test datasets for a single class.
@@ -195,16 +187,6 @@ def create_dataloaders(
     Returns:
         Tuple of (train_dataset, val_dataset, test_dataset)
         
-    Example:
-        >>> from src.data.splitter import load_splits
-        >>> from src.data.transforms import get_clean_transforms
-        >>> 
-        >>> splits = load_splits(Path('data/processed/clean_splits.json'))
-        >>> train_ds, val_ds, test_ds = create_dataloaders(
-        ...     splits['hazelnut'],
-        ...     transform=get_clean_transforms(),
-        ...     batch_size=32
-        ... )
     """
     train_dataset = MVTecDataset.from_split(
         splits['train'],

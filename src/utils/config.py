@@ -6,7 +6,7 @@ with support for YAML and nested dictionary access.
 """
 
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Union
 
 import yaml
 
@@ -18,12 +18,6 @@ class Config:
     Allows accessing nested configuration keys using dot notation:
     config.dataset.classes instead of config['dataset']['classes']
     
-    Example:
-        >>> config = Config.load('configs/experiment_config.yaml')
-        >>> print(config.seed)
-        42
-        >>> print(config.dataset.classes)
-        ['hazelnut', 'carpet', 'zipper']
     """
     
     def __init__(self, config_dict: Dict[str, Any]):
@@ -93,10 +87,6 @@ class Config:
         
         Returns:
             Configuration value or default
-        
-        Example:
-            >>> config.get('dataset.image_size', 224)
-            224
         """
         keys = key.split('.')
         value = self._config
@@ -139,26 +129,3 @@ def load_config(config_path: Union[str, Path]) -> Config:
     """
     return Config.load(config_path)
 
-
-def merge_configs(base_config: Dict, override_config: Dict) -> Dict:
-    """
-    Merge two configuration dictionaries recursively.
-    
-    Values in override_config take precedence over base_config.
-    
-    Args:
-        base_config: Base configuration
-        override_config: Configuration with override values
-    
-    Returns:
-        Merged configuration
-    """
-    merged = base_config.copy()
-    
-    for key, value in override_config.items():
-        if key in merged and isinstance(merged[key], dict) and isinstance(value, dict):
-            merged[key] = merge_configs(merged[key], value)
-        else:
-            merged[key] = value
-    
-    return merged

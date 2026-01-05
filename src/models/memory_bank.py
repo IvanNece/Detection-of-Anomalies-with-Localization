@@ -177,9 +177,7 @@ class MemoryBank:
             # Use exact L2 search
             self.index = faiss.IndexFlatL2(D)
             self.index.add(self.features.astype(np.float32))
-            print(f"✓ Using FAISS for fast k-NN search (memory bank: {N} samples, {D} dims)")
         except ImportError:
-            print("⚠️  WARNING: FAISS not available, using numpy fallback (VERY SLOW!)")
             self.use_faiss = False
     
     def search_nearest(
