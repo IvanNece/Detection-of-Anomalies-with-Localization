@@ -1,0 +1,11 @@
+The final delivery must be submitted one week prior to the oral discussion. 
+
+The following content must be provided​
+
+The project code/notebooks​
+The weights of a trained model​
+A copy or link to the dataset, if not publicly available​
+A 6-8 pages paper that describes the application, machine learning techniques, hyper-parameters, dataset, performance metrics and results​
+The compiled self-assessment checklist ​
+(optional) Experiment log (e.g., using the Sample ML tracker spreadsheet provided)​
+(optional) Supplementary material (e.g., additional figures, videos, etc.)
