@@ -190,25 +190,3 @@ class ResNet50FeatureExtractor(nn.Module):
         
         return patch_features, (H, W)
 
-
-def get_resnet50_feature_extractor(
-    layers: List[str] = ['layer2', 'layer3'],
-    patch_size: int = 3,
-    pretrained: bool = True
-) -> ResNet50FeatureExtractor:
-    """
-    Factory function to create ResNet50FeatureExtractor.
-    
-    Args:
-        layers: Layer names to extract
-        patch_size: Neighborhood size for local aggregation
-        pretrained: Use ImageNet pre-trained weights
-        
-    Returns:
-        Configured ResNet50FeatureExtractor instance
-    """
-    return ResNet50FeatureExtractor(
-        layers=layers,
-        patch_size=patch_size,
-        pretrained=pretrained
-    )

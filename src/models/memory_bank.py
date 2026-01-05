@@ -207,9 +207,6 @@ class MemoryBank:
             distances, indices = self.index.search(query_features, k)
         else:
             # Numpy fallback (slow)
-            if not hasattr(self, '_numpy_warning_shown'):
-                print("⚠️  Using numpy fallback for k-NN (slow)")
-                self._numpy_warning_shown = True
             
             M = query_features.shape[0]
             distances = np.zeros((M, k))
