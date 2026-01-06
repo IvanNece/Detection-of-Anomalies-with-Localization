@@ -66,14 +66,14 @@ These transformations collectively simulate realistic sensor degradation and env
 PatchCore~\cite{roth2022patchcore} is a memory-based anomaly detection method that achieves state-of-the-art results through efficient storage and retrieval of nominal patch embeddings. We implement PatchCore following the original paper with hyperparameters verified against our configuration.
 
 \paragraph{Feature Extraction.}
-We employ a ResNet-50 backbone pre-trained on ImageNet with frozen weights. Features are extracted from two intermediate layers, \texttt{layer2} (256 channels, $28 \times 28$ spatial resolution for $224 \times 224$ input) and \texttt{layer3} (1024 channels, $14 \times 14$ resolution), to capture both fine-grained and semantic information.
+We employ a ResNet-50 backbone pre-trained on ImageNet with frozen weights. Features are extracted from two intermediate layers, \texttt{layer2} (512 channels, $28 \times 28$ spatial resolution for $224 \times 224$ input) and \texttt{layer3} (1024 channels, $14 \times 14$ resolution), to capture both fine-grained and semantic information.
 
 \paragraph{Local Neighborhood Aggregation.}
 To incorporate spatial context into each patch embedding, we perform average pooling over a $p \times p$ local neighborhood:
 \begin{equation}
     f_{\text{agg}}^{(h,w)} = \frac{1}{p^2} \sum_{(i,j) \in \mathcal{N}_{p}(h,w)} f^{(i,j)}
 \end{equation}
-where $\mathcal{N}_{p}(h,w)$ denotes the $p \times p$ patch centered at position $(h,w)$ and $f^{(i,j)}$ is the feature vector at that location. We use $p = 3$ in our implementation. Features from \texttt{layer3} are bilinearly upsampled to match the spatial resolution of \texttt{layer2}, and the two feature maps are concatenated along the channel dimension, yielding a combined feature dimension of $256 + 1024 = 1280$ per patch.
+where $\mathcal{N}_{p}(h,w)$ denotes the $p \times p$ patch centered at position $(h,w)$ and $f^{(i,j)}$ is the feature vector at that location. We use $p = 3$ in our implementation. Features from \texttt{layer3} are bilinearly upsampled to match the spatial resolution of \texttt{layer2}, and the two feature maps are concatenated along the channel dimension, yielding a combined feature dimension of $512 + 1024 = 1536$ per patch.
 
 \paragraph{Coreset Subsampling.}
 Storing all patch embeddings from the training set would result in an impractically large memory bank. Following Roth~\etal~\cite{roth2022patchcore}, we apply greedy coreset subsampling to select a representative subset. The algorithm iteratively selects patches that maximize the minimum distance to already selected patches (furthest-point sampling):
