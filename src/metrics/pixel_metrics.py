@@ -1,17 +1,8 @@
 """
 Pixel-level metrics for anomaly localization evaluation.
-
-This module provides functions to compute pixel-level metrics
-for evaluating defect localization quality:
-- Pixel-wise AUROC: Discrimination between defective and non-defective pixels
-- PRO (Per-Region Overlap): Overlap with ground-truth defect regions
-
-Reference:
-    Bergmann et al., "MVTec AD — A Comprehensive Real-World Dataset for 
-    Unsupervised Anomaly Detection", CVPR 2019
 """
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 import numpy as np
 from scipy.ndimage import label as connected_components
@@ -41,11 +32,6 @@ def compute_pixel_auroc(
         
     Returns:
         Pixel-level AUROC in [0, 1]. Higher is better.
-        
-    Example:
-        >>> masks = [np.array([[0, 0], [1, 1]]), np.array([[0, 1], [0, 1]])]
-        >>> heatmaps = [np.array([[0.1, 0.2], [0.8, 0.9]]), np.array([[0.1, 0.7], [0.2, 0.8]])]
-        >>> pixel_auroc = compute_pixel_auroc(masks, heatmaps)
     """
     if len(masks_true) != len(heatmaps):
         raise ValueError(
@@ -280,10 +266,6 @@ def compute_pixel_metrics(
         - n_images: Number of images evaluated
         - n_anomalous_images: Number of images with masks
         
-    Example:
-        >>> metrics = compute_pixel_metrics(masks, heatmaps)
-        >>> print(f"Pixel AUROC: {metrics['pixel_auroc']:.4f}")
-        >>> print(f"PRO: {metrics['pro']:.4f}")
     """
     # Count anomalous images
     n_anomalous = sum(1 for m in masks_true if m is not None and np.any(m > 0.5))

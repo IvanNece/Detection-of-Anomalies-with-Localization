@@ -1,15 +1,5 @@
 """
 Image-level metrics for anomaly detection evaluation.
-
-This module provides functions to compute all image-level metrics
-defined in the Project Proposal:
-- AUROC: Area Under ROC Curve (threshold-independent)
-- AUPRC: Area Under Precision-Recall Curve (threshold-independent)
-- F1, Accuracy, Precision, Recall (at calibrated threshold)
-
-All metrics follow sklearn conventions:
-- labels: 0 = normal, 1 = anomalous
-- scores: higher values indicate more anomalous
 """
 
 from typing import Dict, Optional, Tuple
@@ -42,11 +32,6 @@ def compute_auroc(labels: np.ndarray, scores: np.ndarray) -> float:
     Returns:
         AUROC value in [0, 1]. Higher is better. 0.5 = random guess.
         
-    Example:
-        >>> labels = np.array([0, 0, 1, 1])
-        >>> scores = np.array([0.1, 0.2, 0.8, 0.9])
-        >>> auroc = compute_auroc(labels, scores)
-        >>> print(f"AUROC: {auroc:.4f}")  # Should be 1.0 (perfect ranking)
     """
     labels = np.asarray(labels)
     scores = np.asarray(scores)
@@ -74,10 +59,6 @@ def compute_auprc(labels: np.ndarray, scores: np.ndarray) -> float:
         AUPRC value in [0, 1]. Higher is better.
         Baseline for imbalanced data = positive_rate.
         
-    Example:
-        >>> labels = np.array([0, 0, 0, 1])  # 25% anomaly rate
-        >>> scores = np.array([0.1, 0.2, 0.3, 0.9])
-        >>> auprc = compute_auprc(labels, scores)
     """
     labels = np.asarray(labels)
     scores = np.asarray(scores)
@@ -106,11 +87,6 @@ def compute_f1_at_threshold(
         
     Returns:
         F1 score in [0, 1]. Higher is better.
-        
-    Example:
-        >>> labels = np.array([0, 0, 1, 1])
-        >>> scores = np.array([1.0, 2.0, 5.0, 6.0])
-        >>> f1 = compute_f1_at_threshold(labels, scores, threshold=3.5)
     """
     labels = np.asarray(labels)
     scores = np.asarray(scores)
@@ -194,13 +170,6 @@ def compute_image_metrics(
         - precision: Precision at threshold (if threshold provided)
         - recall: Recall at threshold (if threshold provided)
         - specificity: Specificity at threshold (if threshold provided)
-        
-    Example:
-        >>> labels = np.array([0, 0, 0, 1, 1, 1])
-        >>> scores = np.array([1.0, 1.5, 2.0, 5.0, 6.0, 7.0])
-        >>> metrics = compute_image_metrics(labels, scores, threshold=3.5)
-        >>> print(f"AUROC: {metrics['auroc']:.4f}")
-        >>> print(f"F1: {metrics['f1']:.4f}")
     """
     labels = np.asarray(labels)
     scores = np.asarray(scores)
@@ -242,11 +211,6 @@ def compute_roc_curve(
         - tpr: True Positive Rates (Recall)
         - thresholds: Threshold values
         
-    Example:
-        >>> fpr, tpr, thresholds = compute_roc_curve(labels, scores)
-        >>> plt.plot(fpr, tpr)
-        >>> plt.xlabel('False Positive Rate')
-        >>> plt.ylabel('True Positive Rate')
     """
     labels = np.asarray(labels)
     scores = np.asarray(scores)
@@ -271,12 +235,6 @@ def compute_pr_curve(
         - precision: Precision values
         - recall: Recall values
         - thresholds: Threshold values
-        
-    Example:
-        >>> precision, recall, thresholds = compute_pr_curve(labels, scores)
-        >>> plt.plot(recall, precision)
-        >>> plt.xlabel('Recall')
-        >>> plt.ylabel('Precision')
     """
     labels = np.asarray(labels)
     scores = np.asarray(scores)
@@ -302,11 +260,6 @@ def compute_confusion_matrix(
         Confusion matrix as 2x2 numpy array:
         [[TN, FP],
          [FN, TP]]
-         
-    Example:
-        >>> cm = compute_confusion_matrix(labels, scores, threshold=3.5)
-        >>> print(f"True Negatives: {cm[0, 0]}")
-        >>> print(f"True Positives: {cm[1, 1]}")
     """
     labels = np.asarray(labels)
     scores = np.asarray(scores)
@@ -328,13 +281,6 @@ def aggregate_metrics(
         
     Returns:
         Aggregated metrics dictionary
-        
-    Example:
-        >>> per_class = {
-        ...     'hazelnut': {'auroc': 0.98, 'f1': 0.92},
-        ...     'carpet': {'auroc': 0.95, 'f1': 0.88}
-        ... }
-        >>> avg_metrics = aggregate_metrics(per_class)
     """
     if aggregation != 'macro':
         raise ValueError(f"Only 'macro' aggregation is supported. Got '{aggregation}'")

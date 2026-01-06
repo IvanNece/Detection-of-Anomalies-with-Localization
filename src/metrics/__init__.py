@@ -1,19 +1,6 @@
 """
 Metrics package for anomaly detection evaluation.
 
-This package provides all metrics defined in the Project Proposal:
-
-Image-Level Metrics:
-    - AUROC: Area Under ROC Curve
-    - AUPRC: Area Under Precision-Recall Curve
-    - F1, Accuracy, Precision, Recall (at threshold)
-
-Pixel-Level Metrics:
-    - Pixel AUROC: Pixel-wise discrimination
-    - PRO: Per-Region Overlap
-
-Threshold Selection:
-    - F1-optimal threshold calibration
 """
 
 from .threshold_selection import (

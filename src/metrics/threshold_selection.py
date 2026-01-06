@@ -2,19 +2,12 @@
 Threshold selection and calibration for anomaly detection.
 
 This module provides functions to find the optimal decision threshold
-that maximizes F1 score on the validation set, following the protocol
-defined in the Project Proposal.
-
-Protocol:
-    1. Compute image-level anomaly scores on Val-clean (normal + anomalous)
-    2. Explore a range of thresholds
-    3. Select the threshold that maximizes F1 score
-    4. Use this threshold for binary classification on Test-clean
+that maximizes F1 score on the validation set. 
 """
 
 import json
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, Tuple, Union
 
 import numpy as np
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
@@ -29,9 +22,6 @@ def calibrate_threshold(
     """
     Find optimal threshold that maximizes F1 score.
     
-    This implements the threshold calibration protocol from the Project Proposal:
-    "Explore a range of thresholds and select the one that maximizes F1 on Val-clean."
-    
     Args:
         scores: Anomaly scores (higher = more anomalous). Shape: (N,)
         labels: Ground truth labels (0=normal, 1=anomalous). Shape: (N,)
@@ -41,12 +31,6 @@ def calibrate_threshold(
     Returns:
         If return_all_metrics=False: optimal_threshold (float)
         If return_all_metrics=True: Tuple of (optimal_threshold, metrics_dict)
-        
-    Example:
-        >>> scores = np.array([1.0, 1.5, 2.0, 5.0, 6.0, 7.0])
-        >>> labels = np.array([0, 0, 0, 1, 1, 1])
-        >>> threshold = calibrate_threshold(scores, labels)
-        >>> print(f"Optimal threshold: {threshold:.2f}")
     """
     scores = np.asarray(scores)
     labels = np.asarray(labels)
