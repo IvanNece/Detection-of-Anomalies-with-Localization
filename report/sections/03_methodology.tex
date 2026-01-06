@@ -1,5 +1,135 @@
+% ============================================================================
+% 3. Methodology
+% ============================================================================
 \section{Methodology}
 \label{sec:methodology}
 
-% TODO
+This section presents the formal problem setup, the domain shift simulation strategy, and the technical details of the two anomaly detection methods employed in our study: PatchCore and PaDiM.
+
+% ----------------------------------------------------------------------------
+\subsection{Problem Formulation}
+\label{sec:problem_formulation}
+
+We consider the one-class classification paradigm for visual anomaly detection. Let $\mathcal{D}_\text{train} = \{x_i\}_{i=1}^{N}$ denote a training set consisting exclusively of nominal (defect-free) images, where $x_i \in \mathbb{R}^{H \times W \times 3}$. The objective is to learn a scoring function $s: \mathbb{R}^{H \times W \times 3} \rightarrow \mathbb{R}$ that assigns low scores to normal samples and high scores to anomalous ones. For pixel-level localization, the goal extends to producing a spatial anomaly map $\mathcal{A}: \mathbb{R}^{H \times W \times 3} \rightarrow \mathbb{R}^{H \times W}$, where $\mathcal{A}(x)_{i,j}$ indicates the anomaly intensity at pixel $(i,j)$.
+
+\paragraph{Preprocessing.}
+All images undergo a deterministic preprocessing pipeline before being fed to the feature extractor. Images are resized to $224 \times 224$ pixels using bilinear interpolation, converted to tensors with values in $[0,1]$, and normalized using ImageNet statistics:
+\begin{equation}
+    \mu = (0.485, 0.456, 0.406), \quad \sigma = (0.229, 0.224, 0.225)
+\end{equation}
+where normalization is applied channel-wise. Ground truth masks, when available, are resized using nearest-neighbor interpolation to preserve binary values and binarized at threshold 0.5.
+
+% ----------------------------------------------------------------------------
+\subsection{Domain Shift Simulation (MVTec-Shift)}
+\label{sec:domain_shift}
+
+To evaluate robustness under distribution shift, we construct a synthetic shifted domain by applying controlled transformations to the clean MVTec~AD images. This approach is inspired by the acquisition variations introduced in MVTec~AD~2~\cite{hecklerkram2025mvtecad2}, which include illumination changes and pose perturbations. Our transformation pipeline comprises three categories, applied with synchronized random seeds to ensure reproducibility:
+
+\paragraph{Geometric Transforms.}
+Applied to both images and ground truth masks to maintain spatial consistency:
+\begin{itemize}
+    \item \textbf{Rotation:} uniformly sampled from $[-10^\circ, +10^\circ]$
+    \item \textbf{Scale:} uniformly sampled from $[0.9, 1.0]$ (slight zoom-out)
+    \item \textbf{Translation:} uniformly sampled within $\pm 10\%$ of image dimensions
+\end{itemize}
+
+\paragraph{Photometric Transforms.}
+Applied only to images (not masks) to simulate sensor and illumination variations:
+\begin{itemize}
+    \item \textbf{Color Jitter:} brightness, contrast, and saturation factors sampled uniformly from $[0.7, 1.3]$
+    \item \textbf{Gaussian Blur:} kernel size $\in \{3, 5\}$, sigma $\in [0.1, 2.0]$, applied with probability 0.5
+    \item \textbf{Gaussian Noise:} additive noise with $\sigma \in [0.01, 0.05]$, applied with probability 0.5
+\end{itemize}
+
+\paragraph{Illumination Gradients.}
+To simulate non-uniform industrial lighting conditions (\eg, spotlight effects from MVTec~AD~2 scenarios such as Fabric and Wall Plugs), we apply smooth illumination gradients with probability 0.5:
+\begin{itemize}
+    \item \textbf{Linear gradients:} simulate side lighting by darkening one edge (left, right, top, or bottom) with strength factor sampled from $[0.4, 0.7]$
+    \item \textbf{Radial gradients:} simulate center/edge illumination variations
+    \item Gradients are smoothed with a Gaussian filter ($\sigma = 80$) for natural transitions
+\end{itemize}
+
+% Placeholder for figure showing clean vs shifted examples
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{img/clearn_vs_shifted_visualization.jpg}
+    \caption{Comparison of clean (left) and shifted (right) samples from MVTec~AD. The shifted domain includes photometric degradation, geometric perturbations, and non-uniform illumination to simulate realistic industrial variations.}
+    \label{fig:clean_vs_shifted}
+\end{figure}
+
+These transformations collectively simulate realistic sensor degradation and environmental changes encountered in industrial deployment, providing a controlled way to evaluate model robustness.
+
+% ----------------------------------------------------------------------------
+\subsection{PatchCore}
+\label{sec:patchcore}
+
+PatchCore~\cite{roth2022patchcore} is a memory-based anomaly detection method that achieves state-of-the-art results through efficient storage and retrieval of nominal patch embeddings. We implement PatchCore following the original paper with hyperparameters verified against our configuration.
+
+\paragraph{Feature Extraction.}
+We employ a ResNet-50 backbone pre-trained on ImageNet with frozen weights. Features are extracted from two intermediate layers, \texttt{layer2} (256 channels, $28 \times 28$ spatial resolution for $224 \times 224$ input) and \texttt{layer3} (1024 channels, $14 \times 14$ resolution), to capture both fine-grained and semantic information.
+
+\paragraph{Local Neighborhood Aggregation.}
+To incorporate spatial context into each patch embedding, we perform average pooling over a $p \times p$ local neighborhood:
+\begin{equation}
+    f_{\text{agg}}^{(h,w)} = \frac{1}{p^2} \sum_{(i,j) \in \mathcal{N}_{p}(h,w)} f^{(i,j)}
+\end{equation}
+where $\mathcal{N}_{p}(h,w)$ denotes the $p \times p$ patch centered at position $(h,w)$ and $f^{(i,j)}$ is the feature vector at that location. We use $p = 3$ in our implementation. Features from \texttt{layer3} are bilinearly upsampled to match the spatial resolution of \texttt{layer2}, and the two feature maps are concatenated along the channel dimension, yielding a combined feature dimension of $256 + 1024 = 1280$ per patch.
+
+\paragraph{Coreset Subsampling.}
+Storing all patch embeddings from the training set would result in an impractically large memory bank. Following Roth~\etal~\cite{roth2022patchcore}, we apply greedy coreset subsampling to select a representative subset. The algorithm iteratively selects patches that maximize the minimum distance to already selected patches (furthest-point sampling):
+\begin{equation}
+    m^* = \arg\max_{m \in \mathcal{M} \setminus \mathcal{C}} \min_{c \in \mathcal{C}} \|m - c\|_2
+\end{equation}
+where $\mathcal{M}$ is the full memory bank and $\mathcal{C}$ is the current coreset. To accelerate distance computations, we apply Johnson-Lindenstrauss random projection to reduce dimensionality to 128 before sampling. We retain $\rho = 5\%$ of total patches (\ie, \texttt{coreset\_sampling\_ratio = 0.05}), which provides an optimal balance between coverage and efficiency as validated on the clean domain. In following Section~\ref{sec:results}, we will show the effect of this hyperparameter on the performance of PatchCore.
+
+\paragraph{Anomaly Scoring.}
+At inference time, each test image $x$ is decomposed into a collection of locally aware patch features $\mathcal{P}(x)$. Each patch embedding $q \in \mathcal{P}(x)$ is compared against the coreset memory bank $\mathcal{C}$ using a Nearest Neighbor (NN) search, implemented via the FAISS \cite{johnson2017faiss} library for high-performance indexing.
+
+The raw anomaly score $s_{\text{raw}}(q)$ is defined as the $L^2$ distance to its nearest neighbor in the coreset:
+\begin{equation}
+    s_{\text{raw}}(q) = \min_{m \in \mathcal{C}} \|q - m\|_2
+\end{equation}
+
+To enhance robustness against noise and outliers, we adopt a density-based reweighting scheme inspired by Roth~\etal~\cite{roth2022patchcore}. Specifically, we retrieve the $k$ nearest neighbors of $q$ from the coreset (where $k=9$ in our implementation) and compute a weighting factor $w(q)$ that penalizes samples whose nearest neighbor is significantly more distant than the rest of the local neighborhood:
+\begin{equation}
+    w(q) = 1 - \frac{\exp(-d_1)}{\sum_{i=1}^{k} \exp(-d_i)}
+\end{equation}
+where $d_i$ represents the $L^2$ distance to the $i$-th nearest neighbor. The final anomaly score for each patch is then $s(q) = s_{\text{raw}}(q) \cdot w(q)$.
+
+The overall image-level anomaly score $S(x)$ is determined by the maximum patch-level score, reflecting the assumption that an image is anomalous if it contains at least one anomalous patch:
+\begin{equation}
+    S(x) = \max_{q \in \mathcal{P}(x)} s(q)
+\end{equation}
+
+\paragraph{Anomaly Localization.}
+For defect localization, a spatial anomaly map is generated by reshaping the patch scores $s(q)$ to their respective grid positions. The map is then upsampled to the original input resolution via bilinear interpolation to produce the final pixel-level prediction.
+
+% ----------------------------------------------------------------------------
+\subsection{PaDiM}
+\label{sec:padim}
+
+PaDiM~\cite{defard2020padim} (Patch Distribution Modeling) is a distribution-based anomaly detection method that models normal patch embeddings with multivariate Gaussian distributions. Our implementation uses the \texttt{anomalib} library's native \texttt{PadimModel}.
+
+\paragraph{Feature Extraction.}
+PaDiM extracts multi-scale features from three ResNet-50 layers: \texttt{layer1}, \texttt{layer2}, and \texttt{layer3}. Features are concatenated and projected to a common spatial resolution, yielding a high-dimensional embedding at each spatial position.
+
+\paragraph{Dimensionality Reduction.}
+To mitigate the curse of dimensionality and reduce computational cost, PaDiM employs random feature selection. From the concatenated feature vector, a random subset of $d = 100$ dimensions is selected (configured via \texttt{n\_features = 100}). This selection is performed once at initialization and fixed for the lifetime of the model.
+
+\paragraph{Gaussian Modeling.}
+For each spatial position $(h,w)$, PaDiM estimates a multivariate Gaussian distribution from the training embeddings:
+\begin{equation}
+    \mathcal{N}_{h,w}(\mu_{h,w}, \Sigma_{h,w})
+\end{equation}
+where $\mu_{h,w} \in \mathbb{R}^{d}$ is the mean embedding and $\Sigma_{h,w} \in \mathbb{R}^{d \times d}$ is the covariance matrix. This position-specific modeling captures the expected appearance at each location, accounting for spatial structure in the images.
+
+\paragraph{Anomaly Scoring via Mahalanobis Distance.}
+At inference, the anomaly score for a test patch at position $(h,w)$ is the Mahalanobis distance to the learned Gaussian:
+\begin{equation}
+    \mathcal{M}(x_{h,w}) = \sqrt{(x_{h,w} - \mu_{h,w})^\top \Sigma_{h,w}^{-1} (x_{h,w} - \mu_{h,w})}
+\end{equation}
+where $\Sigma_{h,w}^{-1}$ is the inverse covariance (precision) matrix. The image-level score is computed as the maximum Mahalanobis distance across all positions, and the spatial anomaly map is obtained by upsampling the distance values to the original image resolution.
+
+\paragraph{Comparison with PatchCore.}
+Unlike PatchCore's non-parametric memory bank, PaDiM stores only statistical summaries (mean and covariance per position), resulting in constant memory and inference time independent of training set size. However, the Gaussian assumption may not hold for all normal variations, potentially limiting its discriminative power compared to PatchCore's explicit nearest-neighbor matching.
 
