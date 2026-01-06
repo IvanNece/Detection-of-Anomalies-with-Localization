@@ -1,2 +1,20 @@
 \section{Introduction}
-% TODO 
+\label{sec:introduction}
+
+Visual anomaly detection in manufacturing aims to automatically identify defective products from images acquired under controlled conditions. This task is commonly framed as \emph{one-class classification}, where a model learns only from normal samples and must identify deviations at test time~\cite{bergmann2019mvtec}. Since anomalous examples are often scarce or unavailable during training, supervised approaches are impractical, motivating unsupervised methods that learn what constitutes normality from defect-free data.
+
+A practical anomaly detection system must address two complementary goals: (i)~\emph{image-level detection}, determining whether an image is normal or anomalous, and (ii)~\emph{pixel-level localization}, identifying which regions contain defects. State-of-the-art methods such as \textbf{PatchCore}~\cite{roth2022patchcore} and \textbf{PaDiM}~\cite{defard2020padim} achieve strong results on standard benchmarks like MVTec~AD~\cite{bergmann2019mvtec} by modelling patch-level feature distributions from pre-trained networks. However, their robustness to distribution shift and sensitivity to threshold calibration remain less explored.
+
+In this work, we present a comparative study of PatchCore and PaDiM on MVTec~AD under both clean and synthetically shifted conditions. Our contributions are:
+
+\begin{enumerate}
+    \item \textbf{Baseline comparison.} We evaluate PatchCore (custom implementation) and PaDiM (anomalib-based) on three MVTec~AD categories (Hazelnut, Carpet, Zipper), reporting both image-level and pixel-level metrics.
+    
+    \item \textbf{Synthetic domain shift.} We construct \emph{MVTec-Shift} by applying photometric and geometric transformations inspired by MVTec~AD~2~\cite{hecklerkram2025mvtecad2}, and measure the performance drop when models trained on clean data are tested on shifted data. Measuring also the hyperparameter influence on the performance obtained. 
+    
+    \item \textbf{Threshold adaptation strategies.} We compare three regimes: (a)~no adaptation, (b)~threshold-only adaptation on shifted validation data, and (c)~full adaptation with model re-training. This ablation isolates the benefit of threshold recalibration from feature-level adaptation.
+    
+    \item \textbf{Model-unified setting.} Following recent literature~\cite{you2022uniad, guo2024cada, heo2025hiercore}, we train a single model on pooled normal data from all categories while using per-class thresholds at inference. This setting enables investigation of the \emph{identical shortcut} problem~\cite{you2022uniad}, where normal samples from one class may be misclassified as anomalies when evaluated against another class's threshold due to overlapping feature distributions.
+\end{enumerate}
+
+The paper is organized as follows: Section~\ref{sec:related_work} reviews related work; Section~\ref{sec:methodology} describes the methods; Section~\ref{sec:experimental_setup} details the experimental setup; Section~\ref{sec:results} presents results and analysis; Section~\ref{sec:conclusion} concludes with limitations and future directions.
