@@ -1,7 +1,6 @@
 {
   "notebook": "05_padim_clean.ipynb",
-  "timestamp": "2025-12-17T15:45:52.955970",
-  "phase": "Phase 4 - PaDiM Clean Domain",
+  "timestamp": "2026-01-06T00:02:15.303071",
   "seed": 42,
   "device": "cuda",
   "configuration": {
@@ -33,7 +32,7 @@
         56,
         56
       ],
-      "training_time_seconds": 90.05389404296875,
+      "training_time_seconds": 83.91812992095947,
       "model_size_mb": 120.8251953125
     },
     "carpet": {
@@ -43,7 +42,7 @@
         56,
         56
       ],
-      "training_time_seconds": 66.68647742271423,
+      "training_time_seconds": 62.25843811035156,
       "model_size_mb": 120.8251953125
     },
     "zipper": {
@@ -53,7 +52,7 @@
         56,
         56
       ],
-      "training_time_seconds": 45.772473096847534,
+      "training_time_seconds": 42.451974391937256,
       "model_size_mb": 120.8251953125
     }
   },
