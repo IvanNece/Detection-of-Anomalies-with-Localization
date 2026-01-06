@@ -1,5 +1,30 @@
 \section{Related Work}
 \label{sec:related_work}
 
-% TODO
+Unsupervised anomaly detection methods for industrial images can be broadly categorized into four families: reconstruction-based, distribution-based, memory-based, and unified approaches. Reconstruction methods~\cite{bergmann2019mvtec} learn to encode and decode normal images, flagging samples with high reconstruction error as anomalous. While intuitive, these approaches often struggle to localize subtle defects when the autoencoder generalizes too well. Distribution-based approaches model the statistical properties of normal features, whereas memory-based methods store and retrieve representative embeddings at test time. In this work we focus on two state-of-the-art methods from the latter categories---\textbf{PaDiM} and \textbf{PatchCore}---which both leverage features from pre-trained convolutional networks.
+
+\subsection{Embedding-Based Methods}
+
+\paragraph{PaDiM.}
+Defard~\etal~\cite{defard2020padim} propose \emph{Patch Distribution Modeling} (PaDiM), which extracts multi-scale features from intermediate layers of a pre-trained ResNet and models the distribution of patch embeddings with a multivariate Gaussian at each spatial location. At inference, anomaly scores are computed via the Mahalanobis distance between a test patch and its corresponding Gaussian. Because it stores only statistical summaries (mean and covariance) rather than individual embeddings, PaDiM is highly memory-efficient and fast at inference. However, the Gaussian assumption may be violated when the underlying distribution is non-unimodal, limiting its capacity to capture complex normal variations.
+
+\paragraph{PatchCore.}
+Roth~\etal~\cite{roth2022patchcore} present \textbf{PatchCore}, which constructs a \emph{memory bank} of locally-aware patch embeddings extracted from a pre-trained network. To reduce storage and retrieval costs, the memory bank is subsampled using greedy coreset selection. At test time, each image patch is compared to its nearest neighbor in the memory bank, and the maximum distance across patches determines the image-level score.  PatchCore achieves near-perfect AUROC on MVTec~AD, demonstrating excellent localization thanks to its explicit patch-level comparison.
+
+\paragraph{Efficiency vs.\ Accuracy Trade-off.}
+Both methods exploit transferable features from ImageNet-pretrained backbones, enabling training without gradient-based optimization.  PaDiM's parametric model yields constant-time inference independent of dataset size, whereas PatchCore's non-parametric memory bank scales with the number of stored embeddings (mitigated by coreset selection). Empirically, PatchCore tends to achieve higher detection and localization accuracy at the cost of increased memory footprint and inference time. In our experiments we quantify this trade-off across multiple categories and domain conditions.
+
+\subsection{Unified Multi-Class Anomaly Detection}
+
+Conventional anomaly detection follows a \emph{one-model-per-class} paradigm: a separate model is trained for each product category. This approach becomes impractical when the number of categories grows, motivating research into \emph{unified} models that handle multiple classes simultaneously.
+
+\paragraph{Identical Shortcut Problem.}
+You~\etal~\cite{you2022uniad} introduce \textbf{UniAD}, a transformer-based architecture that reconstructs features of different object classes with a single model. A key contribution is the identification of the \emph{identical shortcut} problem: when a model is trained on multiple classes, it may learn to reconstruct any input identically, thereby losing the ability to detect anomalies. UniAD addresses this by injecting neighbour-masked attention and layer-wise query decoders. This insight motivates careful evaluation of unified settings in our work.
+
+\paragraph{Model-Unified vs.\ Absolute-Unified.}
+Heo and Kang~\cite{heo2025hiercore} further distinguish between \emph{Model-Unified} and \emph{Absolute-Unified} settings. In the Model-Unified setting, a single model is trained on pooled normal data from all categories, but separate, per-class thresholds are calibrated at inference. In the stricter Absolute-Unified setting, a single global threshold is used regardless of class. The latter is significantly harder because classes may have different ``normal'' score distributions. Our experiments adopt the Model-Unified paradigm to study how PatchCore and PaDiM behave when exposed to heterogeneous training data, and whether the identical shortcut manifests in embedding-based methods.
+
+\subsection{Robustness to Domain Shift}
+
+Despite strong benchmark performance, the robustness of anomaly detection models to distribution shift remains under-explored. Real-world deployment often involves variations in lighting, sensor noise, or imaging conditions that differ from the training environment. The MVTec~AD~2 dataset~\cite{hecklerkram2025mvtecad2} explicitly addresses this gap by introducing controlled illumination and pose variations, revealing substantial performance degradation for methods trained on standard MVTec~AD. Motivated by this, we construct a synthetic \emph{MVTec-Shift} domain using photometric and geometric augmentations and systematically study the drop in detection and localization accuracy. We further investigate whether simple threshold recalibration on shifted validation data can recover performance without retraining feature extractors, offering practical insights for deployment scenarios with limited access to shifted anomalous samples.
 
