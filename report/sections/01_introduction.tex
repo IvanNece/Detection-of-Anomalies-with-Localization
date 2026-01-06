@@ -17,4 +17,12 @@ In this work, we present a comparative study of PatchCore and PaDiM on MVTec~AD 
     \item \textbf{Model-unified setting.} Following recent literature~\cite{you2022uniad, guo2024cada, heo2025hiercore}, we train a single model on pooled normal data from all categories while using per-class thresholds at inference. This setting enables investigation of the \emph{identical shortcut} problem~\cite{you2022uniad}, where normal samples from one class may be misclassified as anomalies when evaluated against another class's threshold due to overlapping feature distributions.
 \end{enumerate}
 
-The paper is organized as follows: Section~\ref{sec:related_work} reviews related work; Section~\ref{sec:methodology} describes the methods; Section~\ref{sec:experimental_setup} details the experimental setup; Section~\ref{sec:results} presents results and analysis; Section~\ref{sec:conclusion} concludes with limitations and future directions.
+The paper is organized as follows: Section~\ref{sec:related_work} reviews related work; Section~\ref{sec:methodology} describes the methods; Section~\ref{sec:experimental_setup} details the experimental setup; Section~\ref{sec:results} presents results and analysis; Section~\ref{sec:conclusion} concludes with limitations and future directions. Figure~\ref{fig:pipeline_overview} provides a high-level overview of our experimental pipeline.
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=\textwidth]{img/Schema.jpg}
+    \caption{Overview of the experimental pipeline. The workflow encompasses data preparation (splitting and domain shift generation), model training (PatchCore memory bank construction and PaDiM Gaussian fitting), threshold calibration on validation sets, and evaluation under multiple scenarios (clean domain, shifted domain with/without adaptation, and model-unified setting).}
+    \label{fig:pipeline_overview}
+\end{figure*}
+

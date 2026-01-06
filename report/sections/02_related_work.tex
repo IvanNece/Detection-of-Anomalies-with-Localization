@@ -1,7 +1,7 @@
 \section{Related Work}
 \label{sec:related_work}
 
-Unsupervised anomaly detection methods for industrial images can be broadly categorized into four families: reconstruction-based, distribution-based, memory-based, and unified approaches. Reconstruction methods~\cite{bergmann2019mvtec} learn to encode and decode normal images, flagging samples with high reconstruction error as anomalous. While intuitive, these approaches often struggle to localize subtle defects when the autoencoder generalizes too well. Distribution-based approaches model the statistical properties of normal features, whereas memory-based methods store and retrieve representative embeddings at test time. In this work we focus on two state-of-the-art methods from the latter categories---\textbf{PaDiM} and \textbf{PatchCore}---which both leverage features from pre-trained convolutional networks.
+Unsupervised anomaly detection methods for industrial images can be broadly categorized into four families: reconstruction-based, distribution-based, memory-based, and unified approaches. Reconstruction methods~\cite{bergmann2019mvtec} learn to encode and decode normal images, flagging samples with high reconstruction error as anomalous. While intuitive, these approaches often struggle to localize subtle defects when the autoencoder generalizes too well. Distribution-based approaches model the statistical properties of normal features, whereas memory-based methods store and retrieve representative embeddings at test time. In this work we focus on two state-of-the-art methods from the latter categories, \textbf{PaDiM} and \textbf{PatchCore}, which both leverage features from pre-trained convolutional networks.
 
 \subsection{Embedding-Based Methods}
 
