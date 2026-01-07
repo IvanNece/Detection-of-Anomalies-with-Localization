@@ -1,0 +1,40 @@
+{
+  "method": "padim_shift",
+  "thresholds": {
+    "hazelnut": 37.94191447335321,
+    "carpet": 32.306675199646136,
+    "zipper": 24.806418069404167
+  },
+  "calibration_metrics": {
+    "hazelnut": {
+      "threshold": 37.94191447335321,
+      "f1": 0.6666666666666666,
+      "precision": 0.5454545454545454,
+      "recall": 0.8571428571428571,
+      "accuracy": 0.82,
+      "n_samples": 100,
+      "n_normal": 79,
+      "n_anomalous": 21
+    },
+    "carpet": {
+      "threshold": 32.306675199646136,
+      "f1": 0.8571428571428571,
+      "precision": 0.9130434782608695,
+      "recall": 0.8076923076923077,
+      "accuracy": 0.9146341463414634,
+      "n_samples": 82,
+      "n_normal": 56,
+      "n_anomalous": 26
+    },
+    "zipper": {
+      "threshold": 24.806418069404167,
+      "f1": 0.72,
+      "precision": 0.675,
+      "recall": 0.7714285714285715,
+      "accuracy": 0.7469879518072289,
+      "n_samples": 83,
+      "n_normal": 48,
+      "n_anomalous": 35
+    }
+  }
+}
