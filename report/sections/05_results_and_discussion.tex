@@ -6,7 +6,6 @@
 
 This section presents the experimental results across the evaluation scenarios described in Section~\ref{sec:evaluation_scenarios}. 
 
-% ----------------------------------------------------------------------------
 \subsection{Clean Domain Performance}
 \label{sec:clean_results}
 
@@ -70,7 +69,6 @@ Figure~\ref{fig:roc_clean} shows the ROC curves for both methods across all cate
     \label{fig:confusion_clean}
 \end{figure}
 
-% ----------------------------------------------------------------------------
 \subsection{Impact of Domain Shift}
 \label{sec:shift_no_adapt}
 
@@ -136,5 +134,109 @@ These results underscore the critical importance of threshold recalibration and/
     \includegraphics[width=\linewidth]{../outputs/visualizations/shifted_no_adaptation/roc_curves_shifted.png}
     \caption{ROC curves on Test-shift (No Adaptation). PatchCore maintains reasonable ranking ability (macro AUROC = 0.892), while PaDiM's curves approach the diagonal (random classifier) for Hazelnut and Zipper.}
     \label{fig:roc_shifted}
+\end{figure}
+
+
+\subsection{Adaptation Strategies}
+\label{sec:adaptation}
+
+Having established the severity of domain shift degradation in Section~\ref{sec:shift_no_adapt}, we now evaluate two adaptation strategies: (1)~\emph{threshold-only adaptation}, which recalibrates the decision threshold on Val-shift without modifying the model, and (2)~\emph{full adaptation}, which retrains the model on Train-shift. Table~\ref{tab:adaptation_comparison} summarizes the macro-averaged results across all scenarios.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Comparison of adaptation strategies (macro-average). AUROC and Pixel AUROC are threshold-independent; values in \textcolor{gray}{gray} indicate no change from Shift-NoAdapt. Best per-metric in \textbf{bold}.}
+\label{tab:adaptation_comparison}
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}l ccc ccc@{}}
+\toprule
+& \multicolumn{3}{c}{\textbf{PatchCore}} & \multicolumn{3}{c}{\textbf{PaDiM}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+\textbf{Scenario} & AUC & pAUC & PRO & AUC & pAUC & PRO \\
+\midrule
+Clean (Baseline) & \textbf{.985} & \textbf{.987} & \textbf{.841} & \textbf{.930} & \textbf{.973} & \textbf{.709} \\
+Shift-NoAdapt & .892 & .922 & .645 & .684 & .827 & .527 \\
+Threshold-Only & \textcolor{gray}{.892} & \textcolor{gray}{.922} & \textcolor{gray}{.645} & \textcolor{gray}{.684} & \textcolor{gray}{.827} & \textcolor{gray}{.527} \\
+Full Adaptation & .961 & .966 & .800 & .885 & .922 & .629 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Threshold-dependent metrics (macro-average). These metrics \textbf{change} with threshold recalibration, unlike Table~\ref{tab:adaptation_comparison}.}
+\label{tab:threshold_dependent}
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}l ccc ccc@{}}
+\toprule
+& \multicolumn{3}{c}{\textbf{PatchCore}} & \multicolumn{3}{c}{\textbf{PaDiM}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+\textbf{Scenario} & F1 & Spec & Acc & F1 & Spec & Acc \\
+\midrule
+Clean (Baseline) & \textbf{.966} & \textbf{.905} & \textbf{.952} & \textbf{.895} & \textbf{.869} & \textbf{.870} \\
+Shift-NoAdapt & .839 & .223 & .749 & .806 & .183 & .696 \\
+Threshold-Only & .850 & .830 & .814 & .800 & .183 & .700 \\
+Full Adaptation & .921 & .911 & .896 & .858 & .824 & .819 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Threshold-Only Adaptation.}
+An important observation from Table~\ref{tab:adaptation_comparison} is that AUROC, Pixel AUROC, and PRO remain \emph{unchanged} between Shift-NoAdapt and Threshold-Only scenarios. This is expected: these metrics are \textbf{threshold-independent}, measuring the model's ranking ability by integrating over all possible thresholds. Since the underlying model and its anomaly scores are identical in both cases, only threshold-dependent metrics (F1, Specificity, Accuracy) can improve, as shown in Table~\ref{tab:threshold_dependent}.
+
+The practical benefit of threshold recalibration is the recovery of specificity (Table~\ref{tab:threshold_dependent}). For PatchCore, specificity increases from 22.3\% to 83.0\% by adjusting the threshold from 227.5 to 441.8 (the optimal F1 point on Val-shift). This eliminates the false positive explosion observed in Section~\ref{sec:shift_no_adapt} at \emph{zero computational cost}: no retraining or feature extraction required.
+
+However, threshold-only adaptation has fundamental limitations: it cannot improve detection accuracy beyond what the existing score distribution allows. For PaDiM, where the score distributions of normal and anomalous samples overlap significantly under shift (particularly for Zipper), recalibration yields minimal benefit (specificity remains at 18.3\%).
+
+\paragraph{Full Adaptation.}
+Full model retraining on Train-shift provides substantial performance recovery. PatchCore's AUROC increases from 0.892 to 0.961 ($\Delta = +6.9$~pp), while PaDiM shows even larger recovery from 0.684 to 0.885 ($\Delta = +20.1$~pp). The improvement mechanism differs between methods:
+
+\begin{itemize}
+    \item \textbf{PatchCore:} The memory bank is rebuilt using patch embeddings from shifted normal images. This allows the nearest-neighbor matching to account for the new appearance variations introduced by domain shift transformations. The coreset subsampling~\ref{sec:methodology} ensures efficient coverage of the expanded feature manifold.
+    
+    \item \textbf{PaDiM:} New Gaussian distributions are estimated at each spatial position using shifted training data. This recalibrates both the mean vectors $\mu_{ij}$ and covariance matrices $\Sigma_{ij}$ to match the shifted domain, reducing the systematic Mahalanobis distance inflation observed without adaptation.
+\end{itemize}
+
+The effect of these adaptation strategies on score distributions is visualized in Figure~\ref{fig:score_dist_comparison}, focusing on the Zipper category where the contrast is most evident. Under threshold-only adaptation (top), the score distributions of normal (blue) and anomalous (red) samples remain heavily overlapped for both methods, with PaDiM showing near-complete overlap that explains the persistent 18.3\% specificity. In contrast, full adaptation (bottom) re-separates the distributions by learning new feature representations, restoring clearer boundaries between normal and anomalous samples.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{img/score_distributions_shift_threshold_ZIPPER.png}
+    \\[0.5em]
+    \includegraphics[width=\linewidth]{img/score_distributions_shift_full_adaptation_ZIPPER.png}
+    \caption{Score distributions on Zipper (Val-shift): \textbf{Top:} Threshold-only adaptation: distributions remain overlapped; only the threshold (green dashed) is recalibrated. \textbf{Bottom:} Full adaptation: retraining re-separates normal and anomalous distributions, enabling effective classification.}
+    \label{fig:score_dist_comparison}
+\end{figure}
+
+Figure~\ref{fig:roc_full_adapt} shows the ROC curves after full adaptation. PatchCore achieves near-perfect detection on Hazelnut (AUROC = 0.998) and strong performance across all categories. The confusion matrices (Figure~\ref{fig:confusion_full_adapt}) confirm the recovery of specificity to practical levels (PatchCore: 91.1\%, PaDiM: 82.4\%).
+
+
+\paragraph{Residual Gap Analysis.}
+Despite full retraining, neither method fully recovers to clean domain performance. PatchCore exhibits a residual gap of $-2.4$~pp (0.985 $\rightarrow$ 0.961), while PaDiM shows $-4.5$~pp (0.930 $\rightarrow$ 0.885). We attribute this to three factors:
+
+\begin{enumerate}
+    \item \textbf{Increased intra-class variance:} The shift transformations (rotation, color jitter, blur, illumination gradients) expand the feature distribution of normal images, making the boundary between normal and anomalous less distinct.
+    
+    \item \textbf{Transformation artifacts:} Image interpolation during geometric transformations and border effects introduce subtle patterns that differ from real acquisition variations, potentially confusing the models.
+    
+    \item \textbf{Data quality:} Synthetically augmented data, while useful for robustness, does not fully replicate the natural variations encountered in real domain shifts.
+\end{enumerate}
+
+\paragraph{Method Comparison.}
+PatchCore's smaller residual gap ($-2.4$~pp vs.\ $-4.5$~pp for PaDiM) confirms the advantage of non-parametric approaches under domain shift. The memory bank can flexibly accommodate new appearance variations without making distributional assumptions. In contrast, PaDiM's position-specific Gaussian modeling~\cite{defard2020padim} remains partially misaligned even after retraining: the $\pm10°$ rotations in our shift protocol cause features at position $(i,j)$ to originate from physically different locations than in training, violating the positional correspondence assumption.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{../outputs/visualizations/shifted_full_adaptation/roc_curves_shift_full_adaptation.png}
+    \caption{ROC curves after full adaptation on Train-shift. PatchCore achieves AUROC $\geq 0.936$ on all categories, with near-perfect performance on Hazelnut (0.998). PaDiM shows significant recovery but remains below PatchCore, particularly on Zipper (0.809).}
+    \label{fig:roc_full_adapt}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{../outputs/visualizations/shifted_full_adaptation/confusion_matrices_shift_full_adaptation.png}
+    \caption{Confusion matrices after full adaptation. Both methods recover practical specificity levels (PatchCore: 91.1\%, PaDiM: 82.4\%), with PatchCore achieving perfect specificity on Hazelnut (100\%).}
+    \label{fig:confusion_full_adapt}
 \end{figure}
 
