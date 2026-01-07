@@ -1,5 +1,140 @@
+% ============================================================================
+% 5. Results and Discussion
+% ============================================================================
 \section{Results and Discussion}
 \label{sec:results}
 
-% TODO
+This section presents the experimental results across the evaluation scenarios described in Section~\ref{sec:evaluation_scenarios}. 
+
+% ----------------------------------------------------------------------------
+\subsection{Clean Domain Performance}
+\label{sec:clean_results}
+
+Table~\ref{tab:clean_results} reports the detection and localization performance of PatchCore and PaDiM on Test-clean, using thresholds calibrated on Val-clean. Both methods achieve strong baseline performance, validating the experimental setup and implementations.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Clean domain performance (Test-clean). Best per metric in \textbf{bold}.}
+\label{tab:clean_results}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}llccccc@{}}
+\toprule
+\textbf{Method} & \textbf{Class} & \textbf{AUC} & \textbf{PRC} & \textbf{F1} & \textbf{pAUC} & \textbf{PRO} \\
+\midrule
+\multirow{4}{*}{\rotatebox{90}{PatchCore}} 
+ & Hazel. & \textbf{1.00} & \textbf{1.00} & \textbf{1.00} & \textbf{.988} & \textbf{.855} \\
+ & Carpet & \textbf{.973} & \textbf{.991} & \textbf{.951} & \textbf{.988} & \textbf{.836} \\
+ & Zipper & \textbf{.982} & \textbf{.994} & \textbf{.949} & \textbf{.986} & \textbf{.833} \\
+ & \textit{Avg} & \textit{\textbf{.985}} & \textit{\textbf{.995}} & \textit{\textbf{.966}} & \textit{\textbf{.987}} & \textit{\textbf{.841}} \\
+\midrule
+\multirow{4}{*}{\rotatebox{90}{PaDiM}}
+ & Hazel. & .971 & .975 & .867 & .963 & .797 \\
+ & Carpet & .959 & .985 & .923 & .984 & .534 \\
+ & Zipper & .862 & .942 & .895 & .972 & .797 \\
+ & \textit{Avg} & \textit{.930} & \textit{.967} & \textit{.895} & \textit{.973} & \textit{.709} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Detection Performance.}
+PatchCore demonstrates superior image-level detection, achieving near-perfect performance on Hazelnut (AUROC = 1.000, F1 = 1.000) and strong results across all categories (macro-average AUROC = 0.985, F1 = 0.966). PaDiM, while competitive, shows a consistent performance gap, particularly on Zipper (AUROC = 0.862 vs.\ 0.982 for PatchCore). This difference in macro-average AUROC (0.985 vs.\ 0.930) confirms the advantage of PatchCore's non-parametric approach.
+
+\paragraph{Localization Performance.}
+Both methods achieve excellent pixel-level AUROC (PatchCore: 0.987, PaDiM: 0.973), indicating strong discrimination between defective and normal pixels. However, the PRO metric reveals a more significant gap: PatchCore achieves 0.841 compared to PaDiM's 0.709. The PRO metric, which penalizes predictions that only partially cover defect regions, highlights PatchCore's more precise spatial localization. Notably, PaDiM's PRO on Carpet (0.534) is substantially lower than other categories, suggesting difficulty with fine-grained texture defects.
+
+\paragraph{Method Comparison.}
+The performance gap between PatchCore and PaDiM can be attributed to their fundamentally different modeling approaches:
+
+\begin{itemize}
+    \item \textbf{Non-parametric vs.\ Parametric:} PatchCore's memory bank approach (Section~\ref{sec:patchcore}) enables exact matching, while PaDiM's Gaussian assumption (Section~\ref{sec:padim}) may not capture complex feature distributions.
+    
+    \item \textbf{Density Reweighting:} PatchCore applies density-based reweighting (see Section~\ref{sec:patchcore}) to anomaly scores, reducing the influence of outliers in the memory bank. PaDiM lacks this mechanism, making it more sensitive to covariance estimation errors.
+    
+    \item \textbf{Trade-offs:} PaDiM offers lower memory footprint and faster inference (no nearest-neighbor search required), making it suitable for resource-constrained deployments. However, for maximum detection accuracy, PatchCore's memory bank approach proves more effective.
+\end{itemize}
+
+Figure~\ref{fig:roc_clean} shows the ROC curves for both methods across all categories. PatchCore consistently achieves higher true positive rates at low false positive rates, reflecting its superior ranking ability. The confusion matrices (Figure~\ref{fig:confusion_clean}) reveal that PatchCore's errors are primarily false positives (8 total across all classes), while PaDiM exhibits a higher false negative rate (9 missed anomalies on Carpet alone).
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{../outputs/visualizations/06_evaluation_clean/roc_curves_clean.png}
+    \caption{ROC curves on Test-clean for PatchCore and PaDiM across the three categories. PatchCore achieves near-perfect AUROC on Hazelnut and consistently outperforms PaDiM.}
+    \label{fig:roc_clean}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{../outputs/visualizations/06_evaluation_clean/confusion_matrices_clean.png}
+    \caption{Confusion matrices on Test-clean at calibrated thresholds. PatchCore shows fewer false negatives, while PaDiM exhibits higher miss rates, particularly on Carpet and Hazelnut.}
+    \label{fig:confusion_clean}
+\end{figure}
+
+% ----------------------------------------------------------------------------
+\subsection{Impact of Domain Shift}
+\label{sec:shift_no_adapt}
+
+We now evaluate the robustness of clean-trained models when tested on the shifted domain (Test-shift) \emph{without any adaptation}. This scenario uses the same models trained on Train-clean and the same thresholds calibrated on Val-clean, isolating the pure impact of distribution shift.
+
+\paragraph{Experimental Setup.}
+The domain shift transformations applied to Test-shift include geometric perturbations (rotation $\pm10°$, scale variations, translations) and photometric changes (color jitter, Gaussian blur, noise, non-uniform illumination). See Section~\ref{sec:domain_shift} for details.
+
+Table~\ref{tab:shift_no_adapt} presents the performance degradation compared to the clean domain baseline.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Domain shift degradation (No Adaptation). Macro-average metrics comparing Clean vs.\ Shift. $\Delta$ = Shift $-$ Clean.}
+\label{tab:shift_no_adapt}
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}lccc ccc@{}}
+\toprule
+& \multicolumn{3}{c}{\textbf{AUROC}} & \multicolumn{3}{c}{\textbf{Specificity}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+\textbf{Method} & Clean & Shift & $\Delta$ & Clean & Shift & $\Delta$ \\
+\midrule
+PatchCore & .985 & .892 & \textcolor{red}{-.093} & .905 & .223 & \textcolor{red}{-.682} \\
+PaDiM     & .930 & .684 & \textcolor{red}{-.246} & .869 & .183 & \textcolor{red}{-.686} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Overall Degradation.}
+Both methods suffer substantial performance drops when evaluated on shifted data with clean-domain thresholds. PatchCore's macro-average AUROC decreases from 0.985 to 0.892 ($\Delta = -0.093$), while PaDiM experiences a more severe drop from 0.930 to 0.684 ($\Delta = -0.246$). This larger degradation for PaDiM indicates that Gaussian parametric models are more sensitive to distribution shift than memory-bank approaches.
+
+\paragraph{Threshold Invalidity and Specificity Collapse.}
+The most striking observation is the \textbf{catastrophic collapse of specificity}, dropping from $\sim$0.90 to $\sim$0.20 for both methods. For Zipper, \emph{both methods achieve exactly 0\% specificity}, meaning every normal image is misclassified as anomalous. This occurs because the domain shift causes anomaly scores to increase systematically across all samples, pushing normal images above the threshold calibrated on clean data.
+
+Figure~\ref{fig:confusion_shifted} visualizes this effect: the bottom-left quadrant (True Negatives) is nearly empty, while false positives dominate. Despite maintaining high recall (PatchCore: 1.000, PaDiM: 0.972), the models become useless for practical deployment due to excessive false alarms.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{../outputs/visualizations/shifted_no_adaptation/confusion_matrices_shifted.png}
+    \caption{Confusion matrices on Test-shift (No Adaptation). Both methods exhibit near-zero specificity, with Zipper showing complete failure to identify normal samples. The threshold calibrated on Val-clean is no longer valid under domain shift.}
+    \label{fig:confusion_shifted}
+\end{figure}
+
+\paragraph{The Rotation Sensitivity.}
+A good finding is PaDiM's disproportionate sensitivity to domain shift, particularly on Hazelnut (AUROC: 0.971 $\rightarrow$ 0.605, $\Delta = -0.366$) and Zipper (AUROC: 0.862 $\rightarrow$ 0.555, $\Delta = -0.307$). We hypothesize this is due to the $\pm10°$ rotations included in our shift transformations:
+
+\begin{itemize}
+    \item \textbf{PaDiM's Position-Specific Modeling:} PaDiM estimates a separate Gaussian distribution for each spatial position $(i,j)$ in the feature map~\cite{defard2020padim}. When an image is rotated, features from position $(i,j)$ in the test image correspond to a different physical location than in training. This spatial misalignment causes features to be compared against incorrect reference distributions, artificially inflating Mahalanobis distances.
+    
+    \item \textbf{PatchCore's Global Memory Bank:} In contrast, PatchCore's memory bank is position-agnostic: it stores patch embeddings without spatial indexing. During inference, each test patch is matched to its globally nearest neighbor regardless of position. Small rotations merely shuffle which memory bank patches are retrieved, without fundamentally breaking the matching process.
+\end{itemize}
+
+This \emph{rotation sensitivity} explains why PaDiM, despite being competitive on clean data, degrades more severely under geometric transformations. The effect is less pronounced on Carpet, a texture category with inherent translation invariance, where PaDiM's degradation is more modest ($\Delta = -0.065$).
+
+\paragraph{Pixel-Level Degradation.}
+Pixel-level metrics also degrade under shift, though less dramatically than image-level specificity. PatchCore's Pixel AUROC drops from 0.987 to 0.922 ($\Delta = -0.065$), while PaDiM drops from 0.973 to 0.827 ($\Delta = -0.146$). The PRO metric shows larger degradation (PatchCore: 0.841 $\rightarrow$ 0.645; PaDiM: 0.709 $\rightarrow$ 0.527), indicating that localization precision suffers more than pixel-level discrimination under distribution shift.
+
+\paragraph{Implications.}
+These results underscore the critical importance of threshold recalibration and/or model adaptation when deploying anomaly detection systems in environments with even modest acquisition variations. The next sections will examine whether threshold-only adaptation (Section~\ref{sec:threshold_adapt}) or full model retraining (Section~\ref{sec:full_adapt}) can recover the lost performance.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{../outputs/visualizations/shifted_no_adaptation/roc_curves_shifted.png}
+    \caption{ROC curves on Test-shift (No Adaptation). PatchCore maintains reasonable ranking ability (macro AUROC = 0.892), while PaDiM's curves approach the diagonal (random classifier) for Hazelnut and Zipper.}
+    \label{fig:roc_shifted}
+\end{figure}
 
