@@ -1,0 +1,52 @@
+{
+  "thresholds": {
+    "patchcore": {
+      "hazelnut": 400.18903746275566,
+      "carpet": 186.91836548951295,
+      "zipper": 151.66495259786154
+    },
+    "padim": {
+      "hazelnut": 41.73367449992412,
+      "carpet": 27.7244876994743,
+      "zipper": 18.04614202181498
+    }
+  },
+  "validation_metrics": {
+    "patchcore": {
+      "hazelnut": {
+        "threshold": 400.18903746275566,
+        "val_f1": 1.0,
+        "val_auroc": 1.0
+      },
+      "carpet": {
+        "threshold": 186.91836548951295,
+        "val_f1": 1.0,
+        "val_auroc": 1.0
+      },
+      "zipper": {
+        "threshold": 151.66495259786154,
+        "val_f1": 0.9859154929577465,
+        "val_auroc": 0.9994047619047619
+      }
+    },
+    "padim": {
+      "hazelnut": {
+        "threshold": 41.73367449992412,
+        "val_f1": 0.84,
+        "val_auroc": 0.9644364074743822
+      },
+      "carpet": {
+        "threshold": 27.7244876994743,
+        "val_f1": 0.9411764705882353,
+        "val_auroc": 0.9684065934065934
+      },
+      "zipper": {
+        "threshold": 18.04614202181498,
+        "val_f1": 0.810126582278481,
+        "val_auroc": 0.8994047619047618
+      }
+    }
+  },
+  "setting": "model-unified",
+  "note": "Per-class thresholds calibrated on class validation sets using global models"
+}

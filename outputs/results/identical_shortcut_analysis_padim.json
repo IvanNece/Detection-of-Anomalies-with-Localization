@@ -4,47 +4,47 @@
       "n_samples": 224,
       "false_positives": 0,
       "fp_rate": 0.0,
-      "mean_score": 14.99870491027832,
-      "max_score": 21.492929458618164
+      "mean_score": 15.38362979888916,
+      "max_score": 21.436426162719727
     },
     "zipper": {
       "n_samples": 192,
       "false_positives": 0,
       "fp_rate": 0.0,
-      "mean_score": 14.066607475280762,
-      "max_score": 25.550622940063477
+      "mean_score": 13.395611763000488,
+      "max_score": 22.863866806030273
     }
   },
   "carpet": {
     "hazelnut": {
       "n_samples": 312,
-      "false_positives": 21,
-      "fp_rate": 0.0673076923076923,
-      "mean_score": 18.634883880615234,
-      "max_score": 24.498668670654297
+      "false_positives": 0,
+      "fp_rate": 0.0,
+      "mean_score": 18.507165908813477,
+      "max_score": 24.61635971069336
     },
     "zipper": {
       "n_samples": 192,
-      "false_positives": 2,
-      "fp_rate": 0.010416666666666666,
-      "mean_score": 14.066607475280762,
-      "max_score": 25.550622940063477
+      "false_positives": 0,
+      "fp_rate": 0.0,
+      "mean_score": 13.395611763000488,
+      "max_score": 22.863866806030273
     }
   },
   "zipper": {
     "hazelnut": {
       "n_samples": 312,
-      "false_positives": 166,
-      "fp_rate": 0.532051282051282,
-      "mean_score": 18.634883880615234,
-      "max_score": 24.498668670654297
+      "false_positives": 172,
+      "fp_rate": 0.5512820512820513,
+      "mean_score": 18.507165908813477,
+      "max_score": 24.61635971069336
     },
     "carpet": {
       "n_samples": 224,
       "false_positives": 12,
       "fp_rate": 0.05357142857142857,
-      "mean_score": 14.99870491027832,
-      "max_score": 21.492929458618164
+      "mean_score": 15.38362979888916,
+      "max_score": 21.436426162719727
     }
   }
 }

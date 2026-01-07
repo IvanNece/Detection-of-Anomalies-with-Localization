@@ -4,15 +4,15 @@
       "n_samples": 224,
       "false_positives": 0,
       "fp_rate": 0.0,
-      "mean_score": 114.81880950927734,
+      "mean_score": 114.81879425048828,
       "max_score": 135.2587890625
     },
     "zipper": {
       "n_samples": 192,
       "false_positives": 0,
       "fp_rate": 0.0,
-      "mean_score": 111.55054473876953,
-      "max_score": 132.3544921875
+      "mean_score": 111.550537109375,
+      "max_score": 132.35400390625
     }
   },
   "carpet": {
@@ -20,15 +20,15 @@
       "n_samples": 312,
       "false_positives": 0,
       "fp_rate": 0.0,
-      "mean_score": 123.18191528320312,
-      "max_score": 151.3505859375
+      "mean_score": 123.18689727783203,
+      "max_score": 151.350341796875
     },
     "zipper": {
       "n_samples": 192,
       "false_positives": 0,
       "fp_rate": 0.0,
-      "mean_score": 111.55054473876953,
-      "max_score": 132.3544921875
+      "mean_score": 111.550537109375,
+      "max_score": 132.35400390625
     }
   },
   "zipper": {
@@ -36,14 +36,14 @@
       "n_samples": 312,
       "false_positives": 0,
       "fp_rate": 0.0,
-      "mean_score": 123.18191528320312,
-      "max_score": 151.3505859375
+      "mean_score": 123.18689727783203,
+      "max_score": 151.350341796875
     },
     "carpet": {
       "n_samples": 224,
       "false_positives": 0,
       "fp_rate": 0.0,
-      "mean_score": 114.81880950927734,
+      "mean_score": 114.81879425048828,
       "max_score": 135.2587890625
     }
   }
