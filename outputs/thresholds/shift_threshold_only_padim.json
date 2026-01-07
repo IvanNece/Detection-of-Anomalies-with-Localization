@@ -3,7 +3,7 @@
   "thresholds": {
     "hazelnut": 56.26533027356809,
     "carpet": 42.61078038138312,
-    "zipper": 92.37101980833677
+    "zipper": 82.71853887884467
   },
   "calibration_metrics": {
     "hazelnut": {
@@ -27,11 +27,11 @@
       "n_anomalous": 26
     },
     "zipper": {
-      "threshold": 92.37101980833677,
-      "f1": 0.5862068965517241,
-      "precision": 0.41975308641975306,
+      "threshold": 82.71853887884467,
+      "f1": 0.5811965811965812,
+      "precision": 0.4146341463414634,
       "recall": 0.9714285714285714,
-      "accuracy": 0.42168674698795183,
+      "accuracy": 0.40963855421686746,
       "n_samples": 83,
       "n_normal": 48,
       "n_anomalous": 35
