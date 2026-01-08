@@ -53,7 +53,7 @@ The performance gap between PatchCore and PaDiM can be attributed to their funda
     \item \textbf{Trade-offs:} PaDiM offers lower memory footprint and faster inference (no nearest-neighbor search required), making it suitable for resource-constrained deployments. However, for maximum detection accuracy, PatchCore's memory bank approach proves more effective.
 \end{itemize}
 
-Figure~\ref{fig:roc_clean} shows the ROC curves for both methods across all categories. PatchCore consistently achieves higher true positive rates at low false positive rates, reflecting its superior ranking ability. The confusion matrices (Figure~\ref{fig:confusion_clean}) reveal that PatchCore's errors are primarily false positives (8 total across all classes), while PaDiM exhibits a higher false negative rate (9 missed anomalies on Carpet alone).
+Figure~\ref{fig:roc_clean} shows the ROC curves for both methods across all categories. PatchCore consistently achieves higher true positive rates at low false positive rates, reflecting its superior ranking ability. The confusion matrices (Figure~\ref{fig:confusion_clean}) reveal that PatchCore's errors are primarily false positives (8 total across all classes), while PaDiM exhibits a higher false negative rate (9 missed anomalies on Carpet alone). Figure~\ref{fig:patchcore_qualitative} provides qualitative evidence of PatchCore's localization quality on Hazelnut, showing accurate heatmap activations on defective regions while producing uniform low-intensity maps for normal samples.
 
 \begin{figure}[t]
     \centering
@@ -67,6 +67,13 @@ Figure~\ref{fig:roc_clean} shows the ROC curves for both methods across all cate
     \includegraphics[width=\linewidth]{../outputs/visualizations/06_evaluation_clean/confusion_matrices_clean.png}
     \caption{Confusion matrices on Test-clean at calibrated thresholds. PatchCore shows fewer false negatives, while PaDiM exhibits higher miss rates, particularly on Carpet and Hazelnut.}
     \label{fig:confusion_clean}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{../outputs/visualizations/patchcore_clean_hazelnut_validation.png}
+    \caption{Qualitative results for PatchCore on Hazelnut (Test-clean). Top row: input images with anomaly scores. Bottom row: predicted heatmaps. Normal samples (left) receive low scores with uniform heatmaps, while anomalous samples (right) show high scores and accurate defect localization.}
+    \label{fig:patchcore_qualitative}
 \end{figure}
 
 \subsection{Impact of Domain Shift}
@@ -209,7 +216,7 @@ The effect of these adaptation strategies on score distributions is visualized i
     \label{fig:score_dist_comparison}
 \end{figure}
 
-Figure~\ref{fig:roc_full_adapt} shows the ROC curves after full adaptation. PatchCore achieves near-perfect detection on Hazelnut (AUROC = 0.998) and strong performance across all categories. The confusion matrices (Figure~\ref{fig:confusion_full_adapt}) confirm the recovery of specificity to practical levels (PatchCore: 91.1\%, PaDiM: 82.4\%).
+Figure~\ref{fig:roc_full_adapt} shows the ROC curves after full adaptation. PatchCore achieves near-perfect detection on Hazelnut (AUROC = 0.998) and strong performance across all categories. The confusion matrices (Figure~\ref{fig:confusion_full_adapt}) confirm the recovery of specificity to practical levels (PatchCore: 91.1\%, PaDiM: 82.4\%). Qualitative comparison (Figure~\ref{fig:qualitative_full_adapt}) further illustrates the difference: PatchCore produces sharper, better-localized heatmaps that closely match ground truth masks, while PaDiM's predictions tend to be more diffuse and occasionally miss subtle defects.
 
 
 \paragraph{Residual Gap Analysis.}
@@ -239,6 +246,15 @@ PatchCore's smaller residual gap ($-2.4$~pp vs.\ $-4.5$~pp for PaDiM) confirms t
     \caption{Confusion matrices after full adaptation. Both methods recover practical specificity levels (PatchCore: 91.1\%, PaDiM: 82.4\%), with PatchCore achieving perfect specificity on Hazelnut (100\%).}
     \label{fig:confusion_full_adapt}
 \end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.6\linewidth]{../outputs/visualizations/shifted_full_adaptation/sample_predictions_hazelnut_shift_full_adaptation.png}
+    \caption{Qualitative comparison on Hazelnut (Test-shift) after full adaptation. Columns: original image, ground truth mask, PatchCore heatmap, PaDiM heatmap. PatchCore produces sharper localization, while PaDiM's predictions are more diffuse.}
+    \label{fig:qualitative_full_adapt}
+\end{figure}
+
+
 
 % ============================================================================
 % 5.5 Unified Model Analysis
