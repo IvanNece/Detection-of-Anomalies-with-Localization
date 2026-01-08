@@ -82,7 +82,7 @@ Figure~\ref{fig:roc_clean} shows the ROC curves for both methods across all cate
 We now evaluate the robustness of clean-trained models when tested on the shifted domain (Test-shift) \emph{without any adaptation}. This scenario uses the same models trained on Train-clean and the same thresholds calibrated on Val-clean, isolating the pure impact of distribution shift.
 
 \paragraph{Experimental Setup.}
-The domain shift transformations applied to Test-shift include geometric perturbations (rotation $\pm10°$, scale variations, translations) and photometric changes (color jitter, Gaussian blur, noise, non-uniform illumination). See Section~\ref{sec:domain_shift} for details.
+The domain shift transformations applied to Test-shift include geometric perturbations and photometric changes (see Section~\ref{sec:domain_shift} for details).
 
 Table~\ref{tab:shift_no_adapt} presents the performance degradation compared to the clean domain baseline.
 
@@ -189,14 +189,16 @@ Full Adaptation & .921 & .911 & .896 & .858 & .824 & .819 \\
 \end{tabular}
 \end{table}
 
-\paragraph{Threshold-Only Adaptation.}
+\subsubsection{Threshold-Only Adaptation}
+\label{sec:threshold_adapt}
 An important observation from Table~\ref{tab:adaptation_comparison} is that AUROC, Pixel AUROC, and PRO remain \emph{unchanged} between Shift-NoAdapt and Threshold-Only scenarios. This is expected: these metrics are \textbf{threshold-independent}, measuring the model's ranking ability by integrating over all possible thresholds. Since the underlying model and its anomaly scores are identical in both cases, only threshold-dependent metrics (F1, Specificity, Accuracy) can improve, as shown in Table~\ref{tab:threshold_dependent}.
 
 The practical benefit of threshold recalibration is the recovery of specificity (Table~\ref{tab:threshold_dependent}). For PatchCore, specificity increases from 22.3\% to 83.0\% by adjusting the threshold from 227.5 to 441.8 (the optimal F1 point on Val-shift). This eliminates the false positive explosion observed in Section~\ref{sec:shift_no_adapt} at \emph{zero computational cost}: no retraining or feature extraction required.
 
 However, threshold-only adaptation has fundamental limitations: it cannot improve detection accuracy beyond what the existing score distribution allows. For PaDiM, where the score distributions of normal and anomalous samples overlap significantly under shift (particularly for Zipper), recalibration yields minimal benefit (specificity remains at 18.3\%).
 
-\paragraph{Full Adaptation.}
+\subsubsection{Full Adaptation}
+\label{sec:full_adapt}
 Full model retraining on Train-shift provides substantial performance recovery. PatchCore's AUROC increases from 0.892 to 0.961 ($\Delta = +6.9$~pp), while PaDiM shows even larger recovery from 0.684 to 0.885 ($\Delta = +20.1$~pp). The improvement mechanism differs between methods:
 
 \begin{itemize}
