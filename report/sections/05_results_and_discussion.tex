@@ -240,3 +240,71 @@ PatchCore's smaller residual gap ($-2.4$~pp vs.\ $-4.5$~pp for PaDiM) confirms t
     \label{fig:confusion_full_adapt}
 \end{figure}
 
+% ============================================================================
+% 5.5 Unified Model Analysis
+% ============================================================================
+\subsection{Model Unified Analysis}
+\label{sec:unified_model}
+
+The preceding sections evaluate \emph{per-class models}, where each category has its own dedicated model trained exclusively on that class's normal data. We now investigate the \textbf{Model-Unified} setting (see Section~\ref{sec:global_model} and Section~\ref{par:model_unified}), where a single model is trained on pooled normal data from all three categories (Hazelnut, Carpet, Zipper). At inference time, class identity is assumed known and \emph{per-class thresholds} are applied. This setting is valuable for industrial deployments where maintaining separate models for each product variant is impractical.
+
+\paragraph{Quantitative Comparison.}
+Table~\ref{tab:global_results} reports the macro-averaged performance of the unified models across all three categories. PatchCore maintains strong detection (AUROC = 0.984) and localization (Pixel-AUROC = 0.981, PRO = 0.801) capabilities even when trained on heterogeneous data. PaDiM shows competitive detection performance (AUROC = 0.934), but its localization remains weak: the PRO of 0.672 is consistent with its per-class performance (0.709 in Table~\ref{tab:clean_results}), confirming that PaDiM's difficulty with precise defect localization is intrinsic to its Gaussian modeling approach rather than a consequence of the unified setting.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Unified model performance (macro-averaged across all classes).}
+\label{tab:global_results}
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Method} & \textbf{AUROC} & \textbf{Pixel-AUROC} & \textbf{PRO} \\
+\midrule
+PatchCore & .984 & .981 & .801 \\
+PaDiM & .934 & .951 & .672 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:gap_analysis} quantifies the AUROC gap between per-class and unified models. PatchCore exhibits negligible degradation (max gap = +0.5\% on Carpet), confirming that its memory bank effectively handles multi-class training data. PaDiM shows larger variance: a 1.5\% drop on Carpet but a 2.1\% \emph{improvement} on Zipper, likely due to the larger training set providing better feature coverage for this challenging category.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{../outputs/visualizations/global/global_vs_perclass_gap.png}
+    \caption{AUROC gap between per-class and unified models. Positive = per-class better, negative = unified better. PatchCore shows negligible gaps ($<$0.5\%), while PaDiM exhibits larger variance.}
+    \label{fig:gap_analysis}
+\end{figure}
+
+\paragraph{The ``Identical Shortcut'' Problem.}
+While per-class thresholds mitigate most issues in the Model-Unified setting, a critical pathology emerges when we analyze \emph{cross-class} behavior. As discussed in Section~\ref{par:identical_shortcut}, You~\etal~\cite{you2022uniad} identified the ``identical shortcut'' problem: in unified settings, models may learn to discriminate between classes rather than between normal and anomalous samples within each class. To test this, we apply each class's calibrated threshold to normal images from \emph{other} classes and measure the false positive rate (FPR).
+
+Figure~\ref{fig:shortcut_confusion} shows the cross-class confusion matrices. PatchCore achieves \textbf{0\% FPR across all class pairs}, demonstrating that its memory bank effectively separates the feature manifolds of different categories. In contrast, PaDiM exhibits a catastrophic failure: when the Zipper threshold ($\tau = 18.05$) is applied to Hazelnut normal images, \textbf{55.1\% are misclassified as anomalous} (172/312 images). This occurs because Zipper's lower threshold, optimized for its own score distribution, incorrectly flags Hazelnut's higher natural scores.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.49\linewidth]{../outputs/visualizations/global/identical_shortcut_confusion.png}
+    \includegraphics[width=0.49\linewidth]{../outputs/visualizations/global/identical_shortcut_confusion_padim.png}
+    \caption{Cross-class confusion matrices showing FPR (\%) when applying one class's threshold to another class's normal images. \textbf{Left:} PatchCore achieves 0\% FPR everywhere. \textbf{Right:} PaDiM shows severe failure when Zipper's threshold is applied to Hazelnut (55.1\%) and Carpet (5.4\%).}
+    \label{fig:shortcut_confusion}
+\end{figure}
+
+\paragraph{Why PatchCore is More Robust.}
+
+\begin{itemize}
+    \item \textbf{PatchCore's Memory Bank:} Stores actual patch embeddings from each class, which naturally occupy distinct regions in feature space. The nearest-neighbor matching ensures that test patches are compared only against visually similar prototypes. When Hazelnut patches query the global memory bank, they find Hazelnut-like neighbors regardless of which threshold is applied: the anomaly score reflects true visual deviation.
+    
+    \item \textbf{PaDiM's Shared Gaussian:} Estimates a single Gaussian distribution per spatial position over \emph{all} classes. This creates overlapping distributions where Hazelnut's feature vectors, which tend to have higher Mahalanobis distances due to their distinct appearance (nuts vs.\ fabric), naturally produce higher baseline scores. Zipper's threshold, calibrated for lower scores, incorrectly triggers.
+\end{itemize}
+
+\paragraph{Practical Implications.}
+These findings have direct implications for industrial deployment:
+
+\begin{enumerate}
+    \item \textbf{Per-class thresholds are essential:} Even with a unified model, applying a single global threshold is not advisable. Our Model-Unified results confirm that per-class threshold calibration effectively compensates for score distribution differences.
+    
+    \item \textbf{PatchCore is preferred for multi-class scenarios:} Its memory bank approach inherently preserves class boundaries, avoiding the identical shortcut problem. PaDiM's Gaussian modeling, while computationally efficient, requires careful attention to prevent cross-class interference.
+    
+    \item \textbf{Scalability consideration:} A single unified PatchCore model with per-class thresholds achieves comparable performance to per-class models (AUROC gap $<$0.5\%) while reducing deployment complexity from 3 models to 1.
+\end{enumerate}
+
