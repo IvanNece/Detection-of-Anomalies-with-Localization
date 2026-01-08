@@ -19,9 +19,11 @@ Both methods exploit transferable features from ImageNet-pretrained backbones, e
 Conventional anomaly detection follows a \emph{one-model-per-class} paradigm: a separate model is trained for each product category. This approach becomes impractical when the number of categories grows, motivating research into \emph{unified} models that handle multiple classes simultaneously.
 
 \paragraph{Identical Shortcut Problem.}
+\label{par:identical_shortcut}
 You~\etal~\cite{you2022uniad} introduce \textbf{UniAD}, a transformer-based architecture that reconstructs features of different object classes with a single model. A key contribution is the identification of the \emph{identical shortcut} problem: when a model is trained on multiple classes, it may learn to reconstruct any input identically, thereby losing the ability to detect anomalies. UniAD addresses this by injecting neighbour-masked attention and layer-wise query decoders. This insight motivates careful evaluation of unified settings in our work.
 
 \paragraph{Model-Unified vs.\ Absolute-Unified.}
+\label{par:model_unified}
 Heo and Kang~\cite{heo2025hiercore} further distinguish between \emph{Model-Unified} and \emph{Absolute-Unified} settings. In the Model-Unified setting, a single model is trained on pooled normal data from all categories, but separate, per-class thresholds are calibrated at inference. In the stricter Absolute-Unified setting, a single global threshold is used regardless of class. The latter is significantly harder because classes may have different ``normal'' score distributions. Our experiments adopt the Model-Unified paradigm to study how PatchCore and PaDiM behave when exposed to heterogeneous training data, and whether the identical shortcut manifests in embedding-based methods.
 
 \subsection{Robustness to Domain Shift}
