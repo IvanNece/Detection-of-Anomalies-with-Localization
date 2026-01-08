@@ -255,6 +255,110 @@ PatchCore's smaller residual gap ($-2.4$~pp vs.\ $-4.5$~pp for PaDiM) confirms t
 \end{figure}
 
 
+% ============================================================================
+% 5.4 Coreset Ratio Analysis
+% ============================================================================
+\subsection{Coreset Ratio Analysis}
+\label{sec:coreset_analysis}
+
+The Greedy Coreset Subsampling mechanism is a core component of PatchCore, reducing the memory bank size while preserving feature space coverage~\cite{roth2022patchcore}. In this study, we evaluate the impact of different coreset ratios (1\%, 5\%, 10\%) on detection performance when training and testing on the \emph{shifted domain}. This setting isolates the effect of memory bank size without domain shift confounding, as both Train-Shift and Test-Shift share the same distribution.
+
+\paragraph{Experimental Results.}
+Table~\ref{tab:coreset_metrics} reports the macro-averaged performance across all three categories. Counterintuitively, the smallest coreset ratio (1\%) achieves the \textbf{best detection performance} (AUROC = 0.9625, F1 = 0.9294), while the largest ratio (10\%) yields the \emph{worst} results (AUROC = 0.9560, F1 = 0.9205). This finding contradicts the naive expectation that larger memory banks should provide better coverage of the nominal feature space.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Coreset ratio ablation on shifted domain (macro-averaged). Best results in \textbf{bold}.}
+\label{tab:coreset_metrics}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Coreset} & \textbf{AUROC} & \textbf{AUPRC} & \textbf{F1} & \textbf{Time (s)} & \textbf{Mem Bank} \\
+\midrule
+\textbf{1\%} & \textbf{.9625} & \textbf{.9857} & \textbf{.9294} & \textbf{368} & 1,902 \\
+5\% & .9605 & .9850 & .9210 & 1,350 & 9,512 \\
+10\% & .9560 & .9834 & .9205 & 2,254 & 19,024 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:coreset_delta} quantifies the relative change compared to the 1\% baseline. Increasing the coreset ratio to 10\% results in a $-0.67$\% AUROC degradation while incurring a $+513$\% increase in training time. The 5\% ratio, used as the default in our full adaptation experiments (Section~\ref{sec:adaptation}), represents a middle ground with marginal performance loss ($-0.20$\% AUROC) but substantially higher computational cost ($+267$\% time).
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Relative performance change vs.\ 1\% coreset baseline.}
+\label{tab:coreset_delta}
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Coreset} & \textbf{$\Delta$ AUROC} & \textbf{$\Delta$ F1} & \textbf{$\Delta$ Time} \\
+\midrule
+1\% (baseline) & 0.00\% & 0.00\% & 0.00\% \\
+5\% & \textcolor{red}{$-$0.20\%} & \textcolor{red}{$-$0.90\%} & +267\% \\
+10\% & \textcolor{red}{$-$0.67\%} & \textcolor{red}{$-$0.96\%} & +513\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Per-Class Breakdown.}
+The effect of coreset ratio varies across categories. Hazelnut, a rigid object category, shows a slight improvement with larger coresets ($+0.10$\% AUROC from 1\% to 10\%), likely benefiting from increased coverage of pose variations. In contrast, texture categories exhibit performance degradation: Carpet drops by $-0.66$\% and Zipper by $-1.51$\%. These categories, characterized by high intra-class variance in the shifted domain, are more susceptible to the negative effects of larger memory banks.
+
+\paragraph{Interpretation: Noise Filtering Hypothesis.}
+We attribute this counterintuitive result to an implicit \emph{noise filtering} effect of aggressive coreset subsampling on domain-shifted data:
+
+\begin{enumerate}
+    \item \textbf{Noisy Training Features.} The shifted domain includes images with geometric perturbations (rotation $\pm10°$, scale variations), photometric distortions (color jitter, blur, Gaussian noise), and non-uniform illumination gradients. These transformations expand the feature distribution of normal images, introducing ``peripheral'' patch embeddings that represent unusual but nominally valid appearances.
+    
+    \item \textbf{Coreset Overfitting.} At 10\% coreset, the Greedy Coreset algorithm~\cite{roth2022patchcore} retains not only core structural features but also these peripheral/noisy patches. The resulting memory bank becomes overly tolerant of variance, causing anomalies with similar distortion patterns to receive lower scores (closer neighbors in the polluted feature space).
+    
+    \item \textbf{Filtering Effect.} At 1\% coreset, the minimax facility location objective selects only the most \emph{representative} prototypes, discarding less central patches. This acts as an implicit noise filter: transformation artifacts are pruned, leaving a cleaner representation of structural normality with sharper decision boundaries.
+\end{enumerate}
+
+This interpretation aligns with observations in the original PatchCore paper, where Roth~\etal~\cite{roth2022patchcore} note that ``for certain subsampling intervals (between around 50\% and 10\%), we even find joint performance over anomaly detection and localization to partly \emph{increase} as compared to non-subsampled PatchCore.''
+
+\paragraph{Comparison with Original Paper Results.}
+The original PatchCore paper~\cite{roth2022patchcore} evaluates coreset ratios exclusively on the \emph{clean} MVTec AD benchmark, reporting nearly equivalent performance: PatchCore-25\% achieves 99.1\% AUROC, PatchCore-10\% achieves 99.0\%, and PatchCore-1\% achieves 99.0\%. The authors advocate for aggressive 1\% subsampling, demonstrating that it reduces inference time to $<$200ms while maintaining state-of-the-art detection. Notably, the original evaluation uses no data augmentation~\cite{roth2022patchcore}, meaning all models are trained and tested on well-aligned, controlled imagery.
+
+Our experiments extend this analysis to a \emph{synthetically shifted} domain, applying controlled transformations (rotation $\pm10°$, color jitter, blur, illumination gradients) to simulate acquisition variability. Under these conditions, the 1\% coreset \emph{outperforms} larger ratios, contrasting with the clean-domain equivalence. This suggests that the optimal coreset ratio is \textbf{domain-dependent}: on clean, compact feature distributions, all ratios perform similarly; under domain shift, aggressive subsampling acts as an implicit noise filter.
+
+We note that our synthetic shifts represent \emph{mild, controlled} perturbations compared to real-world distribution shifts. Recent work on MVTec AD 2~\cite{hecklerkram2025mvtecad2} introduces significantly more challenging scenarios including transparent objects, dark-field illumination, and explicit lighting-change test sets, where PatchCore achieves only 53.8\% AU-PRO versus $\sim$93\% on the original benchmark. Our ablation study provides a preliminary investigation into coreset sensitivity under distribution shift, but the behavior on truly complex, real-world domain shifts remains an open question for future work.
+
+\paragraph{Justification for 5\% Default.}
+Throughout our main experiments (Sections~\ref{sec:clean_results}--\ref{sec:adaptation}), we adopted a 5\% coreset ratio as a \emph{conservative middle ground}. This choice balances three considerations:
+
+\begin{enumerate}
+    \item \textbf{Literature alignment:} Many implementations (e.g., Anomalib) default to 10\% for robustness; 5\% represents a more aggressive but still conservative setting.
+    
+    \item \textbf{Uncertainty at design time:} Before conducting the ablation study, we lacked evidence that 1\% would outperform larger ratios under domain shift. The 5\% choice hedged against potential underfitting.
+    
+    \item \textbf{Reproducibility:} A single fixed ratio across all experiments ensures fair comparison between clean and shifted domain scenarios.
+\end{enumerate}
+
+In retrospect, our ablation validates that 1\% would have been optimal for the shifted domain, while confirming that the paper's original claim that 1\% is sufficient for clean domains extends robustly to our setup.
+
+\paragraph{Efficiency Trade-off.}
+Figure~\ref{fig:coreset_tradeoff} illustrates the performance-efficiency trade-off. The 1\% coreset achieves both the highest AUROC and the fastest training time, dominating the Pareto frontier. Training time increases dramatically with coreset size: Hazelnut requires 563s at 1\% vs.\ 3,338s at 10\% ($+493$\%), while Zipper shows the largest relative increase ($+664$\%). Memory bank size scales linearly (1,902 $\rightarrow$ 19,024 patches), directly impacting inference-time nearest-neighbor search complexity.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.85\linewidth]{../outputs/visualizations/coreset/performance_efficiency_tradeoff.png}
+    \caption{Performance vs.\ efficiency trade-off for different coreset ratios on the shifted domain. The 1\% coreset (leftmost point) dominates the Pareto frontier, achieving highest AUROC with lowest training time.}
+    \label{fig:coreset_tradeoff}
+\end{figure}
+
+\paragraph{Practical Implications.}
+These findings have direct implications for deploying PatchCore in non-ideal environments:
+
+\begin{itemize}
+    \item \textbf{Aggressive subsampling is beneficial under domain shift.} When training data exhibits high variance (common in real-world industrial settings with lighting/positioning variations), smaller coreset ratios prevent ``pollution'' of the nominal feature space.
+    
+    \item \textbf{1\% coreset is recommended for shifted domains.} It provides the best detection performance, fastest training, and lowest memory footprint. The 5\% ratio offers negligible benefit at $3.7\times$ the computational cost.
+    
+    \item \textbf{Larger coresets may help for rigid objects.} Categories with low intra-class variance (e.g., Hazelnut) can benefit from increased coverage, but the effect is marginal ($+0.10$\% AUROC).
+\end{itemize}
+
 
 % ============================================================================
 % 5.5 Unified Model Analysis
@@ -263,6 +367,7 @@ PatchCore's smaller residual gap ($-2.4$~pp vs.\ $-4.5$~pp for PaDiM) confirms t
 \label{sec:unified_model}
 
 The preceding sections evaluate \emph{per-class models}, where each category has its own dedicated model trained exclusively on that class's normal data. We now investigate the \textbf{Model-Unified} setting (see Section~\ref{sec:global_model} and Section~\ref{par:model_unified}), where a single model is trained on pooled normal data from all three categories (Hazelnut, Carpet, Zipper). At inference time, class identity is assumed known and \emph{per-class thresholds} are applied. This setting is valuable for industrial deployments where maintaining separate models for each product variant is impractical.
+
 
 \paragraph{Quantitative Comparison.}
 Table~\ref{tab:global_results} reports the macro-averaged performance of the unified models across all three categories. PatchCore maintains strong detection (AUROC = 0.984) and localization (Pixel-AUROC = 0.981, PRO = 0.801) capabilities even when trained on heterogeneous data. PaDiM shows competitive detection performance (AUROC = 0.934), but its localization remains weak: the PRO of 0.672 is consistent with its per-class performance (0.709 in Table~\ref{tab:clean_results}), confirming that PaDiM's difficulty with precise defect localization is intrinsic to its Gaussian modeling approach rather than a consequence of the unified setting.
