@@ -49,8 +49,7 @@ Fabio Veroli \\ s336301\\
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-   % TODO: Write abstract
-   \cite{}
+Visual anomaly detection in manufacturing requires identifying defective products from images acquired under controlled conditions. While state-of-the-art methods such as PatchCore and PaDiM achieve strong results on standard benchmarks, their robustness to distribution shift and behavior in multi-class settings remain underexplored. In this work, we present a comparative study of these two embedding-based approaches on the MVTec~AD dataset under both clean and synthetically shifted domains. We construct MVTec-Shift by applying photometric and geometric transformations inspired by MVTec~AD~2, measuring performance degradation when models trained on clean data are tested under distribution shift. Our experiments reveal that both methods suffer severe specificity collapse without adaptation, with PaDiM exhibiting greater sensitivity to rotations due to its position-specific Gaussian modeling. We evaluate two adaptation strategies: threshold-only recalibration recovers PatchCore's specificity at zero computational cost, while full model retraining provides stronger recovery. Additionally, our coreset ratio ablation shows that aggressive subsampling (1\%) outperforms larger ratios under domain shift, acting as an implicit noise filter. Finally, in the Model-Unified setting, PatchCore maintains robust performance with negligible degradation, while PaDiM exhibits cross-class interference characteristic of the identical shortcut problem. These findings provide practical insights for deploying anomaly detection systems in real-world industrial environments.
 \end{abstract}
 
 %%%%%%%%% BODY TEXT

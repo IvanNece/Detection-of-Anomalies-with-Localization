@@ -27,7 +27,7 @@ The 80/20 train/validation ratio ensures sufficient training data for robust fea
 All splits are generated reproducibly using a fixed random seed (42), with split indices stored in JSON format to ensure consistency across experiments.
 
 \paragraph{Split Statistics.}
-Table~\ref{tab:split_statistics} summarizes the dataset composition for each category and split.
+Table~\ref{tab:split_statistics} summarizes the dataset composition for each category and split, and Figure~\ref{fig:split_distribution} provides a visual representation of the distribution.
 
 \begin{table}[t]
 \centering
@@ -53,7 +53,8 @@ Zipper   & 192 & 0 & 48 & 36 & 32 & 84 \\
 \begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{../outputs/visualizations/02_data_preparation/split_distribution.png}
-    \label{fig:datasetSplittingg}
+    \caption{Visual representation of the data split distribution across the three MVTec~AD categories, showing the number of normal and anomalous samples in each split.}
+    \label{fig:split_distribution}
 \end{figure}
 
 % ----------------------------------------------------------------------------

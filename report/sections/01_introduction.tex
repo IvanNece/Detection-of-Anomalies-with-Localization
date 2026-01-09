@@ -10,7 +10,7 @@ In this work, we present a comparative study of PatchCore and PaDiM on MVTec~AD 
 \begin{enumerate}
     \item \textbf{Baseline comparison.} We evaluate PatchCore (custom implementation) and PaDiM (anomalib-based) on three MVTec~AD categories (Hazelnut, Carpet, Zipper), reporting both image-level and pixel-level metrics.
     
-    \item \textbf{Synthetic domain shift.} We construct \emph{MVTec-Shift} by applying photometric and geometric transformations inspired by MVTec~AD~2~\cite{hecklerkram2025mvtecad2}, and measure the performance drop when models trained on clean data are tested on shifted data. Measuring also the hyperparameter influence on the performance obtained. 
+    \item \textbf{Synthetic domain shift.} We construct \emph{MVTec-Shift} by applying photometric and geometric transformations inspired by MVTec~AD~2~\cite{hecklerkram2025mvtecad2}, and measure the performance drop when models trained on clean data are tested on shifted data, including an analysis of hyperparameter influence on model robustness. 
     
     \item \textbf{Threshold adaptation strategies.} We compare three regimes: (a)~no adaptation, (b)~threshold-only adaptation on shifted validation data, and (c)~full adaptation with model re-training. This ablation isolates the benefit of threshold recalibration from feature-level adaptation.
     
