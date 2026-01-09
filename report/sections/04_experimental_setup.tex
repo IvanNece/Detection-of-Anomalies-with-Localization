@@ -61,6 +61,8 @@ Zipper   & 192 & 0 & 48 & 36 & 32 & 84 \\
 \subsection{Evaluation Protocol}
 \label{sec:evaluation_protocol}
 
+Since both PatchCore and PaDiM are inference-only or analytical methods that bypass gradient-based optimization on the target domain, traditional training loss curves are not applicable. Instead, we evaluate model performance using threshold-independent metrics, specifically AUROC and AUPRC, to characterize the trade-off between true positive and false positive rates across all possible operating points.
+
 \paragraph{Threshold Selection.}
 For each class and method, we calibrate a decision threshold on the validation set using an F1-optimal grid search. Specifically, we:
 \begin{enumerate}
