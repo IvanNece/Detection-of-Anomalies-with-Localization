@@ -1,0 +1,35 @@
+% ============================================================================
+% 6. Conclusions
+% ============================================================================
+\section{Conclusions}
+\label{sec:conclusion}
+
+This work presented a comprehensive comparative study of PatchCore and PaDiM for visual anomaly detection under both clean and domain-shifted conditions. Our experiments on three MVTec~AD categories (Hazelnut, Carpet, Zipper) systematically evaluated baseline performance, robustness to distribution shift, adaptation strategies, and the Model-Unified setting.
+
+\paragraph{Key Findings.}
+On the clean domain, PatchCore achieves state-of-the-art detection (AUROC = 0.985) and localization (PRO = 0.841), outperforming PaDiM across all metrics. The performance gap is most pronounced on challenging categories like Zipper, where PaDiM's Gaussian assumption fails to capture complex feature distributions.
+
+Under synthetic domain shift, both methods suffer substantial degradation, with specificity collapsing from $\sim$90\% to $\sim$20\% when clean-calibrated thresholds are applied. PaDiM exhibits greater sensitivity to geometric transformations due to its position-specific modeling, while PatchCore's global memory bank proves more robust. Threshold-only adaptation recovers specificity for PatchCore (22.3\% $\rightarrow$ 83.0\%) at zero computational cost, but cannot improve underlying detection accuracy. Full model retraining provides the strongest recovery: PatchCore reaches 0.961 AUROC ($-$2.4~pp from clean), while PaDiM recovers to 0.885 ($-$4.5~pp).
+
+Our coreset ratio ablation reveals that aggressive subsampling (1\%) \emph{outperforms} larger ratios under domain shift, acting as an implicit noise filter that prunes transformation artifacts from the memory bank. This finding extends the original PatchCore analysis, suggesting that optimal coreset ratio is domain-dependent.
+
+In the Model-Unified setting, PatchCore maintains strong performance (AUROC = 0.984) with negligible degradation from per-class models ($<$0.5\% gap), while PaDiM exhibits cross-class interference characteristic of the identical shortcut problem. PatchCore's non-parametric approach inherently preserves class boundaries, making it more suitable for multi-class industrial deployments.
+
+
+\paragraph{Limitations.}
+Our study has several limitations that should be considered when interpreting the results:
+\begin{itemize}
+    \item \textbf{Synthetic domain shift:} Our MVTec-Shift transformations represent mild, controlled perturbations. Real-world distribution shifts (sensor degradation, environmental changes) may exhibit different characteristics.
+    \item \textbf{Limited categories:} We evaluated three MVTec~AD categories; generalization to all 15 categories or other datasets remains to be validated.
+    \item \textbf{Fixed backbone:} All experiments use ResNet-50 pretrained on ImageNet. The relative performance of PatchCore and PaDiM may differ with alternative feature extractors.
+    \item \textbf{Model-Unified scope:} Our unified setting pools only three visually distinct categories. Scaling to tens or hundreds of classes may reveal different dynamics.
+\end{itemize}
+
+\paragraph{Future Work.}
+Several directions merit further investigation:
+\begin{itemize}
+    \item \textbf{Real-world domain shift:} Evaluation on MVTec~AD~2~\cite{hecklerkram2025mvtecad2} or other benchmarks with authentic acquisition variations would provide stronger evidence of robustness.
+    \item \textbf{Alternative backbones:} Exploring vision transformers or self-supervised features as alternatives to ImageNet-pretrained CNNs.
+    \item \textbf{Absolute-Unified setting:} Extending from Model-Unified (per-class thresholds) to the stricter Absolute-Unified setting~\cite{guo2024cada} where class identity is unknown at inference.
+\end{itemize}
+

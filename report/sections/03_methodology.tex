@@ -59,6 +59,9 @@ To simulate non-uniform industrial lighting conditions (\eg, spotlight effects f
 
 These transformations collectively simulate realistic sensor degradation and environmental changes encountered in industrial deployment, providing a controlled way to evaluate model robustness.
 
+\paragraph{Implementation Note.}
+The shifted dataset (MVTec-Shift) is generated \emph{offline} as a preprocessing step, producing a separate set of transformed images stored on disk. This approach can be viewed as a form of data augmentation; however, unlike traditional online augmentation (which is applied stochastically during training to improve generalization), our transformations are applied deterministically to create a distinct domain for evaluating robustness. During training and inference, models load pre-generated images directly. The clean-domain experiments use no augmentation whatsoever, following the original PatchCore and PaDiM protocols~\cite{roth2022patchcore, defard2020padim}.
+
 % ----------------------------------------------------------------------------
 \subsection{PatchCore}
 \label{sec:patchcore}
@@ -73,7 +76,7 @@ To incorporate spatial context into each patch embedding, we perform average poo
 \begin{equation}
     f_{\text{agg}}^{(h,w)} = \frac{1}{p^2} \sum_{(i,j) \in \mathcal{N}_{p}(h,w)} f^{(i,j)}
 \end{equation}
-where $\mathcal{N}_{p}(h,w)$ denotes the $p \times p$ patch centered at position $(h,w)$ and $f^{(i,j)}$ is the feature vector at that location. We use $p = 3$ in our implementation. Features from \texttt{layer3} are bilinearly upsampled to match the spatial resolution of \texttt{layer2}, and the two feature maps are concatenated along the channel dimension, yielding a combined feature dimension of $512 + 1024 = 1536$ per patch.
+where $\mathcal{N}_{p}(h,w)$ denotes the $p \times p$ patch centered at position $(h,w)$ and $f^{(i,j)}$ is the feature vector at that location. We use $p = 3$ with stride $s = 1$ in our implementation, thus preserving the full spatial resolution. Features from \texttt{layer3} are bilinearly upsampled to match the spatial resolution of \texttt{layer2}, and the two feature maps are concatenated along the channel dimension, yielding a combined feature dimension of $512 + 1024 = 1536$ per patch.
 
 \paragraph{Coreset Subsampling.}
 Storing all patch embeddings from the training set would result in an impractically large memory bank. Following Roth~\etal~\cite{roth2022patchcore}, we apply greedy coreset subsampling to select a representative subset. The algorithm iteratively selects patches that maximize the minimum distance to already selected patches (furthest-point sampling):
