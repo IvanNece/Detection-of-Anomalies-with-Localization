@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="report/main.pdf">
+    <img src="https://img.shields.io/badge/📄_Read_Full_Report-PDF-red?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="Read Full Report PDF"/>
+  </a>
+</p>
+
 # Detection of Anomalies with Localization
 
 **Computer Vision Project - Machine Learning for Vision and Multimedia**  
