@@ -17,17 +17,14 @@ We conduct experiments on the MVTec Anomaly Detection (MVTec~AD) dataset~\cite{b
 Following the one-class classification paradigm, we construct separate train/validation/test splits for each category. The original MVTec~AD structure provides a \texttt{train/good} folder (normal images only) and \texttt{test/} folder containing both normal (\texttt{good}) and anomalous images organized by defect type. We partition these as follows:
 
 \begin{itemize}
-    \item \textbf{Train-clean:} 80\% of images from \texttt{train/good}, used exclusively to build the nominal representation (\ie, memory bank for PatchCore, Gaussian parameters for PaDiM).
+    \item \textbf{Train-clean:} 80\% of images from \texttt{train/good}, used exclusively to build the nominal representation.
     \item \textbf{Val-clean:} Remaining 20\% of \texttt{train/good} (normal) plus 30\% of the anomalous images from \texttt{test/<defect>}, used for threshold calibration and hyperparameter tuning.
     \item \textbf{Test-clean:} All remaining normal images from \texttt{test/good} and all remaining anomalous images from \texttt{test/<defect>}, with ground truth masks. Reserved strictly for final evaluation.
 \end{itemize}
 
 The 80/20 train/validation ratio ensures sufficient training data for robust feature extraction while retaining a representative validation set. Crucially, \textbf{anomalous samples are included in the validation set} (at 30\% of available anomalies) to enable threshold calibration that accounts for the score distribution of both classes. This design follows established practice in anomaly detection, where access to a small number of labeled validation anomalies is realistic and necessary for setting decision thresholds~\cite{roth2022patchcore}.
 
-All splits are generated reproducibly using a fixed random seed (42), with split indices stored in JSON format to ensure consistency across experiments.
-
-\paragraph{Split Statistics.}
-Table~\ref{tab:split_statistics} summarizes the dataset composition for each category and split, and Figure~\ref{fig:split_distribution} provides a visual representation of the distribution.
+All splits are generated reproducibly using a fixed random seed (42), with split indices stored in JSON format to ensure consistency across experiments. Table~\ref{tab:split_statistics} summarizes the dataset composition for each category and split, and Figure~\ref{fig:split_distribution} provides a visual representation of the distribution.
 
 \begin{table}[t]
 \centering
@@ -66,7 +63,7 @@ Since both PatchCore and PaDiM are inference-only or analytical methods that byp
 \paragraph{Threshold Selection.}
 For each class and method, we calibrate a decision threshold on the validation set using an F1-optimal grid search. Specifically, we:
 \begin{enumerate}
-    \item Compute image-level anomaly scores for all validation samples (normal + anomalous).
+    \item Compute image-level anomaly scores for all validation samples.
     \item Search over 1000 uniformly spaced thresholds between the minimum and maximum validation scores.
     \item Select the threshold $\tau^*$ that maximizes the F1 score on the validation set:
 \end{enumerate}
@@ -144,15 +141,13 @@ The coreset ratio ablation study (Section~\ref{sec:ablation_coreset}) is conduct
 The coreset sampling ratio $\rho$ is a critical hyperparameter for PatchCore, controlling the trade-off between memory bank coverage and computational efficiency. Following the range suggested by Roth~\etal~\cite{roth2022patchcore} (1--10\%), we conduct an ablation study to evaluate the impact of this parameter.
 
 \paragraph{Experimental Design.}
-We train three PatchCore variants with coreset ratios $\rho \in \{1\%, 5\%, 10\%\}$ on the shifted domain (Train-shift), calibrate thresholds on Val-shift, and evaluate on Test-shift. This configuration isolates the effect of coreset size by keeping the domain fixed (shifted), avoiding confounding factors from domain mismatch.
+We train three PatchCore variants with coreset ratios $\rho \in \{1\%, 5\%, 10\%\}$ on the shifted domain (Train-shift), calibrate thresholds on Val-shift, and evaluate on Test-shift. This configuration isolates the effect of coreset size by keeping the domain fixed (shifted), avoiding other influences.
 
 For each configuration, we record:
 \begin{itemize}
     \item \textbf{Detection metrics:} AUROC, AUPRC, F1, and Accuracy on Test-shift.
     \item \textbf{Efficiency metrics:} Memory bank size (number of retained patches) and training time.
 \end{itemize}
-
-Smaller coreset ratios reduce memory usage and accelerate nearest neighbor search during inference, but may underfit by discarding representative patches. Larger ratios improve coverage but increase computational cost quadratically during coreset selection. The ablation quantifies this trade-off empirically, justifying the selection of $\rho = 0.05$ as the default configuration for all other experiments. Results are reported in Section~\ref{sec:results}.
 
 % ----------------------------------------------------------------------------
 \subsection{Implementation Details}
