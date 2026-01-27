@@ -37,10 +37,10 @@ Table~\ref{tab:clean_results} reports the detection and localization performance
 \end{table}
 
 \paragraph{Detection Performance.}
-PatchCore demonstrates superior image-level detection, achieving near-perfect performance on Hazelnut (AUROC = 1.000, F1 = 1.000) and strong results across all categories (macro-average AUROC = 0.985, F1 = 0.966). PaDiM, while competitive, shows a consistent performance gap, particularly on Zipper (AUROC = 0.862 vs.\ 0.982 for PatchCore). This difference in macro-average AUROC (0.985 vs.\ 0.930) confirms the advantage of PatchCore's non-parametric approach.
+PatchCore demonstrates superior image-level detection, achieving near-perfect performance on Hazelnut (AUROC = 1.000, F1 = 1.000) and strong results across all categories (macro-average AUROC = 0.985, F1 = 0.966). PaDiM, while competitive, shows a consistent performance gap, particularly on Zipper (AUROC = 0.862 vs.\ 0.982 for PatchCore). This difference in macro-average AUROC confirms the advantage of PatchCore's non-parametric approach.
 
 \paragraph{Localization Performance.}
-Both methods achieve excellent pixel-level AUROC (PatchCore: 0.987, PaDiM: 0.973), indicating strong discrimination between defective and normal pixels. However, the PRO metric reveals a more significant gap: PatchCore achieves 0.841 compared to PaDiM's 0.709. The PRO metric, which penalizes predictions that only partially cover defect regions, highlights PatchCore's more precise spatial localization. Notably, PaDiM's PRO on Carpet (0.534) is substantially lower than other categories, suggesting difficulty with fine-grained texture defects.
+Both methods achieve excellent pixel-level AUROC (PatchCore: 0.987, PaDiM: 0.973), indicating strong discrimination between defective and normal pixels. However, the PRO metric reveals a more significant gap: PatchCore achieves 0.841 compared to PaDiM's 0.709. The PRO metric, which penalizes predictions that only partially cover defect regions, highlights PatchCore's more precise spatial localization. Notably, PaDiM's PRO on Carpet is substantially lower than other categories, suggesting difficulty with fine-grained texture defects.
 
 \paragraph{Method Comparison.}
 The performance gap between PatchCore and PaDiM can be attributed to their fundamentally different modeling approaches:
@@ -79,12 +79,7 @@ Figure~\ref{fig:roc_clean} shows the ROC curves for both methods across all cate
 \subsection{Impact of Domain Shift}
 \label{sec:shift_no_adapt}
 
-We now evaluate the robustness of clean-trained models when tested on the shifted domain (Test-shift) \emph{without any adaptation}. This scenario uses the same models trained on Train-clean and the same thresholds calibrated on Val-clean, isolating the pure impact of distribution shift.
-
-\paragraph{Experimental Setup.}
-The domain shift transformations applied to Test-shift include geometric perturbations and photometric changes (see Section~\ref{sec:domain_shift} for details).
-
-Table~\ref{tab:shift_no_adapt} presents the performance degradation compared to the clean domain baseline.
+We now evaluate the robustness of clean-trained models when tested on the shifted domain (Test-shift) \emph{without any adaptation}. This scenario uses the same models trained on Train-clean and the same thresholds calibrated on Val-clean, isolating the pure impact of distribution shift. Table~\ref{tab:shift_no_adapt} presents the performance degradation compared to the clean domain baseline.
 
 \begin{table}[t]
 \centering
@@ -232,8 +227,7 @@ Despite full retraining, neither method fully recovers to clean domain performan
     \item \textbf{Data quality:} Synthetically augmented data, while useful for robustness, does not fully replicate the natural variations encountered in real domain shifts.
 \end{enumerate}
 
-\paragraph{Method Comparison.}
-PatchCore's smaller residual gap ($-2.4$~pp vs.\ $-4.5$~pp for PaDiM) confirms the advantage of non-parametric approaches under domain shift. The memory bank can flexibly accommodate new appearance variations without making distributional assumptions. In contrast, PaDiM's position-specific Gaussian modeling~\cite{defard2020padim} remains partially misaligned even after retraining: the $\pm10°$ rotations in our shift protocol cause features at position $(i,j)$ to originate from physically different locations than in training, violating the positional correspondence assumption.
+PatchCore's smaller residual gap confirms the advantage of non-parametric approaches under domain shift. The memory bank can flexibly accommodate new appearance variations without making distributional assumptions. In contrast, PaDiM's position-specific Gaussian modeling~\cite{defard2020padim} remains partially misaligned even after retraining: the $\pm10°$ rotations in our shift protocol cause features at position $(i,j)$ to originate from physically different locations than in training, violating the positional correspondence assumption.
 
 \begin{figure}[t]
     \centering
@@ -263,7 +257,7 @@ PatchCore's smaller residual gap ($-2.4$~pp vs.\ $-4.5$~pp for PaDiM) confirms t
 \subsection{Coreset Ratio Analysis}
 \label{sec:coreset_analysis}
 
-The Greedy Coreset Subsampling mechanism is a core component of PatchCore, reducing the memory bank size while preserving feature space coverage~\cite{roth2022patchcore}. In this study, we evaluate the impact of different coreset ratios (1\%, 5\%, 10\%) on detection performance when training and testing on the \emph{shifted domain}. This setting isolates the effect of memory bank size without domain shift confounding, as both Train-Shift and Test-Shift share the same distribution.
+The Greedy Coreset Subsampling mechanism is a core component of PatchCore, reducing the memory bank size while preserving feature space coverage~\cite{roth2022patchcore}. In this study, we evaluate the impact of different coreset ratios (1\%, 5\%, 10\%) on detection performance when training and testing on the \emph{shifted domain}.
 
 \paragraph{Experimental Results.}
 Table~\ref{tab:coreset_metrics} reports the macro-averaged performance across all three categories. Counterintuitively, the smallest coreset ratio (1\%) achieves the \textbf{best detection performance} (AUROC = 0.963, F1 = 0.929), while the largest ratio (10\%) yields the \emph{worst} results (AUROC = 0.956, F1 = 0.921). This finding contradicts the naive expectation that larger memory banks should provide better coverage of the nominal feature space.
@@ -326,7 +320,7 @@ We hypothesize that aggressive coreset subsampling acts as an implicit \emph{noi
 \paragraph{Extending the Original Analysis.}
 The original PatchCore paper~\cite{roth2022patchcore} evaluates coreset ratios on the clean MVTec AD benchmark without data augmentation, reporting nearly equivalent performance across ratios: 99.1\% (25\%), 99.0\% (10\%), and 99.0\% (1\%) AUROC. The authors advocate for 1\% subsampling primarily for efficiency, achieving inference times below 200ms while maintaining state-of-the-art detection.
 
-Our experiments extend this analysis to a synthetically shifted domain. Under controlled transformations (rotation, color jitter, blur, illumination gradients), the 1\% coreset \emph{outperforms} larger ratios---a result not observed on clean data. This suggests that optimal coreset ratio is \textbf{domain-dependent}: on compact feature distributions, all ratios perform similarly; under domain shift, aggressive subsampling provides implicit noise filtering. However, our synthetic shifts represent \emph{mild, controlled} perturbations compared to real-world distribution shifts. This ablation provides a preliminary investigation into coreset sensitivity, but the behavior under more complex domain shifts remains an open question for future work.
+Our experiments extend this analysis to a synthetically shifted domain. Under controlled transformations, the 1\% coreset \emph{outperforms} larger ratios---a result not observed on clean data. This suggests that optimal coreset ratio is \textbf{domain-dependent}: on compact feature distributions, all ratios perform similarly; under domain shift, aggressive subsampling provides implicit noise filtering. However, our synthetic shifts represent \emph{mild, controlled} perturbations compared to real-world distribution shifts. This ablation provides a preliminary investigation into coreset sensitivity, but the behavior under more complex domain shifts remains an open question for future work.
 
 % ============================================================================
 % 5.5 Unified Model Analysis
@@ -338,7 +332,7 @@ The preceding sections evaluate \emph{per-class models}, where each category has
 
 
 \paragraph{Quantitative Comparison.}
-Table~\ref{tab:global_results} reports the macro-averaged performance of the unified models across all three categories. PatchCore maintains strong detection (AUROC = 0.984) and localization (Pixel-AUROC = 0.981, PRO = 0.801) capabilities even when trained on heterogeneous data. PaDiM shows competitive detection performance (AUROC = 0.934), but its localization remains weak: the PRO of 0.672 is consistent with its per-class performance (0.709 in Table~\ref{tab:clean_results}), confirming that PaDiM's difficulty with precise defect localization is intrinsic to its Gaussian modeling approach rather than a consequence of the unified setting.
+Table~\ref{tab:global_results} reports the macro-averaged performance of the unified models across all three categories. PatchCore maintains strong detection and localization capabilities even when trained on heterogeneous data. PaDiM shows competitive detection performance, but its localization remains weak: the PRO of 0.672 is consistent with its per-class performance (0.709 in Table~\ref{tab:clean_results}), confirming that PaDiM's difficulty with precise defect localization is intrinsic to its Gaussian modeling approach rather than a consequence of the unified setting.
 
 \begin{table}[H]
 \centering
@@ -379,5 +373,5 @@ Figure~\ref{fig:shortcut_confusion} shows the cross-class confusion matrices. Pa
 \end{figure}
 
 \paragraph{Why PatchCore is More Robust.}
-The difference in robustness originates from the fundamental modeling approaches. PatchCore's memory bank stores actual patch embeddings from each class, which naturally occupy distinct regions in feature space. The nearest-neighbor matching ensures that test patches are compared only against visually similar prototypes---when Hazelnut patches query the global memory bank, they find Hazelnut-like neighbors regardless of which threshold is applied, so the anomaly score reflects true visual deviation rather than class identity. In contrast, PaDiM estimates a single Gaussian distribution per spatial position over \emph{all} classes, creating overlapping distributions. Hazelnut's feature vectors tend to produce higher Mahalanobis distances due to their distinct appearance (rigid nuts vs.\ flexible fabric), and Zipper's threshold, calibrated for lower scores, incorrectly triggers on these naturally higher values. This analysis confirms that PatchCore's non-parametric approach is inherently more suitable for unified multi-class deployments, achieving comparable performance to per-class models (AUROC gap $<$0.5\%) while reducing deployment complexity.
+The difference in robustness originates from the fundamental modeling approaches. PatchCore's memory bank stores actual patch embeddings from each class, which naturally occupy distinct regions in feature space. The nearest-neighbor matching ensures that test patches are compared only against visually similar prototypes---when Hazelnut patches query the global memory bank, they find Hazelnut-like neighbors regardless of which threshold is applied, so the anomaly score reflects true visual deviation rather than class identity. In contrast, PaDiM estimates a single Gaussian distribution per spatial position over \emph{all} classes, creating overlapping distributions. Hazelnut's feature vectors tend to produce higher Mahalanobis distances due to their distinct appearance (rigid nuts vs.\ flexible fabric), and Zipper's threshold, calibrated for lower scores, incorrectly triggers on these naturally higher values. This analysis confirms that PatchCore's non-parametric approach is inherently more suitable for unified multi-class deployments, achieving comparable performance to per-class models while reducing deployment complexity.
 
