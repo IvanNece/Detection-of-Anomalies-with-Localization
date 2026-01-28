@@ -78,6 +78,16 @@ AD/
 └── doc/                   # Submission materials
 ```
 
+## ⚙️ Key Hyperparameters
+
+| Parameter        | Value                        | Location                         |
+| ---------------- | ---------------------------- | -------------------------------- |
+| Random seed      | 42                           | `configs/experiment_config.yaml` |
+| Input resolution | 224×224                      | All notebooks                    |
+| Backbone         | ResNet-50 (ImageNet, frozen) | PatchCore/PaDiM                  |
+| Coreset ratio    | 0.05 (default)               | PatchCore                        |
+| PaDiM n_features | 100                          | PaDiM                            |
+
 ---
 
 ## 📊 Supplementary Materials
@@ -121,18 +131,6 @@ Here you can find all the trained models during the experiments:
 
 ---
 
-## ⚙️ Key Hyperparameters
-
-| Parameter        | Value                        | Location                         |
-| ---------------- | ---------------------------- | -------------------------------- |
-| Random seed      | 42                           | `configs/experiment_config.yaml` |
-| Input resolution | 224×224                      | All notebooks                    |
-| Backbone         | ResNet-50 (ImageNet, frozen) | PatchCore/PaDiM                  |
-| Coreset ratio    | 0.05 (default)               | PatchCore                        |
-| PaDiM n_features | 100                          | PaDiM                            |
-
-
----
 
 
 
