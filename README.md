@@ -84,6 +84,8 @@ AD/
 
 ### Models
 
+Here you can find all the trained models during the experiments:
+
 | Path                                   | Content                           |
 | -------------------------------------- | --------------------------------- |
 | `outputs/models/patchcore_*_clean.npy` | PatchCore memory banks (clean)    |
