@@ -1,73 +1,137 @@
+# Industrial Anomaly Detection with Localization
+
 <p align="center">
-  <a href="report/main.pdf">
-    <img src="https://img.shields.io/badge/📄_Read_Full_Report-PDF-red?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="Read Full Report PDF"/>
-  </a>
+    <a href="https://github.com/IvanNece/Detection-of-Anomalies-with-Localization/blob/main/report/main.pdf">
+        <img src="https://img.shields.io/badge/📄_Read_Full_Report-PDF-red?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="Read Full Report PDF"/>
+    </a>
 </p>
 
-# Detection of Anomalies with Localization
-
-**Computer Vision Project - Machine Learning for Vision and Multimedia**  
-**Politecnico di Torino**
-
-Authors: Ivan Necerini (s345147), Jacopo Rialti (s346357), Fabio Veroli (s336301)
+## A Comparative Study of PatchCore and PaDiM under Clean and Shifted Domains
 
 ---
 
-## 📋 Project Overview
+## 👥 Authors
 
-Anomaly detection system for industrial quality control using MVTec AD dataset. Comparison of two state-of-the-art methods:
+- Ivan Necerini (s345147)
+- Jacopo Rialti (s346357)
+- Fabio Veroli (s336301)
 
-- **PatchCore** (main) - Memory bank with Greedy Coreset Subsampling
-- **PaDiM** (baseline) - Gaussian modeling with Mahalanobis distance
+## 📁 Dataset Links
 
-**Features**: Image-level detection, pixel-level localization, domain shift robustness evaluation.
+The datasets are available at the following links:
 
-**Dataset**: MVTec AD - 3 classes (Hazelnut, Carpet, Zipper)
+| Dataset                   | Link                 | Description                                                         |
+| ------------------------- | -------------------- | ------------------------------------------------------------------- |
+| **MVTec AD (Clean)**      | [Download](https://www.mydrive.ch/shares/38536/3830184030e49fe74747669442f0f283/download/420938113-1629960298/mvtec_anomaly_detection.tar.xz) | Original MVTec AD dataset              |
+| **MVTec-Shift (Shifted)** | No Link | Generated in notebook 03 |
+
+The original MVTec AD dataset needs to be downloaded and uploaded to your Google Drive before running the notebooks. Before uploading the entire dataset, remove the other classes expect for the selected one (e.g., hazelnut, carpet, zipper), used in our study.
+The MVTec-Shift dataset will be generated in the third notebook using the provided code.
 
 ---
 
-## 🚀 Quick Setup
+##  Notebooks Execution Order
 
-### Prerequisites
-- Python 3.10+
-- ~10GB disk space
-- CUDA GPU (recommended for training)
+Before running the notebooks, make sure to have the datasets downloaded and available in your Google Drive. 
 
-### Installation
+To reproduce the results, execute notebooks **in sequential order** for full reproducibility, all the common source code used in the notebooks is available in the folder `src/`. 
+Load the notebooks in Colab and run them in order. The notebooks will create the necessary folders and files and results will be saved on your Google Drive at the end of the experiment. 
 
-```powershell
-# 1. Clone repository
-git clone https://github.com/IvanNece/Detection-of-Anomalies-with-Localization.git
-cd Detection-of-Anomalies-with-Localization
+| Step | Notebook                                     | Purpose                                | Output                                 |
+| ---- | -------------------------------------------- | -------------------------------------- | -------------------------------------- |
+| 1    | `01_data_exploration.ipynb`                  | Dataset analysis and visualization     | Exploratory plots                      |
+| 2    | `02_data_preparation.ipynb`                  | Train/Val/Test split (80/20, seed=42)  | `data/processed/clean_splits.json`     |
+| 3    | `03_domain_shift_generation.ipynb`           | Generate MVTec-Shift dataset           | `data/shifted/`, `shifted_splits.json` |
+| 4    | `04_patchcore_clean.ipynb`                   | Train PatchCore on clean domain        | `outputs/models/patchcore_*_clean.npy` |
+| 5    | `05_padim_clean.ipynb`                       | Train PaDiM on clean domain            | `outputs/models/padim_*_clean.pt`      |
+| 6    | `06_evaluation_clean.ipynb`                  | Evaluate both on Test-clean            | `outputs/results/clean_results.json`   |
+| 7    | `07_evaluation_shifted_no_adaptation.ipynb`  | Evaluate on Test-shift (no adaptation) | `shifted_no_adaptation_results.json`   |
+| 8    | `08_evaluation_shifted_threshold_only.ipynb` | Threshold-only adaptation              | `shifted_threshold_only_results.json`  |
+| 9    | `09_full_shift_adaptation.ipynb`             | Full model retraining on shifted       | Models + results for full adaptation   |
+| 10   | `10_global_model_clean.ipynb`                | Model-Unified setting                  | `patchcore_global_clean.npy`           |
+| 11   | `11_coreset_ratio_analysis_on_shift.ipynb`   | Coreset ablation (1%, 5%, 10%)         | Coreset comparison results             |
 
-# 2. Create virtual environment
-python -m venv venv
-.\venv\Scripts\Activate.ps1
+---
 
-# 3. Install dependencies
-pip install --upgrade pip
-pip install -r requirements.txt
+## 🗂️ Project Structure
 
-# 4. Setup Kaggle credentials
-# Download kaggle.json from https://www.kaggle.com/settings
-Copy-Item "path\to\kaggle.json" ".kaggle\kaggle.json"
-$env:KAGGLE_CONFIG_DIR = "$PWD\.kaggle"
-
-# 5. Download dataset
-python scripts/download_dataset.py --source kaggle
-
-# 6. Verify setup
-python scripts/download_dataset.py --verify-only
+```
+AD/
+├── configs/
+│   └── experiment_config.yaml     # Parameters and Hyperparameters (seed=42, coreset=0.05, etc.)
+├── data/
+│   ├── processed/
+│      ├── clean_splits.json      # Train/Val/Test indices for clean domain
+│      └── shifted_splits.json    # Splits for shifted domain
+├── notebooks/                     # Jupyter notebooks (01-11)
+├── src/
+│   ├── data/                      # Dataset, transforms, splitter
+│   ├── models/                    # PatchCore wrapper, PaDiM wrapper
+│   ├── metrics/                   # Evaluator, PRO metric
+│   └── utils/                     # Config loader, visualization
+├── outputs/
+│   ├── models/                    # Trained models (.npy, .pt)
+│   ├── results/                   # Evaluation metrics (.json, .csv)
+│   ├── thresholds/                # Calibrated thresholds per experiment
+│   └── visualizations/            # ROC curves, confusion matrices, heatmaps
+├── report/                        # Paper PDF file
+└── doc/                   # Submission materials
 ```
 
 ---
 
-## 📝 Documentation
+## 📊 Supplementary Materials
 
-- **Pipeline**: `PIPELINE.md`
-- **Proposal**: `ProjectProposal.md`
-- **Instructions**: `Instruction.md`
+### Models
+
+| Path                                   | Content                           |
+| -------------------------------------- | --------------------------------- |
+| `outputs/models/patchcore_*_clean.npy` | PatchCore memory banks (clean)    |
+| `outputs/models/padim_*_clean.pt`      | PaDiM Gaussian parameters (clean) |
+| `outputs/models/*_shift.npy/.pt`       | Fully adapted models              |
+| `outputs/models/*_coreset_01/10.*`     | Coreset ablation models           |
+
+### Results
+
+| Path                                               | Content                  |
+| -------------------------------------------------- | ------------------------ |
+| `outputs/results/clean_results.json`               | Clean domain metrics     |
+| `outputs/results/shifted_*_results.json`           | All shift scenarios      |
+| `outputs/results/global_results.json`              | Unified model metrics    |
+| `outputs/results/patchcore_coreset_comparison.csv` | Coreset ablation summary |
+
+### Thresholds
+
+| Path                                                 | Content                 |
+| ---------------------------------------------------- | ----------------------- |
+| `outputs/thresholds/patchcore_clean_thresholds.json` | Clean thresholds        |
+| `outputs/thresholds/shift_threshold_only_*.json`     | Recalibrated thresholds |
+
+### Visualizations
+
+| Path                                              | Content                                |
+| ------------------------------------------------- | -------------------------------------- |
+| `outputs/visualizations/06_evaluation_clean/`     | ROC curves, confusion matrices (clean) |
+| `outputs/visualizations/shifted_no_adaptation/`   | No-adaptation results                  |
+| `outputs/visualizations/shifted_full_adaptation/` | Full adaptation results                |
+| `outputs/visualizations/global/`                  | Unified model + shortcut analysis      |
+| `outputs/visualizations/coreset/`                 | Coreset trade-off plots                |
 
 ---
+
+## ⚙️ Key Hyperparameters
+
+| Parameter        | Value                        | Location                         |
+| ---------------- | ---------------------------- | -------------------------------- |
+| Random seed      | 42                           | `configs/experiment_config.yaml` |
+| Input resolution | 224×224                      | All notebooks                    |
+| Backbone         | ResNet-50 (ImageNet, frozen) | PatchCore/PaDiM                  |
+| Coreset ratio    | 0.05 (default)               | PatchCore                        |
+| PaDiM n_features | 100                          | PaDiM                            |
+
+
+---
+
+
 
 
